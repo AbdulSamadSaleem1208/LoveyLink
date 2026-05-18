@@ -30,10 +30,16 @@ export default function PricingPage() {
                             Premium Plan
                         </span>
                     </div>
-                    <div className="mt-4 flex justify-center items-baseline text-6xl font-extrabold text-white">
-                        <span className="text-2xl font-medium text-gray-400 mr-1">PKR</span>
-                        1000
-                        <span className="ml-1 text-2xl font-medium text-gray-400">/mo</span>
+                    <div className="mt-4 flex flex-col items-center">
+                        <div className="flex items-center gap-3 justify-center">
+                            <span className="text-5xl md:text-6xl font-extrabold text-white tracking-tight">PKR 500</span>
+                            <span className="px-3 py-1 bg-gradient-to-r from-red-500/20 to-pink-500/20 text-red-400 text-xs font-bold rounded-full border border-red-500/30 uppercase tracking-wider shadow-lg">
+                                Save 50%
+                            </span>
+                        </div>
+                        <div className="text-gray-400 text-sm font-medium mt-2">
+                            Regularly <span className="line-through decoration-gray-500">PKR 1000</span> / month
+                        </div>
                     </div>
                     <p className="mt-5 text-lg text-gray-400 text-center">
                         Everything you need to create the perfect digital gift.

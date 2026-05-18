@@ -30,57 +30,66 @@ export async function checkSubscriptionStatus() {
             }
         );
 
-        // Use Admin Client to bypass RLS and get accurate status
         // 1. Check subscriptions table (Primary Source of Truth)
         const { data: sub } = await supabaseAdmin
             .from('subscriptions')
-            .select('status')
+            .select('status, current_period_end')
             .eq('user_id', user.id)
             .eq('status', 'active')
             .maybeSingle();
 
         if (sub) {
-            logDebug(`[CheckSubscription] Found active subscription in 'subscriptions' table for ${user.id}`);
-            return { isPremium: true };
+            const isPastDue = sub.current_period_end && new Date(sub.current_period_end) < new Date();
+            if (!isPastDue) {
+                logDebug(`[CheckSubscription] Found active, non-expired subscription for ${user.id}`);
+                return { isPremium: true };
+            } else {
+                logDebug(`[CheckSubscription] Subscription for ${user.id} has EXPIRED.`);
+            }
         }
 
-        // 2. Fallback: Check users table (Legacy/Denormalized)
+        // 2. Fallback: Check payment_requests table (Stable table)
+        // Only consider approved payments that are less than 30 days old
+        logDebug(`[CheckSubscription] Attempting Tertiary Fallback for ${user.id}...`);
+        const { data: payment } = await supabaseAdmin
+            .from('payment_requests')
+            .select('id, updated_at')
+            .eq('user_id', user.id)
+            .eq('status', 'approved')
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (payment) {
+            const paymentDate = new Date(payment.updated_at);
+            const expiryDate = new Date(paymentDate);
+            expiryDate.setDate(expiryDate.getDate() + 30);
+
+            if (expiryDate > new Date()) {
+                logDebug(`[CheckSubscription] Found valid approved payment for ${user.id}. Fallback Granted.`);
+                return { isPremium: true };
+            } else {
+                logDebug(`[CheckSubscription] Payment for ${user.id} is older than 30 days. EXPIRED.`);
+                return { isPremium: false, error: "Premium period expired." };
+            }
+        }
+
+        // 3. Fallback: Check users table (Legacy/Denormalized)
+        // We only grant this if we haven't already determined they are expired above to prevent infinite bypass.
         const { data: userRef, error } = await supabaseAdmin
             .from('users')
             .select('subscription_status')
             .eq('id', user.id)
             .single();
 
-        logDebug(`[CheckSubscription] User: ${user.id}, Status: ${userRef?.subscription_status}, Error: ${error?.message}`);
-
-        // 3. Tertiary Fallback: Check payment_requests table (Stable table)
-        // Only consider approved payments that haven't been revoked
-        logDebug(`[CheckSubscription] Attempting Tertiary Fallback for ${user.id}...`);
-        const { data: payment } = await supabaseAdmin
-            .from('payment_requests')
-            .select('id')
-            .eq('user_id', user.id)
-            .eq('status', 'approved')
-            .limit(1)
-            .maybeSingle();
-
-        if (payment) {
-            logDebug(`[CheckSubscription] Found approved payment request for ${user.id}. Fallback Premium Granted.`);
-            return { isPremium: true };
-        } else {
-            logDebug(`[CheckSubscription] No approved payment found for ${user.id} in fallback.`);
+        if (error || !userRef) {
+            return { isPremium: false, error: error?.message || "No user record" };
         }
 
-        if (error) {
-            logDebug(`Error fetching subscription status: ${JSON.stringify(error)}`);
-            // If error is "PGRST116" (no rows), it means user record missing.
-            return { isPremium: false, error: error.message };
-        }
-
-        const isActive = userRef?.subscription_status === 'active';
-        console.log(`[CheckSubscription] Final Verdict: ${isActive}`);
-
-        return { isPremium: isActive };
+        // We no longer blindly trust the users table because it never auto-expires. 
+        // Since we didn't find a valid active subscription above, we enforce false.
+        console.log(`[CheckSubscription] Final Verdict: false`);
+        return { isPremium: false };
     } catch (error) {
         console.error("Unexpected error checking subscription:", error);
         return { isPremium: false, error: "Internal Server Error" };

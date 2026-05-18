@@ -78,9 +78,10 @@ export default async function Dashboard() {
             // 4. Fallback: Check payment_requests (optimistically fetch to avoid waterfall)
             supabaseAdmin
                 .from('payment_requests')
-                .select('id')
+                .select('id, updated_at')
                 .eq('user_id', user.id)
                 .eq('status', 'approved')
+                .order('updated_at', { ascending: false })
                 .limit(1)
                 .maybeSingle()
         ]);
@@ -115,10 +116,18 @@ export default async function Dashboard() {
 
     if (!isPremium) {
         // Use the pre-fetched payment check result
-        // Only grant premium if payment is approved AND not revoked
-        if (paymentCheck.data) {
-            console.log(`[Dashboard] Fallback Premium Granted via payment_requests for ${user.id}`);
-            isPremium = true;
+        // Only grant premium if payment is approved AND within last 30 days
+        if (paymentCheck?.data?.updated_at) {
+            const paymentDate = new Date(paymentCheck.data.updated_at);
+            const expiryDate = new Date(paymentDate);
+            expiryDate.setDate(expiryDate.getDate() + 30);
+
+            if (expiryDate > new Date()) {
+                console.log(`[Dashboard] Fallback Premium Granted via payment_requests for ${user.id}`);
+                isPremium = true;
+            } else {
+                console.log(`[Dashboard] Fallback Payment for ${user.id} is older than 30 days. EXPIRED.`);
+            }
         }
     }
 

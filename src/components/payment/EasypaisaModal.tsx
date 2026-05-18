@@ -46,7 +46,7 @@ export default function EasypaisaModal({ isOpen, onClose }: EasypaisaModalProps)
 
             const { error } = await supabase.from('payment_requests').insert({
                 user_id: user.id,
-                amount: 1000,
+                amount: 500,
                 trx_id: trxId,
                 status: 'pending',
                 payment_method: 'easypaisa_manual'
@@ -80,7 +80,16 @@ export default function EasypaisaModal({ isOpen, onClose }: EasypaisaModalProps)
 
                 <div className="text-center mb-6">
                     <h2 className="text-2xl font-bold text-green-500 mb-2">Easypaisa Payment</h2>
-                    <p className="text-gray-400">Send <span className="text-white font-bold">PKR 1000</span> to activate Premium.</p>
+                    <div className="flex flex-col items-center justify-center mt-3 p-4 bg-green-500/10 rounded-2xl border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                        <span className="text-[10px] text-green-400 font-bold uppercase tracking-widest mb-1 bg-green-500/20 px-2 py-0.5 rounded-full">Limited Offer</span>
+                        <div className="flex items-baseline gap-3 mt-1">
+                            <span className="text-gray-500 line-through decoration-red-500/50 text-lg font-medium">PKR 1000</span>
+                            <span className="text-4xl font-black text-white tracking-tight">PKR 500</span>
+                        </div>
+                        <p className="text-sm text-gray-300 mt-2 flex items-center bg-black/30 px-3 py-1.5 rounded-lg border border-white/5">
+                            <span className="text-green-400 mr-2 text-lg">✓</span> Send exactly <strong className="text-white mx-1">500</strong> to activate Premium.
+                        </p>
+                    </div>
                 </div>
 
                 <div className="bg-black/50 rounded-xl p-4 mb-6 border border-white/5">

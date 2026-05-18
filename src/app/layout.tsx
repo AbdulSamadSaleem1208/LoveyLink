@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google"; // Using Outfit as requested for mode
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import SplashScreen from "@/components/SplashScreen";
 import { Toaster } from "sonner"; // Assuming sonner was installed
 
 const outfit = Outfit({
@@ -13,6 +14,9 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "LoveyLink - Create Your Romantic Love Page",
   description: "Share your love story with a beautiful, custom web page. Include photos, music, and your unique journey.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -23,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} antialiased min-h-screen flex flex-col`}>
+        <SplashScreen />
         <Navbar />
         <main className="flex-grow">
           {children}

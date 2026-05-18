@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Heart, Sparkles, Share2, QrCode, Star, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import AnimatedMockup from "@/components/home/AnimatedMockup";
 
 // Force dynamic rendering since we check auth with cookies
 export const dynamic = 'force-dynamic';
@@ -97,32 +98,8 @@ export default async function Home() {
                 Share the love ♡
               </div>
 
-              {/* Mockup Container */}
-              <div className="relative mx-auto border-gray-800 bg-gray-900 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-2xl flex flex-col overflow-hidden">
-                <div className="h-[32px] w-[3px] bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg"></div>
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
-                <div className="h-[64px] w-[3px] bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
-                <div className="rounded-[2rem] overflow-hidden w-full h-full bg-black relative">
-                  {/* Mockup Screen Content */}
-                  <div className="w-full h-full bg-black text-white p-4 flex flex-col items-center pt-10">
-                    <div className="w-full h-48 bg-gray-800 rounded-xl mb-4 relative overflow-hidden group">
-                      <img
-                        src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1000&auto=format&fit=crop"
-                        alt="Couple"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                    </div>
-                    <h3 className="font-serif text-2xl text-red-primary mb-2">Jose e Lara</h3>
-                    <p className="text-center text-gray-400 text-xs leading-relaxed px-2">
-                      "My love, I made this page to eternalize everything we live. Each memory here is a piece of my heart..."
-                    </p>
-                    <div className="mt-8">
-                      <Heart className="w-12 h-12 text-red-primary fill-current animate-pulse mx-auto" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Animated Mockup Component */}
+              <AnimatedMockup />
             </div>
 
           </div>
