@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import QRDisplay from "@/components/qr/QRDisplay";
 import Link from "next/link";
 import { CheckCircle, ArrowLeft } from "lucide-react";
+import { headers } from "next/headers";
 
 // Force dynamic rendering - NEVER cache this page (contains user-specific data)
 export const dynamic = 'force-dynamic';
@@ -28,29 +29,39 @@ export default async function SuccessPage({ params }: Props) {
 
     if (!page) notFound();
 
-    // Determine the base URL
+    // Determine the base URL dynamically
+    const headerStack = await headers();
+    const host = headerStack.get("host") || "";
+    const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+
     let siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
     if (!siteUrl) {
-        if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+        if (host) {
+            siteUrl = `${protocol}://${host}`;
+        } else if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
             siteUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
         } else if (process.env.VERCEL_URL) {
             siteUrl = `https://${process.env.VERCEL_URL}`;
         } else {
-            // Use production domain as fallback instead of localhost
+            // Ultimate fallback
             siteUrl = "https://loveylink.net";
         }
     }
 
     // If strictly localhost (dev mode), try to use LAN IP for mobile testing
-    if (siteUrl.includes("localhost")) {
+    if (siteUrl.includes("localhost") || siteUrl.includes("127.0.0.1")) {
         try {
             const { networkInterfaces } = require('os');
             const nets = networkInterfaces();
             for (const name of Object.keys(nets)) {
                 for (const net of nets[name]) {
                     if (net.family === 'IPv4' && !net.internal) {
-                        siteUrl = siteUrl.replace("localhost", net.address);
+                        siteUrl = siteUrl.replace(/localhost|127\.0\.0\.1/, net.address);
+                        // Ensure it's http for local IP unless it's known to be https
+                        if (!siteUrl.startsWith("http")) {
+                            siteUrl = "http://" + siteUrl;
+                        }
                         break;
                     }
                 }
