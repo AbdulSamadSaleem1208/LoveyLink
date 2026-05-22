@@ -76,11 +76,11 @@ export default async function SuccessPage({ params }: Props) {
     }
 
     return (
-        <div className="min-h-screen bg-background-blush flex flex-col items-center justify-center p-4">
-            <div className="max-w-2xl w-full bg-white rounded-3xl shadow-xl p-8 md:p-12 text-center border border-red-50 animate-fade-in">
+        <div className="min-h-screen bg-[#FFF1F2] flex flex-col items-center justify-center p-4">
+            <div className="max-w-2xl w-full bg-white rounded-3xl shadow-xl p-8 md:p-12 text-center border border-red-50 animate-fade-in text-gray-900">
                 <div className="flex justify-center mb-6">
-                    <div className="h-20 w-20 bg-green-50 rounded-full flex items-center justify-center">
-                        <CheckCircle className="h-10 w-10 text-green-primary" />
+                    <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-10 w-10 text-green-600" />
                     </div>
                 </div>
 
