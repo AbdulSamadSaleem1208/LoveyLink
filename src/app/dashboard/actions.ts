@@ -4,9 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 
-export async function deleteLovePage(pageId: string) {
+export async function deleteLovePage(pageId: string | string[]) {
     const start = Date.now();
-    console.log(`[Delete] Starting delete for ${pageId}`);
+    const ids = Array.isArray(pageId) ? pageId : [pageId];
+    console.log(`[Delete] Starting delete for ${ids.length} pages: ${ids.join(', ')}`);
 
     try {
         const supabase = await createClient();
@@ -33,23 +34,18 @@ export async function deleteLovePage(pageId: string) {
         const { error, count } = await supabaseAdmin
             .from('love_pages')
             .delete({ count: 'exact' })
-            .eq('id', pageId)
+            .in('id', ids) // Use .in() for multiple IDs
             .eq('user_id', user.id); // Guardrail to ensure user only deletes their own
 
         if (error) {
             console.error("Delete Page Error:", error);
-            return { error: "Failed to delete page from database" };
+            return { error: "Failed to delete pages from database" };
         }
 
-        if (count === 0) {
-            console.warn(`[Delete] No rows affected for page ${pageId}`);
-            // This might happen if the page was already deleted or IDs don't match
-        }
-
-        console.log(`[Delete] Success. Operation took ${Date.now() - start}ms`);
+        console.log(`[Delete] Success. Deleted ${count} rows. Operation took ${Date.now() - start}ms`);
 
         revalidatePath('/dashboard');
-        return { success: true };
+        return { success: true, count };
     } catch (error) {
         console.error("Delete Page Exception:", error);
         return { error: "An unexpected error occurred" };
