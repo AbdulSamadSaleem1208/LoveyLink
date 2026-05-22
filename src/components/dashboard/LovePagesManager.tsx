@@ -151,7 +151,11 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                     <div
                         key={page.id}
                         onClick={() => selectionMode && toggleSelection(page.id)}
-                        className={`bg-background-card border rounded-2xl p-6 shadow-sm transition-all group relative cursor-pointer ${selectionMode ? (selectedIds.includes(page.id) ? 'border-red-500 ring-2 ring-red-500/20 bg-red-500/5' : 'border-white/10 opacity-70 scale-[0.98]') : 'border-white/10 hover:border-red-primary/50 hover:scale-[1.01]'}`}
+                        className={`bg-background-card border rounded-2xl p-6 shadow-sm transition-all duration-300 group relative cursor-pointer 
+                            ${selectionMode
+                                ? (selectedIds.includes(page.id) ? 'border-red-500 ring-2 ring-red-500/20 bg-red-500/5' : 'border-white/10 opacity-70 scale-[0.98]')
+                                : 'border-white/10 hover:border-red-primary/50 hover:scale-[1.01]'
+                            }`}
                     >
                         {!selectionMode && <DeletePageButton pageId={page.id} pageTitle={page.title} />}
 

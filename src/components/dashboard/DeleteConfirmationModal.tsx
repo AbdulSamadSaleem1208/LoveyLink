@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, X } from "lucide-react";
+import { useEffect } from "react";
 
 interface DeleteConfirmationModalProps {
     isOpen: boolean;
@@ -18,6 +19,17 @@ export default function DeleteConfirmationModal({
     title,
     loading
 }: DeleteConfirmationModalProps) {
+    // Prevent scrolling when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
     return (
         <AnimatePresence>
             {isOpen && (
