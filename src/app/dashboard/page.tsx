@@ -196,7 +196,7 @@ export default async function Dashboard() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {lovePages.map((page) => (
                             <div key={page.id} className="bg-background-card border border-white/10 rounded-2xl p-6 shadow-sm hover:border-red-primary/50 transition-all group relative">
-                                <DeletePageButton pageId={page.id} />
+                                <DeletePageButton pageId={page.id} pageTitle={page.title} />
 
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="h-12 w-12 bg-red-primary/10 rounded-full flex items-center justify-center text-red-primary group-hover:bg-red-primary group-hover:text-white transition-colors">
