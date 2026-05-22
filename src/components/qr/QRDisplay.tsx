@@ -98,6 +98,9 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
             <div className="bg-white p-4 rounded-xl shadow-lg border-2 border-red-100">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={qrSrc} alt={`QR Code for ${title}`} className="w-64 h-64 md:w-80 md:h-80" />
+                <div className="mt-2 text-[10px] text-gray-400 break-all font-mono">
+                    {mode === 'link' ? url : "Message encoded"}
+                </div>
             </div>
 
             {/* Toggle button to show/hide actions */}
