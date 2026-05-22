@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, Check, Trash2, LayoutGrid, Clock, Filter } from "lucide-react";
+import { Heart as HeartIcon, Check as CheckIcon, Trash2 as TrashIcon, LayoutGrid as GridIcon, Clock as ClockIcon, Filter as FilterIcon } from "lucide-react";
 import Link from "next/link";
 import DeletePageButton from "./DeletePageButton";
 import { deleteLovePage } from "@/app/dashboard/actions";
@@ -23,7 +23,15 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
     const [selectionMode, setSelectionMode] = useState(false);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
-    const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+
+    // Modal state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalConfig, setModalConfig] = useState<{
+        ids: string[];
+        title: string;
+        isBulk: boolean;
+    }>({ ids: [], title: "", isBulk: false });
+
     const router = useRouter();
 
     const filteredPages = view === 'recent'
@@ -36,47 +44,35 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
         );
     };
 
-    const handleBulkDelete = async () => {
+    const openDeleteModal = (ids: string[], title: string, isBulk: boolean) => {
+        setModalConfig({ ids, title, isBulk });
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
         setLoading(true);
         try {
-            const result = await deleteLovePage(selectedIds);
+            const result = await deleteLovePage(modalConfig.ids);
             if (result.error) {
                 toast.error(result.error);
             } else {
-                toast.success(`Deleted ${result.count} pages`);
-                setSelectionMode(false);
-                setSelectedIds([]);
+                toast.success(modalConfig.isBulk ? `Deleted ${result.count} pages` : "Page deleted");
+                if (modalConfig.isBulk) {
+                    setSelectionMode(false);
+                    setSelectedIds([]);
+                }
+                setIsModalOpen(false);
                 router.refresh();
             }
         } catch (error) {
             toast.error("Failed to delete pages");
         } finally {
             setLoading(false);
-            setIsBulkDeleteModalOpen(false);
-        }
-    };
-
-    const handleDeleteAll = async () => {
-        const allIds = initialPages.map(p => p.id);
-        setLoading(true);
-        try {
-            const result = await deleteLovePage(allIds);
-            if (result.error) {
-                toast.error(result.error);
-            } else {
-                toast.success(`Deleted all ${result.count} pages`);
-                router.refresh();
-            }
-        } catch (error) {
-            toast.error("Failed to delete all pages");
-        } finally {
-            setLoading(false);
-            setIsBulkDeleteModalOpen(false);
         }
     };
 
     return (
-        <div className="space-y-6">
+        <div className={`space-y-6 transition-opacity duration-300 ${isModalOpen ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
             {/* Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
                 <div className="flex items-center gap-2">
@@ -84,14 +80,14 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                         onClick={() => { setView('all'); setSelectionMode(false); }}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center ${view === 'all' && !selectionMode ? 'bg-red-600 text-white shadow-lg shadow-red-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                     >
-                        <LayoutGrid className="w-4 h-4 mr-2" />
+                        <GridIcon className="w-4 h-4 mr-2" />
                         All Pages
                     </button>
                     <button
                         onClick={() => { setView('recent'); setSelectionMode(false); }}
                         className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center ${view === 'recent' ? 'bg-red-600 text-white shadow-lg shadow-red-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                     >
-                        <Clock className="w-4 h-4 mr-2" />
+                        <ClockIcon className="w-4 h-4 mr-2" />
                         Recent
                     </button>
                 </div>
@@ -113,11 +109,11 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                                 Cancel
                             </button>
                             <button
-                                onClick={() => setIsBulkDeleteModalOpen(true)}
+                                onClick={() => openDeleteModal(selectedIds, `${selectedIds.length} Selected Pages`, true)}
                                 disabled={selectedIds.length === 0 || loading}
                                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-red-900/40 transition-all disabled:opacity-50 flex items-center"
                             >
-                                <Trash2 className="w-4 h-4 mr-2" />
+                                <TrashIcon className="w-4 h-4 mr-2" />
                                 Delete Selected
                             </button>
                         </>
@@ -127,17 +123,14 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                                 onClick={() => setSelectionMode(true)}
                                 className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors flex items-center"
                             >
-                                <Filter className="w-4 h-4 mr-2" />
+                                <FilterIcon className="w-4 h-4 mr-2" />
                                 Select & Manage
                             </button>
                             <button
-                                onClick={() => {
-                                    setSelectedIds(initialPages.map(p => p.id));
-                                    setIsBulkDeleteModalOpen(true);
-                                }}
+                                onClick={() => openDeleteModal(initialPages.map(p => p.id), "All Pages", true)}
                                 className="px-4 py-2 text-sm text-red-500 hover:text-red-400 transition-colors flex items-center"
                             >
-                                <Trash2 className="w-4 h-4 mr-2" />
+                                <TrashIcon className="w-4 h-4 mr-2" />
                                 Delete All
                             </button>
                         </>
@@ -152,22 +145,26 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                         key={page.id}
                         onClick={() => selectionMode && toggleSelection(page.id)}
                         className={`bg-background-card border rounded-2xl p-6 shadow-sm transition-all duration-300 group relative cursor-pointer 
-                            ${selectionMode
-                                ? (selectedIds.includes(page.id) ? 'border-red-500 ring-2 ring-red-500/20 bg-red-500/5' : 'border-white/10 opacity-70 scale-[0.98]')
-                                : 'border-white/10 hover:border-red-primary/50 hover:scale-[1.01]'
-                            }`}
+                            ${selectionMode ? (selectedIds.includes(page.id) ? 'border-red-500 ring-2 ring-red-500/20 bg-red-500/5' : 'border-white/10 opacity-70 scale-[0.98]') : 'border-white/10 hover:border-red-primary/50 hover:scale-[1.01]'}`}
                     >
-                        {!selectionMode && <DeletePageButton pageId={page.id} pageTitle={page.title} />}
+                        {!selectionMode && (
+                            <DeletePageButton
+                                pageId={page.id}
+                                pageTitle={page.title}
+                                onDeleteRequest={(id, title) => openDeleteModal([id], title, false)}
+                                isDeleting={loading && modalConfig.ids.includes(page.id)}
+                            />
+                        )}
 
                         {selectionMode && (
                             <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedIds.includes(page.id) ? 'bg-red-500 border-red-500' : 'border-white/20'}`}>
-                                {selectedIds.includes(page.id) && <Check className="w-4 h-4 text-white" />}
+                                {selectedIds.includes(page.id) && <CheckIcon className="w-4 h-4 text-white" />}
                             </div>
                         )}
 
                         <div className="flex justify-between items-start mb-4">
                             <div className="h-12 w-12 bg-red-primary/10 rounded-full flex items-center justify-center text-red-primary group-hover:bg-red-primary group-hover:text-white transition-colors">
-                                <Heart className="w-6 h-6 fill-current" />
+                                <HeartIcon className="w-6 h-6 fill-current" />
                             </div>
                             {page.published ? (
                                 <span className="px-3 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20">
@@ -196,10 +193,10 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
             </div>
 
             <DeleteConfirmationModal
-                isOpen={isBulkDeleteModalOpen}
-                onClose={() => setIsBulkDeleteModalOpen(false)}
-                onConfirm={selectedIds.length === initialPages.length ? handleDeleteAll : handleBulkDelete}
-                title={selectedIds.length === initialPages.length ? "All Pages" : `${selectedIds.length} Selected Pages`}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title={modalConfig.title}
                 loading={loading}
             />
         </div>
