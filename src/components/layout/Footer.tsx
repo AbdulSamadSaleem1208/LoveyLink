@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
     return (
@@ -7,7 +7,13 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-center">
                     <div className="flex items-center gap-2 mb-4 md:mb-0 group">
-                        <Heart className="h-6 w-6 text-red-primary fill-current drop-shadow-[0_0_5px_rgba(255,0,51,0.5)] group-hover:scale-110 transition-transform" />
+                        <Image
+                            src="/logo.png"
+                            alt="LoveyLink logo"
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 rounded-full group-hover:scale-110 transition-transform"
+                        />
                         <span className="font-bold text-xl text-white group-hover:text-red-primary transition-colors">LoveyLink.</span>
                     </div>
 

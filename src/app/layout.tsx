@@ -12,8 +12,24 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.loveylink.net"),
   title: "LoveyLink - Create Your Romantic Love Page",
   description: "Share your love story with a beautiful, custom web page. Include photos, music, and your unique journey.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/logo.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "LoveyLink - Create Your Romantic Love Page",
+    description: "Share your love story with a beautiful, custom web page. Include photos, music, and your unique journey.",
+    url: "https://www.loveylink.net",
+    siteName: "LoveyLink",
+    images: [{ url: "/logo.png", width: 512, height: 512, alt: "LoveyLink logo" }],
+    type: "website",
+  },
 };
 
 export default function RootLayout({

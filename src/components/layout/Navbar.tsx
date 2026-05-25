@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Heart, Menu, X, User } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -52,7 +53,14 @@ export default function Navbar() {
                 <div className="flex justify-between h-20">
                     <div className="flex items-center">
                         <Link href="/" className="flex-shrink-0 flex items-center gap-2 group">
-                            <Heart className="h-8 w-8 text-red-primary fill-current drop-shadow-[0_0_8px_rgba(255,0,51,0.5)] group-hover:scale-110 transition-transform" />
+                            <Image
+                                src="/logo.png"
+                                alt="LoveyLink logo"
+                                width={40}
+                                height={40}
+                                className="h-10 w-10 rounded-full group-hover:scale-110 transition-transform"
+                                priority
+                            />
                             <span className="font-bold text-2xl text-white tracking-tight group-hover:text-red-primary transition-colors">LoveyLink.</span>
                         </Link>
                     </div>

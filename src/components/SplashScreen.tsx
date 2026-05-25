@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SplashScreen() {
@@ -24,7 +25,6 @@ export default function SplashScreen() {
                     className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-black"
                 >
                     <div className="flex flex-col items-center">
-                        {/* Custom Glowing Heart Logo (Transparent Background) */}
                         <motion.div
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{
@@ -41,24 +41,15 @@ export default function SplashScreen() {
                             }}
                             className="relative flex items-center justify-center w-32 h-32 md:w-40 md:h-40"
                         >
-                            {/* Glowing background behind heart */}
-                            <div className="absolute inset-0 bg-red-500 rounded-full blur-[40px] opacity-40 animate-pulse"></div>
-
-                            {/* The Heart SVG */}
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="url(#heart-gradient)"
-                                className="w-full h-full relative z-10 drop-shadow-2xl"
-                            >
-                                <defs>
-                                    <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#ff4d4d" />
-                                        <stop offset="50%" stopColor="#ff0066" />
-                                        <stop offset="100%" stopColor="#990033" />
-                                    </linearGradient>
-                                </defs>
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                            </svg>
+                            <div className="absolute inset-0 bg-pink-500 rounded-full blur-[40px] opacity-40 animate-pulse"></div>
+                            <Image
+                                src="/logo.png"
+                                alt="LoveyLink logo"
+                                width={160}
+                                height={160}
+                                className="relative z-10 w-full h-full rounded-full drop-shadow-2xl"
+                                priority
+                            />
                         </motion.div>
                         {/* Fading Title */}
                         <motion.h1
