@@ -15,7 +15,12 @@ export const metadata: Metadata = {
   title: "LoveyLink - Create Your Romantic Love Page",
   description: "Share your love story with a beautiful, custom web page. Include photos, music, and your unique journey.",
   icons: {
-    icon: "/logo.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
