@@ -17,10 +17,12 @@ export const metadata: Metadata = {
   description: "Share your love story with a beautiful, custom web page. Include photos, music, and your unique journey.",
   icons: {
     icon: [
+      { url: "/favicon-48.png", type: "image/png", sizes: "48x48" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
       { url: "/favicon.ico", sizes: "48x48" },
-      { url: "/logo.png", type: "image/png", sizes: "512x512" },
     ],
     apple: "/apple-touch-icon.png",
+    shortcut: "/favicon-48.png",
   },
   openGraph: {
     title: "LoveyLink - Create Your Romantic Love Page",
