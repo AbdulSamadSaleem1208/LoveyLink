@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, Music2 } from "lucide-react";
 
-const SLIDE_COUNT = 6;
-const ROTATE_MS = 5200;
+const SLIDE_COUNT = 9;
+const ROTATE_MS = 4800;
 
-/** Bundled in /public/mockup — always loads (no external CDN dependency) */
+/** Bundled in /public/mockup — romantic love-themed photos */
 const PHOTOS = {
     silhouette: "/mockup/silhouette.jpg",
     hands: "/mockup/hands.jpg",
@@ -17,6 +17,12 @@ const PHOTOS = {
     roses: "/mockup/roses.jpg",
     beach: "/mockup/beach.jpg",
     embrace: "/mockup/embrace.jpg",
+    hearts: "/mockup/hearts.jpg",
+    holding: "/mockup/holding.jpg",
+    petals: "/mockup/petals.jpg",
+    dinner: "/mockup/dinner.jpg",
+    forever: "/mockup/forever.jpg",
+    together: "/mockup/together.jpg",
 } as const;
 
 const FALLBACK_IMG = PHOTOS.silhouette;
@@ -164,7 +170,7 @@ function SlideJuliet() {
 function SlideCinematic() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurnsPhoto src={PHOTOS.couple} alt="Couple" zoom={1.18} />
+            <KenBurnsPhoto src={PHOTOS.forever} alt="Couple at sunset" zoom={1.18} />
             <div className="absolute inset-0 bg-gradient-to-b from-pink-900/20 via-transparent to-black z-10" />
             <div className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
                 <motion.div
@@ -262,8 +268,8 @@ function SlideRomeo() {
 function SlideMemories() {
     const polaroids = [
         { src: PHOTOS.wedding, rotate: -8, top: "6%", left: "4%", z: 10 },
-        { src: PHOTOS.hands, rotate: 5, top: "26%", left: "36%", z: 20 },
-        { src: PHOTOS.sunsetWalk, rotate: -4, top: "50%", left: "8%", z: 30 },
+        { src: PHOTOS.holding, rotate: 5, top: "26%", left: "36%", z: 20 },
+        { src: PHOTOS.petals, rotate: -4, top: "50%", left: "8%", z: 30 },
     ];
 
     return (
@@ -372,6 +378,72 @@ function SlideGolden() {
     );
 }
 
+/** Slide 7 — Rose hearts close-up */
+function SlideHearts() {
+    return (
+        <div className="relative w-full h-full min-h-[560px]">
+            <KenBurnsPhoto src={PHOTOS.hearts} alt="Love hearts" zoom={1.1} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-pink-900/20 to-transparent z-10" />
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center">
+                <Heart className="w-12 h-12 text-pink-heart fill-pink-heart mb-4 drop-shadow-[0_0_16px_rgba(255,107,157,0.8)]" />
+                <h2 className="text-2xl font-bold text-white">Made with Love</h2>
+                <p className="text-sm text-pink-100/90 mt-2 font-serif italic">
+                    Every petal, every beat — for you
+                </p>
+            </div>
+        </div>
+    );
+}
+
+/** Slide 8 — Romantic date night */
+function SlideDateNight() {
+    return (
+        <div className="relative w-full h-full min-h-[560px]">
+            <KenBurnsPhoto src={PHOTOS.dinner} alt="Romantic dinner" zoom={1.15} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+            <div className="absolute bottom-12 left-0 right-0 z-20 text-center px-5">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-pink-heart mb-2">
+                    Date night
+                </p>
+                <h2 className="text-xl font-bold text-white">Just the two of us</h2>
+                <p className="text-xs text-gray-300 mt-2 font-serif italic">
+                    Candlelight, laughter, and forever ♥
+                </p>
+            </div>
+        </div>
+    );
+}
+
+/** Slide 9 — Holding hands / together */
+function SlideTogether() {
+    return (
+        <div className="relative w-full h-full min-h-[560px]">
+            <KenBurnsPhoto src={PHOTOS.together} alt="Together" zoom={1.12} />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 z-10" />
+            <div className="absolute top-14 left-0 right-0 z-20 text-center px-4">
+                <Sparkles className="w-6 h-6 text-pink-heart mx-auto mb-2" />
+                <h2 className="text-2xl font-bold text-white drop-shadow-lg">Soulmates</h2>
+                <p className="text-sm text-pink-200/90 mt-2 font-serif italic">
+                    Hand in hand, heart to heart
+                </p>
+            </div>
+            <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-3 z-20">
+                {[PHOTOS.hands, PHOTOS.embrace, PHOTOS.roses].map((src, i) => (
+                    <motion.div
+                        key={src}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 + i * 0.1 }}
+                        className="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-white/40 shadow-lg"
+                    >
+                        <MockupImage src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 const SLIDES = [
     SlideJuliet,
     SlideCinematic,
@@ -379,6 +451,9 @@ const SLIDES = [
     SlideMemories,
     SlideGallery,
     SlideGolden,
+    SlideHearts,
+    SlideDateNight,
+    SlideTogether,
 ];
 
 export default function AnimatedMockup() {
