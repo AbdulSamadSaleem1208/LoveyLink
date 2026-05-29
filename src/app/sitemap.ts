@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://www.loveylink.net';
+    const baseUrl = 'https://loveylink.net';
 
     // Core static routes
     const routes = [

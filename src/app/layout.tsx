@@ -12,7 +12,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.loveylink.net"),
+  metadataBase: new URL("https://loveylink.net"),
   title: "LoveyLink - Create Your Romantic Love Page",
   description: "Share your love story with a beautiful, custom web page. Include photos, music, and your unique journey.",
   icons: {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "LoveyLink - Create Your Romantic Love Page",
     description: "Share your love story with a beautiful, custom web page. Include photos, music, and your unique journey.",
-    url: "https://www.loveylink.net",
+    url: "https://loveylink.net",
     siteName: "LoveyLink",
     images: [{ url: "/logo.png", width: 512, height: 512, alt: "LoveyLink logo" }],
     type: "website",

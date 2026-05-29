@@ -1,4 +1,4 @@
-const CANONICAL_SITE_URL = 'https://www.loveylink.net'
+const CANONICAL_SITE_URL = 'https://loveylink.net'
 
 /**
  * Canonical public site URL for share links, auth redirects, and QR codes.
