@@ -97,7 +97,7 @@ export default async function Home() {
                 Animated & beautiful <span className="text-pink-heart">♥</span>
               </div>
               <div className="absolute -right-2 bottom-1/4 bg-background-card/80 border border-white/10 px-3 py-2 rounded-lg text-[10px] text-gray-300 z-20 hidden md:block backdrop-blur-md">
-                9 couple love stories
+                Real love pages for real relationships
               </div>
 
               <AnimatedMockup />

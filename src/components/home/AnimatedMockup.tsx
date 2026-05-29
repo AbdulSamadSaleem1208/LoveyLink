@@ -4,31 +4,23 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, Music2 } from "lucide-react";
 
-const SLIDE_COUNT = 9;
-const ROTATE_MS = 4800;
+const ROTATE_MS = 5000;
 
-/** Couple / soulmate / girlfriend–boyfriend photos only (bundled in /public/mockup) */
-const PHOTOS = {
-    soulmateSunset: "/mockup/silhouette.jpg",
-    coupleForever: "/mockup/forever.jpg",
-    coupleEmbrace: "/mockup/embrace.jpg",
-    coupleHolding: "/mockup/holding.jpg",
-    coupleWedding: "/mockup/wedding.jpg",
-    coupleBeach: "/mockup/beach.jpg",
-    coupleTogether: "/mockup/together.jpg",
-    coupleHands: "/mockup/hands.jpg",
-    coupleSunsetWalk: "/mockup/sunset.jpg",
-    coupleKiss: "/mockup/kiss.jpg",
-    coupleLaugh: "/mockup/couple-laugh.jpg",
-    coupleHug: "/mockup/couple-hug.jpg",
-    coupleDate: "/mockup/couple-date.jpg",
-    soulmates: "/mockup/soulmates.jpg",
-    girlfriend: "/mockup/girlfriend.jpg",
+/** Relationship & love couples only — /public/mockup/love-*.jpg */
+const LOVE = {
+    sunsetCouple: "/mockup/love-01.jpg",
+    soulmates: "/mockup/love-02.jpg",
+    embrace: "/mockup/love-03.jpg",
+    wedding: "/mockup/love-04.jpg",
+    kiss: "/mockup/love-05.jpg",
+    inLove: "/mockup/love-06.jpg",
+    holding: "/mockup/love-07.jpg",
+    happy: "/mockup/love-08.jpg",
 } as const;
 
-const FALLBACK_IMG = PHOTOS.soulmateSunset;
+const FALLBACK = LOVE.sunsetCouple;
 
-function MockupImage({
+function LoveImg({
     src,
     alt,
     className = "absolute inset-0 h-full w-full object-cover",
@@ -37,46 +29,54 @@ function MockupImage({
     alt: string;
     className?: string;
 }) {
-    const [current, setCurrent] = useState(src);
-
-    useEffect(() => {
-        setCurrent(src);
-    }, [src]);
-
+    const [url, setUrl] = useState(src);
+    useEffect(() => setUrl(src), [src]);
     return (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-            src={current}
+            src={url}
             alt={alt}
             className={className}
             loading="eager"
             decoding="async"
-            referrerPolicy="no-referrer"
-            onError={() => {
-                if (current !== FALLBACK_IMG) setCurrent(FALLBACK_IMG);
-            }}
+            onError={() => url !== FALLBACK && setUrl(FALLBACK)}
         />
     );
 }
 
-function FloatingPhoneHearts() {
+function LoveKenBurns({ src, alt, zoom = 1.12 }: { src: string; alt: string; zoom?: number }) {
+    return (
+        <div className="absolute inset-0 overflow-hidden">
+            <motion.div
+                className="absolute inset-0 h-full w-full origin-center"
+                initial={{ scale: 1 }}
+                animate={{ scale: zoom }}
+                transition={{ duration: ROTATE_MS / 1000, ease: "linear" }}
+            >
+                <LoveImg src={src} alt={alt} />
+            </motion.div>
+        </div>
+    );
+}
+
+function GlowHeart({ size = "w-14 h-14" }: { size?: string }) {
+    return (
+        <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 1.8, repeat: Infinity }}>
+            <Heart className={`${size} text-pink-heart fill-pink-heart drop-shadow-[0_0_18px_rgba(255,107,157,0.85)]`} />
+        </motion.div>
+    );
+}
+
+function FloatingHearts() {
     return (
         <>
-            {[...Array(5)].map((_, i) => (
+            {[0, 1, 2, 3, 4].map((i) => (
                 <motion.span
                     key={i}
-                    className="absolute text-pink-heart/30 pointer-events-none z-[5]"
-                    style={{ left: `${15 + i * 18}%`, bottom: `${12 + (i % 3) * 8}%` }}
-                    animate={{
-                        y: [0, -40, 0],
-                        opacity: [0.2, 0.6, 0.2],
-                        scale: [0.8, 1.1, 0.8],
-                    }}
-                    transition={{
-                        duration: 3.5 + i * 0.4,
-                        repeat: Infinity,
-                        delay: i * 0.6,
-                    }}
+                    className="absolute text-pink-heart/25 pointer-events-none z-[5]"
+                    style={{ left: `${12 + i * 17}%`, bottom: `${10 + (i % 3) * 10}%` }}
+                    animate={{ y: [0, -30, 0], opacity: [0.15, 0.5, 0.15] }}
+                    transition={{ duration: 3 + i * 0.3, repeat: Infinity, delay: i * 0.5 }}
                 >
                     <Heart className="w-3 h-3 fill-current" />
                 </motion.span>
@@ -85,208 +85,97 @@ function FloatingPhoneHearts() {
     );
 }
 
-function KenBurnsPhoto({
-    src,
-    alt,
-    className = "",
-    zoom = 1.12,
-}: {
-    src: string;
-    alt: string;
-    className?: string;
-    zoom?: number;
-}) {
-    return (
-        <div className={`absolute inset-0 overflow-hidden ${className}`}>
-            <motion.div
-                className="absolute inset-0 h-full w-full origin-center"
-                initial={{ scale: 1 }}
-                animate={{ scale: zoom }}
-                transition={{ duration: ROTATE_MS / 1000, ease: "linear" }}
-            >
-                <MockupImage src={src} alt={alt} />
-            </motion.div>
-        </div>
-    );
-}
+/* ——— 8 relationship-only slides ——— */
 
-function GlowingHeart({ className = "w-14 h-14" }: { className?: string }) {
-    return (
-        <motion.div
-            animate={{ scale: [1, 1.12, 1] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            className="relative"
-        >
-            <div className="absolute inset-0 bg-pink-heart/40 blur-xl rounded-full scale-150" />
-            <Heart className={`${className} text-pink-heart fill-pink-heart relative drop-shadow-[0_0_20px_rgba(255,107,157,0.9)]`} />
-        </motion.div>
-    );
-}
-
-/** For my love — girlfriend name + couple silhouette */
-function SlideJuliet() {
+function SlideForMyLove() {
     return (
         <div className="flex flex-col items-center w-full h-full min-h-[560px] pt-11 px-4 pb-2 bg-black">
-            <GlowingHeart />
-            <motion.h2
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="font-bold text-[1.65rem] text-[#ff6b9d] mt-4 mb-2 tracking-tight"
-            >
-                For my love
-            </motion.h2>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.25 }}
-                className="text-center mb-4"
-            >
-                <p className="text-gray-400 text-xs">To my girlfriend,</p>
-                <h3 className="font-serif text-[1.75rem] text-[#ff6b9d] mt-0.5">Juliet</h3>
-            </motion.div>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, type: "spring" }}
-                className="w-full flex-1 min-h-[280px] rounded-t-[2.25rem] overflow-hidden border-2 border-white/90 shadow-[0_0_50px_rgba(255,107,157,0.35)] relative"
-            >
-                <KenBurnsPhoto src={PHOTOS.soulmateSunset} alt="Couple at sunset" zoom={1.15} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-pink-500/15 z-10" />
-                <motion.div
-                    className="absolute bottom-3 left-0 right-0 text-center z-20"
-                    animate={{ opacity: [0.7, 1, 0.7] }}
-                    transition={{ duration: 2.5, repeat: Infinity }}
-                >
-                    <span className="text-[10px] text-white/80 font-medium tracking-widest uppercase">
-                        My soulmate ♥
-                    </span>
-                </motion.div>
-            </motion.div>
-        </div>
-    );
-}
-
-/** You & Me — couple in love */
-function SlideCinematic() {
-    return (
-        <div className="relative w-full h-full min-h-[560px]">
-            <KenBurnsPhoto src={PHOTOS.coupleForever} alt="Couple soulmates" zoom={1.18} />
-            <div className="absolute inset-0 bg-gradient-to-b from-pink-900/20 via-transparent to-black z-10" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", delay: 0.2 }}
-                >
-                    <Sparkles className="w-8 h-8 text-pink-heart mb-3 mx-auto" />
-                </motion.div>
-                <motion.h2
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-2xl font-bold text-white drop-shadow-2xl"
-                >
-                    You &amp; Me
-                </motion.h2>
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-sm text-pink-100/90 mt-2 font-serif italic"
-                >
-                    Boyfriend &amp; girlfriend, forever
-                </motion.p>
+            <GlowHeart />
+            <h2 className="font-bold text-[1.65rem] text-[#ff6b9d] mt-4">For My Love</h2>
+            <p className="text-gray-400 text-xs mt-1">In a relationship with you ♥</p>
+            <p className="font-serif text-[1.6rem] text-[#ff6b9d] mt-1">Juliet</p>
+            <div className="w-full flex-1 min-h-[270px] mt-4 rounded-t-[2.25rem] overflow-hidden border-2 border-white/90 relative">
+                <LoveKenBurns src={LOVE.sunsetCouple} alt="Couple in love at sunset" zoom={1.14} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent z-10" />
+                <p className="absolute bottom-3 inset-x-0 text-center text-[10px] text-white/85 z-20 tracking-widest uppercase">
+                    Our relationship
+                </p>
             </div>
         </div>
     );
 }
 
-/** Love letter + couple photo */
-function SlideRomeo() {
+function SlideInLove() {
     return (
-        <div className="flex flex-col items-center w-full min-h-full px-4 py-9 pb-14 justify-center bg-gradient-to-b from-zinc-950 to-black">
-            <motion.div
-                initial={{ opacity: 0, rotateX: 8 }}
-                animate={{ opacity: 1, rotateX: 0 }}
-                className="bg-gradient-to-br from-neutral-400 via-neutral-500 to-neutral-600 rounded-3xl p-5 w-full shadow-2xl ring-1 ring-white/25"
-            >
-                <p className="font-serif italic text-[#1a2634] text-[13px] leading-relaxed text-center">
-                    &ldquo;You&apos;re not just my girlfriend — you&apos;re my soulmate. Every moment
-                    with you, my heart chooses you again.&rdquo;{" "}
-                    <span className="text-[#ff6b9d]">♥</span>
+        <div className="relative w-full h-full min-h-[560px]">
+            <LoveKenBurns src={LOVE.soulmates} alt="Couple soulmates in love" zoom={1.16} />
+            <div className="absolute inset-0 bg-gradient-to-b from-pink-900/25 to-black/80 z-10" />
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+                <Sparkles className="w-7 h-7 text-pink-heart mb-3" />
+                <h2 className="text-2xl font-bold text-white">In Love</h2>
+                <p className="text-sm text-pink-100/90 mt-2 font-serif italic">
+                    Two hearts, one relationship
                 </p>
-                <div className="w-full h-px bg-white/50 my-4" />
-                <p className="text-[9px] text-[#3d5166] font-bold tracking-[0.25em] uppercase text-center">
-                    All my love
-                </p>
-                <p className="text-center font-bold text-xl text-[#ff6b9d] mt-1">Your Romeo</p>
-            </motion.div>
-            <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="w-full mt-4 rounded-2xl overflow-hidden border border-pink-heart/20"
-            >
-                <div className="relative h-28 w-full">
-                    <MockupImage src={PHOTOS.coupleEmbrace} alt="Couple embracing" />
-                    <div className="absolute inset-0 bg-black/45 flex items-center px-3 gap-3">
-                        <div className="w-10 h-10 rounded-full bg-pink-heart/90 flex items-center justify-center shrink-0">
-                            <Music2 className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-[11px] font-bold text-white">Our love song</p>
-                            <p className="text-[9px] text-pink-200/80">For my girlfriend ♥</p>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
+            </div>
         </div>
     );
 }
 
-/** Couple memory polaroids */
-function SlideMemories() {
-    const polaroids = [
-        { src: PHOTOS.coupleWedding, label: "us ♥", rotate: -8, top: "6%", left: "4%", z: 10 },
-        { src: PHOTOS.coupleHolding, label: "soulmates", rotate: 5, top: "26%", left: "36%", z: 20 },
-        { src: PHOTOS.coupleKiss, label: "my love", rotate: -4, top: "50%", left: "8%", z: 30 },
-    ];
-
+function SlideLoveLetter() {
     return (
-        <div className="flex flex-col w-full h-full min-h-[560px] pt-9 px-2 pb-6 bg-black">
-            <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-3"
-            >
-                <Sparkles className="w-5 h-5 text-pink-heart mx-auto mb-1" />
-                <h2 className="text-base font-bold text-white">Our Love Story</h2>
-                <p className="text-[9px] text-gray-500">Couple memories ♥</p>
-            </motion.div>
+        <div className="flex flex-col w-full min-h-full px-4 py-10 pb-16 justify-center bg-black">
+            <div className="bg-gradient-to-br from-zinc-400 to-zinc-600 rounded-3xl p-5 ring-1 ring-white/20 shadow-2xl">
+                <p className="font-serif italic text-[#1a2634] text-[13px] text-center leading-relaxed">
+                    &ldquo;Being in love with you is the best part of my life. You are my person, my
+                    relationship, my forever.&rdquo; <span className="text-[#ff6b9d]">♥</span>
+                </p>
+                <div className="h-px bg-white/45 my-4" />
+                <p className="text-[9px] text-center tracking-[0.2em] uppercase text-[#3d5166] font-bold">
+                    With love
+                </p>
+                <p className="text-center text-xl font-bold text-[#ff6b9d]">Romeo</p>
+            </div>
+            <div className="relative h-28 mt-4 rounded-2xl overflow-hidden border border-pink-heart/25">
+                <LoveImg src={LOVE.embrace} alt="Couple hugging in love" />
+                <div className="absolute inset-0 bg-black/40 flex items-center gap-3 px-3">
+                    <div className="w-9 h-9 rounded-full bg-pink-heart flex items-center justify-center">
+                        <Music2 className="w-4 h-4 text-white" />
+                    </div>
+                    <p className="text-[11px] font-bold text-white">Our relationship playlist ♥</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function SlideOurRelationship() {
+    const pics = [
+        { src: LOVE.wedding, tag: "in love" },
+        { src: LOVE.holding, tag: "together" },
+        { src: LOVE.kiss, tag: "forever" },
+    ];
+    return (
+        <div className="w-full h-full min-h-[560px] pt-9 px-2 pb-6 bg-black">
+            <h2 className="text-center text-base font-bold text-white">Our Relationship</h2>
+            <p className="text-center text-[9px] text-gray-500 mb-3">Loves &amp; memories ♥</p>
             <div className="relative flex-1 min-h-[360px]">
-                {polaroids.map((p, i) => (
+                {pics.map((p, i) => (
                     <motion.div
                         key={p.src}
-                        initial={{ opacity: 0, y: 30, rotate: p.rotate - 10 }}
-                        animate={{
-                            opacity: 1,
-                            y: [0, -4, 0],
-                            rotate: p.rotate,
+                        className="absolute w-[55%] bg-white p-1.5 pb-6 rounded-sm shadow-xl"
+                        style={{
+                            top: `${6 + i * 22}%`,
+                            left: i === 1 ? "38%" : "5%",
+                            zIndex: 10 + i,
+                            rotate: i === 0 ? -7 : i === 1 ? 5 : -3,
                         }}
-                        transition={{
-                            opacity: { delay: i * 0.1, duration: 0.5 },
-                            y: { duration: 3, repeat: Infinity, delay: i * 0.3 },
-                            rotate: { delay: i * 0.1 },
-                        }}
-                        className="absolute w-[56%] bg-white p-1.5 pb-7 rounded-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
-                        style={{ top: p.top, left: p.left, zIndex: p.z }}
+                        animate={{ y: [0, -3, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, delay: i * 0.25 }}
                     >
                         <div className="relative aspect-[4/5] overflow-hidden">
-                            <MockupImage src={p.src} alt="Couple memory" />
+                            <LoveImg src={p.src} alt="Couple in love" />
                         </div>
-                        <p className="absolute bottom-1.5 left-0 right-0 text-center text-[7px] text-gray-500">
-                            {p.label}
-                        </p>
+                        <p className="text-[7px] text-center text-gray-500 mt-1">{p.tag} ♥</p>
                     </motion.div>
                 ))}
             </div>
@@ -294,127 +183,84 @@ function SlideMemories() {
     );
 }
 
-/** Girlfriend love page */
-function SlideGallery() {
+function SlideMyGirlfriend() {
     return (
-        <div className="flex flex-col w-full h-full min-h-[560px] pt-9 px-3 pb-5 bg-black">
-            <motion.p
-                animate={{ opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="text-center text-[9px] uppercase tracking-[0.3em] text-pink-heart"
-            >
-                My girlfriend
-            </motion.p>
+        <div className="w-full h-full min-h-[560px] pt-9 px-3 pb-5 bg-black">
+            <p className="text-center text-[9px] uppercase tracking-[0.25em] text-pink-heart">
+                My relationship
+            </p>
             <h2 className="text-center text-xl font-bold text-[#ff6b9d] mb-3">Maya</h2>
-
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="relative w-full aspect-[4/5] rounded-[1.85rem] overflow-hidden border-2 border-pink-heart/50 shadow-[0_0_40px_rgba(255,107,157,0.4)] mb-2.5"
-            >
-                <KenBurnsPhoto src={PHOTOS.girlfriend} alt="Couple in love" zoom={1.14} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent z-10" />
-                <p className="absolute bottom-4 left-0 right-0 z-20 text-center text-[11px] text-white font-serif italic px-3">
-                    I love you more every day ♥
+            <div className="relative w-full aspect-[4/5] rounded-[1.8rem] overflow-hidden border-2 border-pink-heart/45 mb-2">
+                <LoveKenBurns src={LOVE.inLove} alt="Girlfriend and boyfriend in love" zoom={1.13} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 z-10" />
+                <p className="absolute bottom-4 inset-x-0 z-20 text-center text-[11px] text-white font-serif italic">
+                    I love being in this relationship with you
                 </p>
-            </motion.div>
-
+            </div>
             <div className="grid grid-cols-2 gap-2">
-                <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/20">
-                    <MockupImage src={PHOTOS.coupleLaugh} alt="Happy couple" />
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/15">
+                    <LoveImg src={LOVE.happy} alt="Happy couple in love" />
                 </div>
-                <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-pink-heart/40 shadow-lg shadow-pink-heart/20">
-                    <KenBurnsPhoto src={PHOTOS.coupleHug} alt="Couple hugging" zoom={1.1} />
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-pink-heart/35">
+                    <LoveKenBurns src={LOVE.embrace} alt="Loving embrace" zoom={1.08} />
                 </div>
             </div>
         </div>
     );
 }
 
-/** Forever yours — couple sunset */
-function SlideGolden() {
+function SlideForeverLove() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurnsPhoto src={PHOTOS.coupleSunsetWalk} alt="Couple walking at sunset" zoom={1.2} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-amber-900/20 z-10" />
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-12 px-5 text-center">
-                <GlowingHeart className="w-11 h-11" />
-                <motion.h2
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-2xl font-bold text-white mt-4 drop-shadow-lg"
-                >
-                    Forever Yours
-                </motion.h2>
-                <p className="text-xs text-amber-100/90 mt-2 font-serif italic max-w-[200px]">
-                    My soulmate, my girlfriend, my everything
+            <LoveKenBurns src={LOVE.soulmates} alt="Couple in love forever" zoom={1.18} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 z-10" />
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-12 text-center px-5">
+                <GlowHeart size="w-11 h-11" />
+                <h2 className="text-2xl font-bold text-white mt-3">Forever In Love</h2>
+                <p className="text-xs text-pink-100/90 mt-2 font-serif italic">
+                    This relationship is my greatest love
                 </p>
-                <p className="mt-5 text-[#ff6b9d] font-serif text-lg">Amara &amp; Leo</p>
             </div>
         </div>
     );
 }
 
-/** Soulmates — couple kiss */
-function SlideSoulmates() {
+function SlideTrueLove() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurnsPhoto src={PHOTOS.coupleKiss} alt="Couple kiss" zoom={1.1} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-pink-900/25 to-transparent z-10" />
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center">
-                <Heart className="w-12 h-12 text-pink-heart fill-pink-heart mb-4 drop-shadow-[0_0_16px_rgba(255,107,157,0.8)]" />
-                <h2 className="text-2xl font-bold text-white">Soulmates</h2>
+            <LoveKenBurns src={LOVE.kiss} alt="Couple kiss true love" zoom={1.1} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-pink-900/20 z-10" />
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+                <Heart className="w-11 h-11 text-pink-heart fill-pink-heart mb-3" />
+                <h2 className="text-2xl font-bold text-white">True Love</h2>
                 <p className="text-sm text-pink-100/90 mt-2 font-serif italic">
-                    Two hearts, one love — boyfriend &amp; girlfriend
+                    Soulmates in every lifetime
                 </p>
             </div>
         </div>
     );
 }
 
-/** Date with my love — couple together */
-function SlideDateNight() {
+function SlideSoulmates() {
+    const thumbs = [LOVE.holding, LOVE.happy, LOVE.sunsetCouple];
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurnsPhoto src={PHOTOS.coupleDate} alt="Couple on a date" zoom={1.15} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-            <div className="absolute bottom-12 left-0 right-0 z-20 text-center px-5">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-pink-heart mb-2">
-                    Date with my love
-                </p>
-                <h2 className="text-xl font-bold text-white">Just us two</h2>
-                <p className="text-xs text-gray-300 mt-2 font-serif italic">
-                    Girlfriend &amp; boyfriend — always ♥
-                </p>
-            </div>
-        </div>
-    );
-}
-
-/** Soulmates — couple portrait + thumbnails */
-function SlideTogether() {
-    return (
-        <div className="relative w-full h-full min-h-[560px]">
-            <KenBurnsPhoto src={PHOTOS.soulmates} alt="Romantic couple" zoom={1.12} />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 z-10" />
-            <div className="absolute top-14 left-0 right-0 z-20 text-center px-4">
-                <Sparkles className="w-6 h-6 text-pink-heart mx-auto mb-2" />
-                <h2 className="text-2xl font-bold text-white drop-shadow-lg">My Soulmate</h2>
+            <LoveKenBurns src={LOVE.inLove} alt="Soulmate couple" zoom={1.12} />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/80 z-10" />
+            <div className="absolute top-14 inset-x-0 z-20 text-center px-4">
+                <h2 className="text-2xl font-bold text-white">Soulmates</h2>
                 <p className="text-sm text-pink-200/90 mt-2 font-serif italic">
-                    Hand in hand, heart to heart
+                    Our love, our relationship, our story
                 </p>
             </div>
-            <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-3 z-20">
-                {[PHOTOS.coupleHands, PHOTOS.coupleEmbrace, PHOTOS.coupleBeach].map((src, i) => (
-                    <motion.div
+            <div className="absolute bottom-10 inset-x-0 flex justify-center gap-2.5 z-20">
+                {thumbs.map((src) => (
+                    <div
                         key={src}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 + i * 0.1 }}
-                        className="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-white/40 shadow-lg"
+                        className="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-white/35"
                     >
-                        <MockupImage src={src} alt="Couple" />
-                    </motion.div>
+                        <LoveImg src={src} alt="Love" />
+                    </div>
                 ))}
             </div>
         </div>
@@ -422,76 +268,61 @@ function SlideTogether() {
 }
 
 const SLIDES = [
-    SlideJuliet,
-    SlideCinematic,
-    SlideRomeo,
-    SlideMemories,
-    SlideGallery,
-    SlideGolden,
+    SlideForMyLove,
+    SlideInLove,
+    SlideLoveLetter,
+    SlideOurRelationship,
+    SlideMyGirlfriend,
+    SlideForeverLove,
+    SlideTrueLove,
     SlideSoulmates,
-    SlideDateNight,
-    SlideTogether,
 ];
 
 export default function AnimatedMockup() {
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [index, setIndex] = useState(0);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % SLIDE_COUNT);
-        }, ROTATE_MS);
-        return () => clearInterval(timer);
+        const t = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), ROTATE_MS);
+        return () => clearInterval(t);
     }, []);
 
-    const ActiveSlide = SLIDES[currentIndex];
+    const Slide = SLIDES[index];
 
     return (
         <div className="relative mx-auto">
             <motion.div
                 className="absolute -inset-4 rounded-[3rem] bg-pink-heart/20 blur-3xl -z-10"
-                animate={{ opacity: [0.35, 0.55, 0.35], scale: [0.98, 1.02, 0.98] }}
+                animate={{ opacity: [0.3, 0.5, 0.3] }}
                 transition={{ duration: 4, repeat: Infinity }}
             />
-
             <motion.div
-                animate={{ y: [0, -6, 0] }}
+                animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative border-gray-800 bg-black border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-[0_25px_80px_rgba(255,107,157,0.25)] flex flex-col overflow-hidden"
+                className="relative border-[14px] border-gray-800 bg-black rounded-[2.5rem] h-[600px] w-[300px] shadow-[0_20px_70px_rgba(255,107,157,0.22)] overflow-hidden"
             >
-                <div className="h-[32px] w-[3px] bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg" />
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg" />
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg" />
-                <div className="h-[64px] w-[3px] bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg" />
-
-                <div className="rounded-[2rem] overflow-hidden w-full h-full bg-black relative">
-                    <FloatingPhoneHearts />
-
+                <div className="rounded-[2rem] h-full w-full relative overflow-hidden">
+                    <FloatingHearts />
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={currentIndex}
-                            initial={{ opacity: 0, scale: 0.96, filter: "blur(8px)" }}
-                            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                            exit={{ opacity: 0, scale: 1.03, filter: "blur(6px)" }}
-                            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                            className="absolute inset-0 overflow-hidden"
+                            key={index}
+                            initial={{ opacity: 0, filter: "blur(6px)" }}
+                            animate={{ opacity: 1, filter: "blur(0)" }}
+                            exit={{ opacity: 0, filter: "blur(4px)" }}
+                            transition={{ duration: 0.55 }}
+                            className="absolute inset-0"
                         >
-                            <ActiveSlide />
+                            <Slide />
                         </motion.div>
                     </AnimatePresence>
-
-                    <div className="absolute top-0 left-0 right-0 h-7 bg-gradient-to-b from-black/80 to-transparent z-30 pointer-events-none" />
-
-                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-30">
+                    <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-30">
                         {SLIDES.map((_, i) => (
                             <button
                                 key={i}
                                 type="button"
-                                aria-label={`Slide ${i + 1}`}
-                                onClick={() => setCurrentIndex(i)}
-                                className={`h-1.5 rounded-full transition-all duration-300 ${
-                                    i === currentIndex
-                                        ? "w-5 bg-pink-heart shadow-[0_0_8px_rgba(255,107,157,0.8)]"
-                                        : "w-1.5 bg-white/35 hover:bg-white/50"
+                                aria-label={`Love slide ${i + 1}`}
+                                onClick={() => setIndex(i)}
+                                className={`h-1.5 rounded-full transition-all ${
+                                    i === index ? "w-5 bg-pink-heart" : "w-1.5 bg-white/30"
                                 }`}
                             />
                         ))}
