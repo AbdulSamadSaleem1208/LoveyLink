@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import QRCode from "qrcode";
 import { Loader2, Download, ExternalLink, Share2, ChevronDown, ChevronUp } from "lucide-react";
-import Link from "next/link";
 import { toast } from "sonner";
 
 export default function QRDisplay({ url, title, message }: { url: string, title: string, message?: string }) {
@@ -184,9 +183,10 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
                         </a>
 
                         {mode === 'link' && (
-                            <Link
+                            <a
                                 href={url}
                                 target="_blank"
+                                rel="noopener noreferrer"
                                 className="flex items-center px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 style={{ backgroundColor: '#f0f0f0', color: '#333333' }}
                                 onMouseEnter={(e) => { (e.target as HTMLAnchorElement).style.backgroundColor = '#e0e0e0'; }}
@@ -194,7 +194,7 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
                             >
                                 <ExternalLink className="w-4 h-4 mr-2" />
                                 Open Page
-                            </Link>
+                            </a>
                         )}
                     </div>
 

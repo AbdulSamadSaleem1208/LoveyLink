@@ -5,32 +5,28 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
+import { getCanonicalSiteUrl, resolveSiteUrlFromHost } from "@/lib/site-url";
 
-// Helper to get the absolute site URL
 const getSiteUrl = async () => {
-    let url = process.env.NEXT_PUBLIC_SITE_URL;
-
-    if (!url) {
-        if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-            url = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-        } else if (process.env.VERCEL_URL) {
-            url = `https://${process.env.VERCEL_URL}`;
-        }
+    if (process.env.NEXT_PUBLIC_SITE_URL) {
+        return getCanonicalSiteUrl();
     }
 
-    if (!url) {
-        const reqHeaders = await headers();
-        const origin = reqHeaders.get("origin") || reqHeaders.get("host"); // Fallback to host if origin missing
-        if (origin) {
-            url = origin.startsWith('http') ? origin : `http://${origin}`;
-        } else {
-            // Use production domain as fallback instead of localhost
-            url = "https://loveylink.net";
-        }
+    const reqHeaders = await headers();
+    const host = reqHeaders.get("host");
+    if (host) {
+        return resolveSiteUrlFromHost(host);
     }
 
-    // Remove trailing slash if present
-    return url.replace(/\/$/, "");
+    if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+        return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+    }
+
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+
+    return getCanonicalSiteUrl();
 };
 
 export async function login(formData: FormData) {

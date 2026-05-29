@@ -32,7 +32,16 @@ export default function LovePageRenderer({ data, preview = false }: { data: Love
     const bgColor = data.theme_config?.backgroundColor || "#FFF1F2"; // Default blush
     const primaryColor = data.theme_config?.primaryColor || "#9B1C1C"; // Default red
 
-    if (!hasMounted) return null; // Prevent hydration mismatch
+    if (!hasMounted) {
+        return (
+            <div
+                className="min-h-screen w-full flex items-center justify-center"
+                style={{ backgroundColor: data.theme_config?.backgroundColor || "#FFF1F2" }}
+            >
+                <Heart className="h-12 w-12 animate-pulse opacity-40" style={{ color: data.theme_config?.primaryColor || "#9B1C1C" }} />
+            </div>
+        );
+    }
 
     return (
         <div

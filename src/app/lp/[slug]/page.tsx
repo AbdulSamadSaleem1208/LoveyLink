@@ -1,31 +1,67 @@
-import { createClient } from "@/lib/supabase/client"; // Use client for now or server? Server is better for SEO
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import LovePageRenderer from "@/components/love-page/LovePageRenderer";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { normalizeSlugParam } from "@/lib/slug";
 
-// Force dynamic since we use params and DB
 export const dynamic = 'force-dynamic';
 
 type Props = {
     params: Promise<{ slug: string }>
 }
 
-export async function generateMetadata(
-    { params }: Props,
-): Promise<Metadata> {
+type LovePageRow = {
+    id: string;
+    user_id: string;
+    slug: string;
+    title: string;
+    recipient_name: string;
+    sender_name: string;
+    message: string;
+    theme_config: Record<string, unknown>;
+    images: string[];
+    music_url: string | null;
+    published: boolean;
+};
+
+async function fetchLovePageBySlug(slug: string): Promise<LovePageRow | null> {
+    const admin = createAdminClient();
+    const client = admin ?? await createServerClient();
+
+    const { data, error } = await client
+        .from('love_pages')
+        .select('*')
+        .eq('slug', slug)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Love page fetch error:", error.message, { slug });
+        return null;
+    }
+
+    return data as LovePageRow | null;
+}
+
+async function canViewPage(page: LovePageRow): Promise<boolean> {
+    if (page.published) {
+        return true;
+    }
+
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    return !!user && user.id === page.user_id;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
         const resolvedParams = await params;
-        const slug = resolvedParams.slug;
-        const supabase = await createServerClient();
+        const slug = normalizeSlugParam(resolvedParams.slug);
+        const page = await fetchLovePageBySlug(slug);
 
-        const { data: page } = await supabase
-            .from('love_pages')
-            .select('title, recipient_name')
-            .eq('slug', slug)
-            .single();
-
-        if (!page) return { title: 'Love Page Not Found' };
+        if (!page) {
+            return { title: 'Love Page Not Found' };
+        }
 
         return {
             title: `${page.title} - For ${page.recipient_name}`,
@@ -40,18 +76,20 @@ export async function generateMetadata(
 export default async function PublicLovePage({ params }: Props) {
     try {
         const resolvedParams = await params;
-        const slug = resolvedParams.slug;
-        const supabase = await createServerClient();
+        const slug = normalizeSlugParam(resolvedParams.slug);
 
-        // Fetch page data
-        const { data: page, error } = await supabase
-            .from('love_pages')
-            .select('*')
-            .eq('slug', slug)
-            .single();
+        if (!slug) {
+            notFound();
+        }
 
-        if (error || !page || !page.published) {
-            console.error("Page fetch error or not found:", error); // Log error for debugging
+        const page = await fetchLovePageBySlug(slug);
+
+        if (!page) {
+            notFound();
+        }
+
+        const allowed = await canViewPage(page);
+        if (!allowed) {
             notFound();
         }
 

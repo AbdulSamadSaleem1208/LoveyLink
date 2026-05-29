@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { EmailOtpType } from '@supabase/supabase-js'
+
+function safeRedirectPath(next: string | null): string {
+    if (!next || !next.startsWith('/') || next.startsWith('//')) {
+        return '/dashboard'
+    }
+    return next
+}
 
 export async function GET(request: Request) {
     try {
@@ -10,8 +16,7 @@ export async function GET(request: Request) {
         const token_hash = searchParams.get('token_hash')
         const type = searchParams.get('type') as EmailOtpType | null
         
-        // if "next" is in param, use it
-        const next = searchParams.get('next') ?? '/dashboard'
+        const next = safeRedirectPath(searchParams.get('next'))
 
         console.log("Auth Callback Triggered.");
         console.log("  URL:", request.url);

@@ -182,8 +182,12 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                             <p className="text-sm text-gray-500 mb-4">For {page.recipient_name}</p>
 
                             <div className="flex gap-2 mt-4 pt-4 border-t border-white/10">
-                                <Link href={`/lp/${page.slug}`} onClick={(e) => selectionMode && e.preventDefault()} className="flex-1 text-center text-sm font-medium text-gray-300 hover:text-white py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                                    View
+                                <Link
+                                    href={page.published ? `/lp/${encodeURIComponent(page.slug)}` : `/dashboard/success/${page.id}`}
+                                    onClick={(e) => selectionMode && e.preventDefault()}
+                                    className="flex-1 text-center text-sm font-medium text-gray-300 hover:text-white py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+                                >
+                                    {page.published ? 'View' : 'Preview'}
                                 </Link>
                                 <Link href={`/dashboard/success/${page.id}`} onClick={(e) => selectionMode && e.preventDefault()} className="flex-1 text-center text-sm font-medium text-gray-300 hover:text-white py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
                                     QR Code

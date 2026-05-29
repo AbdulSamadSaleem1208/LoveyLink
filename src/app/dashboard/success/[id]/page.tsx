@@ -4,6 +4,7 @@ import QRDisplay from "@/components/qr/QRDisplay";
 import Link from "next/link";
 import { CheckCircle, ArrowLeft } from "lucide-react";
 import { headers } from "next/headers";
+import { resolveSiteUrlFromHost } from "@/lib/site-url";
 
 // Force dynamic rendering - NEVER cache this page (contains user-specific data)
 export const dynamic = 'force-dynamic';
@@ -29,30 +30,8 @@ export default async function SuccessPage({ params }: Props) {
 
     if (!page) notFound();
 
-    // Determine the base URL dynamically
     const headerStack = await headers();
-    const host = headerStack.get("host") || "";
-    const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
-
-    let siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-
-    if (!siteUrl) {
-        if (host) {
-            // Remove any trailing slash from host if it exists (unlikely in host header)
-            const cleanHost = host.replace(/\/$/, "");
-            siteUrl = `${protocol}://${cleanHost}`;
-        } else if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-            siteUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-        } else if (process.env.VERCEL_URL) {
-            siteUrl = `https://${process.env.VERCEL_URL}`;
-        } else {
-            // Ultimate fallback
-            siteUrl = "https://loveylink.net";
-        }
-    }
-
-    // Ensure siteUrl doesn't have a trailing slash for consistent joining
-    siteUrl = siteUrl.replace(/\/$/, "");
+    const siteUrl = resolveSiteUrlFromHost(headerStack.get("host"));
 
     if (!page.slug) {
         console.error("Page slug is missing for page:", id);

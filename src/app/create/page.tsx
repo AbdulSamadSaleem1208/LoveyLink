@@ -9,6 +9,7 @@ import { Heart, Upload, Music, ArrowRight, ArrowLeft, Loader2, Play, Pause } fro
 import LovePageRenderer from "@/components/love-page/LovePageRenderer";
 import { toast } from "sonner";
 import Link from "next/link";
+import { buildLovePageSlug } from "@/lib/slug";
 
 interface LovePageData {
     title: string;
@@ -121,8 +122,7 @@ export default function CreateLovePage() {
 
 
 
-            // Create unique slug
-            const slug = `${formData.recipient_name}-${Math.random().toString(36).substring(2, 7)}`.toLowerCase().replace(/\s+/g, '-');
+            const slug = buildLovePageSlug(formData.recipient_name || 'love');
 
             // Convert Spotify URL to embed format if needed
             let musicUrl = formData.music_url;
