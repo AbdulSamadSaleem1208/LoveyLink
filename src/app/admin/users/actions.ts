@@ -3,6 +3,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { createClient as createAuthClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { isOwnerEmail, isAdminRole } from "@/lib/admin";
 
 // Admin Client
 const supabaseAdmin = createClient(
@@ -33,9 +34,9 @@ export async function revokePremium(userId: string) {
             .eq('user_id', requester.id)
             .single();
 
-        const isOwner = requester.email === 'moizkiani@loveylink.com';
+        const isOwner = isOwnerEmail(requester.email);
 
-        if (!adminRole && !isOwner) {
+        if (!isOwner && (!adminRole || !isAdminRole(adminRole.role))) {
             console.error(`[Admin] Unauthorized revoke attempt by ${requester.email}`);
             return { error: "Forbidden" };
         }

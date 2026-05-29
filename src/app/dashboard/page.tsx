@@ -134,7 +134,8 @@ export default async function Dashboard() {
         });
     }
 
-    const isAdmin = !!adminRole || user.email === 'moizkiani@loveylink.com';
+    const { isOwnerEmail, isAdminRole } = await import('@/lib/admin');
+    const isAdmin = isOwnerEmail(user.email) || (!!adminRole && isAdminRole(adminRole.role));
 
     return (
         <div className="min-h-screen bg-black text-white p-6 md:p-10 relative">

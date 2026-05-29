@@ -56,8 +56,14 @@ export default function CreateLovePage() {
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
 
+        const remaining = 5 - formData.images.length;
+        if (remaining <= 0) {
+            toast.error("Maximum 5 photos allowed");
+            return;
+        }
+
         setUploading(true);
-        const files = Array.from(e.target.files);
+        const files = Array.from(e.target.files).slice(0, remaining);
         const newImages: string[] = [];
         const supabase = createClient();
 

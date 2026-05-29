@@ -4,9 +4,11 @@ import { useState } from "react";
 import { revokePremium } from "@/app/admin/users/actions";
 import { toast } from "sonner";
 import { Loader2, UserX } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function RevokePremiumButton({ userId }: { userId: string }) {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const handleRevoke = async () => {
         if (!confirm("Are you sure you want to revoke premium access for this user?")) {
@@ -21,6 +23,7 @@ export default function RevokePremiumButton({ userId }: { userId: string }) {
             toast.error(result.error);
         } else {
             toast.success("Premium revoked successfully");
+            router.refresh();
         }
     };
 

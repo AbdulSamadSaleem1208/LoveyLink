@@ -66,7 +66,7 @@ export default function PricingPage() {
                     <div className="mt-8">
                         <button
                             onClick={() => setShowPaymentModal(true)}
-                            className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-green-600 hover:bg-green-500 shadow-lg shadow-green-900/40 transition-all font-bold"
+                            className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-button-gradient hover:opacity-90 shadow-lg shadow-red-900/40 transition-all font-bold"
                         >
                             <Heart className="h-5 w-5 mr-2 fill-current" />
                             Pay with Easypaisa

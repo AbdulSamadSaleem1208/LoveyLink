@@ -3,6 +3,7 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { isOwnerEmail, isAdminRole, PREMIUM_PLAN_ID } from "@/lib/admin";
 
 // Initialize Supabase Admin Client with Service Role Key for privileged operations
 const supabaseAdmin = createSupabaseAdminClient(
@@ -36,10 +37,9 @@ async function verifyAdmin() {
         .eq('user_id', user.id)
         .single();
 
-    // Hardcoded bypass for the owner
-    const isOwner = user.email === 'moizkiani@loveylink.com';
+    const isOwner = isOwnerEmail(user.email);
 
-    if ((roleError || !adminRole || !['admin', 'super_admin'].includes(adminRole.role)) && !isOwner) {
+    if (!isOwner && (roleError || !adminRole || !isAdminRole(adminRole.role))) {
         throw new Error("Forbidden: Access denied");
     }
 
@@ -95,7 +95,7 @@ export async function approvePayment(paymentId: string) {
         const subscriptionData = {
             user_id: payment.user_id,
             status: 'active',
-            plan_id: 'monthly_pkr_1000',
+            plan_id: PREMIUM_PLAN_ID,
             current_period_end: currentPeriodEnd.toISOString(),
             updated_at: new Date().toISOString(),
             // Only set stripe_subscription_id on insert to avoid unique constraint if we are updating by ID
@@ -107,21 +107,22 @@ export async function approvePayment(paymentId: string) {
                 .from('subscriptions')
                 .update(subscriptionData)
                 .eq('id', existingSub.id);
-            if (upError) console.error("Subscription update failed:", upError);
+            if (upError) {
+                throw new Error(`Failed to update subscription: ${upError.message}`);
+            }
         } else {
             const { error: insError } = await supabaseAdmin
                 .from('subscriptions')
                 .insert(subscriptionData);
-            if (insError) console.error("Subscription insert failed:", insError);
+            if (insError) {
+                throw new Error(`Failed to create subscription: ${insError.message}`);
+            }
         }
 
-        // Step 5: Update User Status (Manual Upsert to bypass schema cache error)
-
-        // Fetch user email
         const { data: { user: targetUser }, error: userError } = await supabaseAdmin.auth.admin.getUserById(payment.user_id);
 
-        if (userError || !targetUser) {
-            console.error("Critical: Could not find auth user for payment:", payment.user_id);
+        if (userError || !targetUser?.email) {
+            throw new Error("Could not find auth user for this payment");
         }
 
         console.log(`Updating public.users for ${payment.user_id} with status 'active'...`);
@@ -154,7 +155,7 @@ export async function approvePayment(paymentId: string) {
                 .from('users')
                 .insert({
                     id: payment.user_id,
-                    email: targetUser?.email || 'unknown@email.com',
+                    email: targetUser.email,
                     subscription_status: 'active',
                     subscription_id: existingSub?.id || manualSubscriptionId,
                     updated_at: new Date().toISOString()
@@ -163,10 +164,7 @@ export async function approvePayment(paymentId: string) {
         }
 
         if (updateUserError) {
-            console.warn("WARNING: Failed to update public.users status (Schema Cache Error likely):", updateUserError);
-            // Do NOT throw here. We will rely on subscriptions table for IsPremium check.
-        } else {
-            console.log("Successfully updated public.users status to active.");
+            throw new Error(`Failed to update user profile: ${updateUserError.message}`);
         }
 
         // B. Auth Metadata

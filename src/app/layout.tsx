@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google"; // Using Outfit as requested for modern/romantic feel
+import { Outfit } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import SplashScreen from "@/components/SplashScreen";
-import { Toaster } from "sonner"; // Assuming sonner was installed
+import SiteChrome from "@/components/layout/SiteChrome";
+import { Toaster } from "sonner";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -42,12 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} antialiased min-h-screen flex flex-col`}>
-        <SplashScreen />
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+        <SiteChrome>{children}</SiteChrome>
         <Toaster position="top-center" richColors />
       </body>
     </html>

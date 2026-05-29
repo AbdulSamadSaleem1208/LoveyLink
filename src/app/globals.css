@@ -17,17 +17,10 @@ body {
   }
 }
 
-/* Global Heart Icon Override */
-.lucide-heart {
-  color: #ff0000 !important;
-  fill: #ff0000 !important;
-  stroke: #ff0000 !important;
-}
-
-/* Ensure specific UI elements also respect this if they use different structures */
-button .lucide-heart,
-a .lucide-heart,
-div .lucide-heart {
-  color: #ff0000 !important;
-  stroke: #ff0000 !important;
+/* Brand hearts on public/marketing pages only (not admin dashboard stats) */
+main:not([data-admin]) .lucide-heart.text-red-primary,
+main:not([data-admin]) .text-red-primary.lucide-heart {
+  color: #ff0033 !important;
+  fill: #ff0033 !important;
+  stroke: #ff0033 !important;
 }

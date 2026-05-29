@@ -72,22 +72,24 @@ export default function EasypaisaModal({ isOpen, onClose }: EasypaisaModalProps)
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-zinc-900 border border-white/10 rounded-2xl w-full max-w-md p-6 relative shadow-2xl animate-in zoom-in-95 duration-200">
                 <button
+                    type="button"
                     onClick={onClose}
+                    aria-label="Close payment dialog"
                     className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
                 <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-green-500 mb-2">Easypaisa Payment</h2>
-                    <div className="flex flex-col items-center justify-center mt-3 p-4 bg-green-500/10 rounded-2xl border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
-                        <span className="text-[10px] text-green-400 font-bold uppercase tracking-widest mb-1 bg-green-500/20 px-2 py-0.5 rounded-full">Limited Offer</span>
+                    <h2 className="text-2xl font-bold text-red-primary mb-2">Easypaisa Payment</h2>
+                    <div className="flex flex-col items-center justify-center mt-3 p-4 bg-red-primary/10 rounded-2xl border border-red-primary/20">
+                        <span className="text-[10px] text-red-primary font-bold uppercase tracking-widest mb-1 bg-red-primary/20 px-2 py-0.5 rounded-full">Premium — 30 days</span>
                         <div className="flex items-baseline gap-3 mt-1">
                             <span className="text-gray-500 line-through decoration-red-500/50 text-lg font-medium">PKR 1000</span>
                             <span className="text-4xl font-black text-white tracking-tight">PKR 500</span>
                         </div>
                         <p className="text-sm text-gray-300 mt-2 flex items-center bg-black/30 px-3 py-1.5 rounded-lg border border-white/5">
-                            <span className="text-green-400 mr-2 text-lg">✓</span> Send exactly <strong className="text-white mx-1">500</strong> to activate Premium.
+                            <span className="text-red-primary mr-2 text-lg">✓</span> Send exactly <strong className="text-white mx-1">500</strong> to activate Premium.
                         </p>
                     </div>
                 </div>
@@ -115,7 +117,7 @@ export default function EasypaisaModal({ isOpen, onClose }: EasypaisaModalProps)
                             value={trxId}
                             onChange={(e) => setTrxId(e.target.value)}
                             placeholder="e.g. 84219XXXXXX"
-                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition-all font-mono"
+                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-red-primary/50 outline-none transition-all font-mono"
                         />
                         <p className="text-xs text-gray-500 mt-1">Found in the SMS/App receipt from Easypaisa.</p>
                     </div>
@@ -123,7 +125,7 @@ export default function EasypaisaModal({ isOpen, onClose }: EasypaisaModalProps)
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        className="w-full py-3 bg-button-gradient hover:opacity-90 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                         {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify Payment"}
                     </button>

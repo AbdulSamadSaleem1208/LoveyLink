@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { updatePassword } from "@/app/auth/actions";
-import { Loader2 } from "lucide-react";
+import { Loader2, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -14,7 +14,6 @@ export default function UpdatePasswordPage() {
     const [validating, setValidating] = useState(true);
     const router = useRouter();
 
-    // Validate session on mount
     useEffect(() => {
         const checkSession = async () => {
             try {
@@ -22,18 +21,15 @@ export default function UpdatePasswordPage() {
                 const { data: { session }, error } = await supabase.auth.getSession();
 
                 if (error || !session) {
-                    console.error("No valid session for password reset:", error);
                     toast.error("Invalid or expired reset link. Please request a new one.");
-                    setTimeout(() => router.push('/forgot-password'), 2000);
+                    setTimeout(() => router.push("/forgot-password"), 2000);
                     return;
                 }
 
-                console.log("Valid session found for password reset");
                 setValidating(false);
-            } catch (err) {
-                console.error("Session validation error:", err);
+            } catch {
                 toast.error("Something went wrong. Please try again.");
-                setTimeout(() => router.push('/forgot-password'), 2000);
+                setTimeout(() => router.push("/forgot-password"), 2000);
             }
         };
 
@@ -46,6 +42,10 @@ export default function UpdatePasswordPage() {
             toast.error("Passwords do not match");
             return;
         }
+        if (password.length < 6) {
+            toast.error("Password must be at least 6 characters");
+            return;
+        }
         setLoading(true);
 
         try {
@@ -56,7 +56,7 @@ export default function UpdatePasswordPage() {
                 toast.success("Password updated successfully!");
                 router.push("/dashboard");
             }
-        } catch (error) {
+        } catch {
             toast.error("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
@@ -64,68 +64,54 @@ export default function UpdatePasswordPage() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-            {validating ? (
-                <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-lg text-center">
-                    <Loader2 className="w-12 h-12 animate-spin mx-auto text-indigo-600" />
-                    <p className="text-gray-600">Validating reset link...</p>
+        <div className="min-h-screen bg-black flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="flex justify-center">
+                    <Heart className="h-12 w-12 text-red-primary fill-red-primary" />
                 </div>
-            ) : (
-                <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-lg">
-                    <div>
-                        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-                            Update your password
-                        </h2>
-                        <p className="mt-2 text-center text-sm text-gray-600">
-                            Enter your new password below.
-                        </p>
-                    </div>
-                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                        <div>
-                            <label htmlFor="password" className="sr-only">
-                                New Password
-                            </label>
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+                    Update your password
+                </h2>
+            </div>
+
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-background-card py-8 px-4 shadow-xl border border-white/10 sm:rounded-2xl sm:px-10">
+                    {validating ? (
+                        <div className="text-center py-8">
+                            <Loader2 className="w-10 h-10 animate-spin mx-auto text-red-primary" />
+                            <p className="text-gray-400 mt-4">Validating reset link...</p>
+                        </div>
+                    ) : (
+                        <form className="space-y-4" onSubmit={handleSubmit}>
                             <input
-                                id="password"
-                                name="password"
                                 type="password"
                                 required
-                                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3 mb-4"
-                                placeholder="New Password"
+                                minLength={6}
+                                placeholder="New password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                className="block w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-red-primary outline-none"
                             />
-                            <label htmlFor="confirmPassword" className="sr-only">
-                                Confirm New Password
-                            </label>
                             <input
-                                id="confirmPassword"
-                                name="confirmPassword"
                                 type="password"
                                 required
-                                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                                placeholder="Confirm New Password"
+                                minLength={6}
+                                placeholder="Confirm new password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="block w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-red-primary outline-none"
                             />
-                        </div>
-
-                        <div>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full flex justify-center py-3 rounded-xl text-sm font-bold text-white bg-button-gradient hover:opacity-90 disabled:opacity-50"
                             >
-                                {loading ? (
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                    "Update Password"
-                                )}
+                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save new password"}
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    )}
                 </div>
-            )}
+            </div>
         </div>
     );
 }
