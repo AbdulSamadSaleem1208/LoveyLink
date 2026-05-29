@@ -24,12 +24,14 @@ export async function getSessionSubscriptionStatus() {
         const { expireUserPremiumIfDue } = await import("@/lib/subscription-expiration");
         await expireUserPremiumIfDue(user.id);
 
-        const status = await checkSubscriptionStatus();
+        const { resolvePremiumAccess } = await import("@/lib/premium-access");
+        const access = await resolvePremiumAccess(user.id);
         return {
-            isPremium: status.isPremium,
+            isPremium: access.isPremium,
             loggedIn: true,
-            message: status.error,
-            status: status.isPremium ? "active" : "free",
+            message: access.isPremium ? undefined : `Your plan is now ${access.label}.`,
+            status: access.status,
+            label: access.label,
         };
     } catch {
         return { isPremium: false, loggedIn: false };
@@ -49,77 +51,19 @@ export async function checkSubscriptionStatus() {
         const { expireUserPremiumIfDue } = await import("@/lib/subscription-expiration");
         await expireUserPremiumIfDue(user.id);
 
-        const supabaseAdmin = createSupabaseAdminClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!,
-            {
-                auth: {
-                    autoRefreshToken: false,
-                    persistSession: false
-                }
-            }
-        );
+        const { resolvePremiumAccess } = await import("@/lib/premium-access");
+        const access = await resolvePremiumAccess(user.id);
 
-        // 1. Check subscriptions table (Primary Source of Truth)
-        const { data: sub } = await supabaseAdmin
-            .from('subscriptions')
-            .select('status, current_period_end')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .maybeSingle();
-
-        if (sub) {
-            const isPastDue = sub.current_period_end && new Date(sub.current_period_end) < new Date();
-            if (!isPastDue) {
-                logDebug(`[CheckSubscription] Found active, non-expired subscription for ${user.id}`);
-                return { isPremium: true };
-            } else {
-                logDebug(`[CheckSubscription] Subscription for ${user.id} has EXPIRED.`);
-            }
+        logDebug(`[CheckSubscription] ${user.id} → premium=${access.isPremium} status=${access.status}`);
+        if (!access.isPremium) {
+            return {
+                isPremium: false,
+                error: `Your account is on the ${access.label} plan.`,
+                status: access.status,
+                label: access.label,
+            };
         }
-
-        // 2. Fallback: Check payment_requests table (Stable table)
-        // Only consider approved payments that are less than 30 days old
-        logDebug(`[CheckSubscription] Attempting Tertiary Fallback for ${user.id}...`);
-        const { data: payment } = await supabaseAdmin
-            .from('payment_requests')
-            .select('id, updated_at')
-            .eq('user_id', user.id)
-            .eq('status', 'approved')
-            .order('updated_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-        if (payment) {
-            const paymentDate = new Date(payment.updated_at);
-            const expiryDate = new Date(paymentDate);
-            expiryDate.setDate(expiryDate.getDate() + 30);
-
-            if (expiryDate > new Date()) {
-                logDebug(`[CheckSubscription] Found valid approved payment for ${user.id}. Fallback Granted.`);
-                return { isPremium: true };
-            } else {
-                logDebug(`[CheckSubscription] Payment for ${user.id} is older than 30 days. EXPIRED.`);
-                return { isPremium: false, error: "Premium period expired." };
-            }
-        }
-
-        // 3. Fallback: Check users table (Legacy/Denormalized)
-        // We only grant this if we haven't already determined they are expired above to prevent infinite bypass.
-        const { data: userRef, error } = await supabaseAdmin
-            .from('users')
-            .select('subscription_status')
-            .eq('id', user.id)
-            .single();
-
-        if (error || !userRef) {
-            return { isPremium: false, error: error?.message || "No user record" };
-        }
-
-        // We no longer blindly trust the users table because it never auto-expires. 
-        // Since we didn't find a valid active subscription above, we enforce false.
-        console.log(`[CheckSubscription] Final Verdict: false`);
-        return { isPremium: false };
+        return { isPremium: true, status: "active", label: "Premium" };
     } catch (error) {
         console.error("Unexpected error checking subscription:", error);
         return { isPremium: false, error: "Internal Server Error" };

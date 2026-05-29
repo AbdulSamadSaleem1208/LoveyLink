@@ -44,7 +44,7 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath("/", "layout");
-    redirect("/dashboard");
+    redirect("/dashboard?welcome=1");
 }
 
 export async function signup(formData: FormData) {
@@ -77,7 +77,7 @@ export async function signup(formData: FormData) {
 
     const { data: sessionData } = await supabase.auth.getSession();
     if (sessionData.session) {
-        redirect("/dashboard");
+        redirect("/dashboard?welcome=1");
     }
 
     return { success: "Check your email to confirm your account." };

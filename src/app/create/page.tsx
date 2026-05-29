@@ -10,6 +10,7 @@ import LovePageRenderer from "@/components/love-page/LovePageRenderer";
 import { toast } from "sonner";
 import Link from "next/link";
 import { buildLovePageSlug } from "@/lib/slug";
+import ThemePresetPicker from "@/components/create/ThemePresetPicker";
 
 interface LovePageData {
     title: string;
@@ -367,17 +368,15 @@ export default function CreateLovePage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-3">Theme Color</label>
-                                    <div className="flex flex-wrap gap-4 justify-center">
-                                        {['#FF6B9D', '#DB2777', '#E11D48', '#9333EA', '#2563EB', '#000000'].map((color) => (
-                                            <button
-                                                key={color}
-                                                onClick={() => setFormData({ ...formData, theme: color })}
-                                                className={`w-12 h-12 rounded-full border-2 transition-all transform hover:scale-110 ${formData.theme === color ? 'border-white scale-110 ring-2 ring-white/50' : 'border-transparent'}`}
-                                                style={{ backgroundColor: color }}
-                                            />
-                                        ))}
-                                    </div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                                        Pick a romantic color scheme
+                                    </label>
+                                    <ThemePresetPicker
+                                        selected={formData.theme}
+                                        onSelect={(primary) =>
+                                            setFormData({ ...formData, theme: primary })
+                                        }
+                                    />
                                 </div>
 
                                 <div className="mt-8">

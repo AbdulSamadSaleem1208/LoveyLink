@@ -288,6 +288,16 @@ export async function syncSubscriptionForAdminEdit(
             .eq("id", existingSub.id);
     }
 
+    // Stop payment fallback from re-granting premium after admin cancel/revoke
+    await supabase
+        .from("payment_requests")
+        .update({
+            status: "revoked",
+            updated_at: now.toISOString(),
+        })
+        .eq("user_id", userId)
+        .eq("status", "approved");
+
     await bumpUserSubscriptionMetadata(supabase, userId, subscriptionStatus);
 }
 

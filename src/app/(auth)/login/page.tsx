@@ -8,6 +8,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { BackButton } from "@/components/ui/back-button";
 import FloatingHearts from "@/components/ui/FloatingHearts";
+import LoginSparkles from "@/components/auth/LoginSparkles";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -29,13 +30,25 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-black flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-            <FloatingHearts count={8} />
+            <FloatingHearts count={12} />
+            <LoginSparkles />
+
+            <motion.div
+                className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-heart/10 blur-3xl pointer-events-none"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                transition={{ duration: 6, repeat: Infinity }}
+            />
+            <motion.div
+                className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-purple-500/10 blur-3xl pointer-events-none"
+                animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
+                transition={{ duration: 7, repeat: Infinity }}
+            />
 
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
                     background:
-                        "radial-gradient(ellipse at 50% 0%, rgba(255,107,157,0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(219,39,119,0.1) 0%, transparent 40%)",
+                        "radial-gradient(ellipse at 50% 0%, rgba(255,107,157,0.18) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(219,39,119,0.12) 0%, transparent 40%)",
                 }}
             />
 
@@ -112,7 +125,12 @@ export default function LoginPage() {
                 transition={{ delay: 0.25, duration: 0.6, type: "spring" }}
                 className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10"
             >
-                <div className="relative bg-background-card/80 backdrop-blur-xl py-8 px-4 shadow-2xl border border-pink-heart/20 sm:rounded-2xl sm:px-10 overflow-hidden">
+                <div className="relative bg-background-card/80 backdrop-blur-xl py-8 px-4 shadow-2xl shadow-pink-heart/10 border border-pink-heart/25 sm:rounded-2xl sm:px-10 overflow-hidden">
+                    <motion.div
+                        className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-pink-heart/40 via-purple-500/30 to-pink-heart/40 opacity-60 -z-10"
+                        animate={{ opacity: [0.4, 0.7, 0.4] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                    />
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-pink-heart to-transparent" />
 
                     <form className="space-y-6" onSubmit={handleSubmit}>

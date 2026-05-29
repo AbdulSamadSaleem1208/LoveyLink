@@ -75,7 +75,7 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
         <>
             <div className={`space-y-6 transition-all duration-300 ${isModalOpen ? 'opacity-40 pointer-events-none scale-[0.99] blur-[2px]' : 'opacity-100'}`}>
                 {/* Toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+                <div className="flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-zinc-900/80 to-zinc-950/80 backdrop-blur-md p-4 rounded-2xl border border-pink-heart/15 shadow-lg shadow-pink-heart/5">
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => { setView('all'); setSelectionMode(false); }}
@@ -145,8 +145,8 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                         <div
                             key={page.id}
                             onClick={() => selectionMode && toggleSelection(page.id)}
-                            className={`bg-background-card border rounded-2xl p-6 shadow-sm transition-all duration-300 group relative cursor-pointer 
-                                ${selectionMode ? (selectedIds.includes(page.id) ? 'border-red-500 ring-2 ring-red-500/20 bg-red-500/5' : 'border-white/10 opacity-70 scale-[0.98]') : 'border-white/10 hover:border-red-primary/50 hover:scale-[1.01]'}`}
+                            className={`bg-gradient-to-br from-zinc-900/90 to-black/80 backdrop-blur-sm border rounded-2xl p-6 shadow-lg transition-all duration-300 group relative cursor-pointer 
+                                ${selectionMode ? (selectedIds.includes(page.id) ? 'border-pink-heart ring-2 ring-pink-heart/30 bg-pink-heart/5' : 'border-white/10 opacity-70 scale-[0.98]') : 'border-white/10 hover:border-pink-heart/50 hover:shadow-pink-heart/10 hover:scale-[1.02]'}`}
                         >
                             {!selectionMode && (
                                 <DeletePageButton

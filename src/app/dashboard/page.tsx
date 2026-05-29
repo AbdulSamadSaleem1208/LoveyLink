@@ -1,107 +1,59 @@
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
 import Link from "next/link";
-import { Plus, Heart, Sparkles, LayoutDashboard } from "lucide-react";
+import { Plus, Heart } from "lucide-react";
 import { redirect } from "next/navigation";
 import WelcomeConfetti from "@/components/dashboard/WelcomeConfetti";
-import RefreshSubscriptionButton from "@/components/dashboard/RefreshSubscriptionButton";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import LovePagesManager from "@/components/dashboard/LovePagesManager";
 import SubscriptionStatusPoller from "@/components/dashboard/SubscriptionStatusPoller";
+import DashboardBackground from "@/components/dashboard/DashboardBackground";
+import SubscriptionStatusBadge from "@/components/dashboard/SubscriptionStatusBadge";
+import DashboardAdminLink from "@/components/dashboard/DashboardAdminLink";
 import { expireUserPremiumIfDue } from "@/lib/subscription-expiration";
+import { resolvePremiumAccess } from "@/lib/premium-access";
+import LoginWelcomeBurst from "@/components/dashboard/LoginWelcomeBurst";
 
-// Force dynamic rendering - NEVER cache this page (contains user-specific data)
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export default async function Dashboard() {
+export default async function Dashboard({
+    searchParams,
+}: {
+    searchParams: Promise<{ welcome?: string }>;
+}) {
+    const params = await searchParams;
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
         redirect("/login");
     }
 
     await expireUserPremiumIfDue(user.id);
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !serviceRoleKey) {
-        console.error("Missing environment variables: URL or Service Role Key");
-        return (
-            <div className="min-h-screen bg-black text-white p-10 flex items-center justify-center">
-                <div className="bg-red-900/20 border border-red-500/50 p-6 rounded-xl max-w-md text-center">
-                    <h2 className="text-xl font-bold text-red-400 mb-2">Configuration Error</h2>
-                    <p className="text-gray-300">The system is missing required configuration. Please contact the administrator.</p>
-                </div>
-            </div>
-        );
-    }
-
-    // Initialize Admin Client for robust data fetching (bypass RLS)
-    const supabaseAdmin = createSupabaseAdminClient(
-        supabaseUrl,
-        serviceRoleKey,
-        {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false
-            }
-        }
-    );
+    const premiumAccess = await resolvePremiumAccess(user.id);
 
     let lovePages = null;
-    let sub = null;
     let adminRole = null;
-    let paymentCheck: any = { data: null };
 
     try {
-        // Parallelize independent data fetching
         const results = await Promise.all([
-            // 1. Fetch Love Pages
             supabase
-                .from('love_pages')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false }),
-
-            // 2. Check subscription status (Source of Truth)
-            supabaseAdmin
-                .from('subscriptions')
-                .select('status, id, current_period_end')
-                .eq('user_id', user.id)
-                .eq('status', 'active')
-                .maybeSingle(),
-
-            // 3. Check admin role
-            supabase
-                .from('admin_roles')
-                .select('role')
-                .eq('user_id', user.id)
-                .single(),
-
-            // 4. Fallback: Check payment_requests (optimistically fetch to avoid waterfall)
-            supabaseAdmin
-                .from('payment_requests')
-                .select('id, updated_at')
-                .eq('user_id', user.id)
-                .eq('status', 'approved')
-                .order('updated_at', { ascending: false })
-                .limit(1)
-                .maybeSingle()
+                .from("love_pages")
+                .select("*")
+                .eq("user_id", user.id)
+                .order("created_at", { ascending: false }),
+            supabase.from("admin_roles").select("role").eq("user_id", user.id).single(),
         ]);
 
         lovePages = results[0].data;
-        sub = results[1].data;
-        adminRole = results[2].data;
-        paymentCheck = results[3];
-
+        adminRole = results[1].data;
     } catch (error) {
         console.error("Dashboard Data Fetch Error:", error);
     }
 
     if (lovePages && lovePages.length > 0) {
-        const { repairBrokenSlugForPage } = await import('@/lib/love-page-slug-repair');
+        const { repairBrokenSlugForPage } = await import("@/lib/love-page-slug-repair");
         lovePages = await Promise.all(
             lovePages.map(async (page) => {
                 const { slug, repaired } = await repairBrokenSlugForPage(page, user.id);
@@ -110,80 +62,57 @@ export default async function Dashboard() {
         );
     }
 
-    let isPremium = !!sub;
-
-    if (isPremium && sub?.current_period_end) {
-        const expiryDate = new Date(sub.current_period_end);
-        const now = new Date();
-        if (expiryDate < now) {
-            const { expireUserSubscription } = await import('@/lib/subscription-utils');
-            await expireUserSubscription(user.id);
-            isPremium = false;
-        }
-    }
-
-    if (!isPremium && paymentCheck?.data?.updated_at) {
-        const paymentDate = new Date(paymentCheck.data.updated_at);
-        const expiryDate = new Date(paymentDate);
-        expiryDate.setDate(expiryDate.getDate() + 30);
-        if (expiryDate > new Date()) {
-            isPremium = true;
-        }
-    }
-
     const showWelcome = user.user_metadata?.show_premium_welcome;
     if (showWelcome) {
         await supabase.auth.updateUser({
-            data: { show_premium_welcome: null }
+            data: { show_premium_welcome: null },
         });
     }
 
-    const { isOwnerEmail, isAdminRole } = await import('@/lib/admin');
-    const isAdmin = isOwnerEmail(user.email) || (!!adminRole && isAdminRole(adminRole.role));
+    const { isOwnerEmail, isAdminRole } = await import("@/lib/admin");
+    const isAdmin =
+        isOwnerEmail(user.email) || (!!adminRole && isAdminRole(adminRole.role));
+
+    const firstName =
+        user.user_metadata?.full_name?.split(" ")?.[0] ||
+        user.email?.split("@")?.[0] ||
+        "there";
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-10 relative">
-            <SubscriptionStatusPoller initialIsPremium={isPremium} />
+        <div className="min-h-screen bg-black text-white relative overflow-hidden">
+            <DashboardBackground />
+            <SubscriptionStatusPoller
+                initialIsPremium={premiumAccess.isPremium}
+                initialLabel={premiumAccess.label}
+            />
+            {params.welcome === "1" && <LoginWelcomeBurst />}
             {showWelcome && <WelcomeConfetti />}
 
-            <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4 border-b border-white/5 pb-8">
+            <div className="relative z-10 p-6 md:p-10 max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">My Love Pages</h1>
-                        <p className="text-gray-400">Manage and create your special declarations.</p>
+                        <p className="text-pink-heart text-sm font-semibold mb-1 flex items-center gap-1.5">
+                            <Heart className="w-4 h-4 fill-pink-heart" />
+                            Welcome back, {firstName}
+                        </p>
+                        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white via-pink-100 to-pink-heart/80 bg-clip-text text-transparent">
+                            My Love Pages
+                        </h1>
+                        <p className="text-gray-400">
+                            Manage and create your special declarations.
+                        </p>
                     </div>
                     <div className="flex flex-wrap gap-3 items-center">
                         <LogoutButton />
-                        {isAdmin && (
-                            <Link
-                                href="/admin"
-                                className="flex items-center px-4 py-2 bg-red-600/10 text-red-500 border border-red-600/20 rounded-xl hover:bg-red-600/20 transition-colors"
-                            >
-                                <LayoutDashboard className="w-4 h-4 mr-2" />
-                                Admin
-                            </Link>
-                        )}
-
-                        {isPremium ? (
-                            <div className="flex items-center px-4 py-2 bg-white/5 border border-white/10 text-white rounded-xl">
-                                <Sparkles className="w-4 h-4 mr-2 text-yellow-400" />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-600 font-bold">Premium</span>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-2">
-                                <RefreshSubscriptionButton />
-                                <Link
-                                    href="/pricing"
-                                    className="flex items-center px-4 py-2 bg-background-card border border-white/10 text-white rounded-xl hover:bg-white/5 transition-colors"
-                                >
-                                    <Sparkles className="w-4 h-4 mr-2 text-gray-400" />
-                                    Upgrade
-                                </Link>
-                            </div>
-                        )}
+                        {isAdmin && <DashboardAdminLink />}
+                        <SubscriptionStatusBadge
+                            isPremium={premiumAccess.isPremium}
+                            status={premiumAccess.status}
+                            label={premiumAccess.label}
+                        />
                         <Link
                             href="/create"
-                            className="flex items-center px-6 py-2 bg-button-gradient text-white rounded-xl shadow-lg shadow-red-900/40 hover:opacity-90 transition-all transform hover:scale-105 font-bold"
+                            className="flex items-center px-6 py-2.5 bg-button-gradient text-white rounded-xl shadow-lg shadow-pink-heart/30 hover:opacity-90 transition-all transform hover:scale-105 font-bold"
                         >
                             <Plus className="w-5 h-5 mr-2" />
                             Create New Page
@@ -194,15 +123,20 @@ export default async function Dashboard() {
                 {lovePages && lovePages.length > 0 ? (
                     <LovePagesManager initialPages={lovePages} />
                 ) : (
-                    <div className="bg-background-card border border-white/10 rounded-3xl p-16 text-center text-white border-dashed">
-                        <div className="mx-auto h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-gray-700">
+                    <div className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-pink-heart/20 rounded-3xl p-16 text-center backdrop-blur-sm shadow-[0_0_60px_rgba(255,107,157,0.08)]">
+                        <div className="mx-auto h-24 w-24 bg-pink-heart/10 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-pink-heart/40 ring-4 ring-pink-heart/10">
                             <Heart className="h-10 w-10 text-pink-heart fill-pink-heart animate-pulse" />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-2">No love pages yet</h3>
-                        <p className="text-gray-400 mb-8 max-w-md mx-auto">Start creating your first romantic page to share with your loved one! It only takes a minute.</p>
+                        <h3 className="text-2xl font-bold text-white mb-2">
+                            No love pages yet
+                        </h3>
+                        <p className="text-gray-400 mb-8 max-w-md mx-auto">
+                            Start creating your first romantic page to share with your loved
+                            one! It only takes a minute.
+                        </p>
                         <Link
                             href="/create"
-                            className="inline-flex items-center px-8 py-3 bg-button-gradient text-white rounded-2xl shadow-lg hover:opacity-90 transition-all font-bold text-lg"
+                            className="inline-flex items-center px-8 py-3 bg-button-gradient text-white rounded-2xl shadow-lg shadow-pink-heart/25 hover:opacity-90 transition-all font-bold text-lg"
                         >
                             <Plus className="w-5 h-5 mr-2" />
                             Create My First Page

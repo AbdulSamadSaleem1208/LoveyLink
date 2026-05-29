@@ -7,17 +7,23 @@ import { getSessionSubscriptionStatus } from "@/app/actions";
 
 type Props = {
     initialIsPremium: boolean;
+    initialLabel: string;
 };
 
-const POLL_MS = 20_000;
+const POLL_MS = 8_000;
 
-export default function SubscriptionStatusPoller({ initialIsPremium }: Props) {
+export default function SubscriptionStatusPoller({
+    initialIsPremium,
+    initialLabel,
+}: Props) {
     const router = useRouter();
     const isPremiumRef = useRef(initialIsPremium);
+    const labelRef = useRef(initialLabel);
 
     useEffect(() => {
         isPremiumRef.current = initialIsPremium;
-    }, [initialIsPremium]);
+        labelRef.current = initialLabel;
+    }, [initialIsPremium, initialLabel]);
 
     useEffect(() => {
         const poll = async () => {
@@ -26,22 +32,28 @@ export default function SubscriptionStatusPoller({ initialIsPremium }: Props) {
 
             const wasPremium = isPremiumRef.current;
             const nowPremium = result.isPremium;
+            const prevLabel = labelRef.current;
+            const newLabel = result.label ?? (nowPremium ? "Premium" : "Free");
 
-            if (wasPremium !== nowPremium) {
+            if (wasPremium !== nowPremium || prevLabel !== newLabel) {
                 isPremiumRef.current = nowPremium;
+                labelRef.current = newLabel;
                 router.refresh();
 
                 if (wasPremium && !nowPremium) {
                     toast.info(
                         result.message ??
-                            "Your premium access was updated. Premium features are now off."
+                            `Your plan was updated to ${newLabel}. Premium features are now off.`
                     );
                 } else if (!wasPremium && nowPremium) {
                     toast.success("Premium is now active on your account.");
+                } else if (!wasPremium && !nowPremium && prevLabel !== newLabel) {
+                    toast.info(`Your plan status is now: ${newLabel}.`);
                 }
             }
         };
 
+        void poll();
         const interval = setInterval(poll, POLL_MS);
         const onFocus = () => {
             void poll();
