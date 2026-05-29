@@ -89,16 +89,17 @@ export default async function Home() {
             </div>
 
             {/* Right Image (Phone Mockup) */}
-            <div className="flex-1 relative">
-              {/* Floating Elements */}
-              <div className="absolute -left-10 top-1/4 bg-background-card border border-white/10 p-3 rounded-lg text-xs text-white z-20 shadow-xl hidden md:block animate-fade-in">
-                ♡ Custom Design
+            <div className="flex-1 relative flex justify-center lg:justify-end">
+              <div className="absolute -left-10 top-1/4 bg-gradient-to-r from-pink-heart/20 to-transparent border border-pink-heart/30 px-4 py-2.5 rounded-xl text-xs text-white z-20 shadow-lg shadow-pink-heart/10 hidden md:block backdrop-blur-sm">
+                <span className="text-pink-heart">♥</span> Live love pages
               </div>
-              <div className="absolute -right-5 top-1/2 bg-background-card border border-white/10 p-3 rounded-lg text-xs text-white z-20 shadow-xl hidden md:block animate-fade-in delay-150">
-                Share the love ♡
+              <div className="absolute -right-5 top-1/3 bg-gradient-to-l from-pink-heart/20 to-transparent border border-pink-heart/30 px-4 py-2.5 rounded-xl text-xs text-white z-20 shadow-lg shadow-pink-heart/10 hidden md:block backdrop-blur-sm">
+                Animated & beautiful <span className="text-pink-heart">♥</span>
+              </div>
+              <div className="absolute -right-2 bottom-1/4 bg-background-card/80 border border-white/10 px-3 py-2 rounded-lg text-[10px] text-gray-300 z-20 hidden md:block backdrop-blur-md">
+                6 stunning themes
               </div>
 
-              {/* Animated Mockup Component */}
               <AnimatedMockup />
             </div>
 
