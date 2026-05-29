@@ -34,7 +34,7 @@ export default async function Home() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden">
+      <section className="relative pt-12 sm:pt-20 pb-20 sm:pb-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
           {/* Background Hearts Pattern can be added here using CSS or SVG */}
           <div className="absolute top-20 left-10 text-pink-heart animate-bounce delay-100"><Heart size={40} className="fill-current" /></div>
@@ -52,7 +52,7 @@ export default async function Home() {
                 Want to start?
               </div>
 
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight selection:bg-red-500 selection:text-white">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-tight selection:bg-red-500 selection:text-white">
                 Declare your love <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff4d4d] to-[#ffccd5] drop-shadow-sm">
                   for someone special!

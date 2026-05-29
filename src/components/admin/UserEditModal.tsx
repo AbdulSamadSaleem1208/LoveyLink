@@ -74,9 +74,9 @@ export default function UserEditModal({ user, onClose }: Props) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm">
             <div
-                className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl"
+                className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-white/10 bg-zinc-900 shadow-2xl"
                 role="dialog"
                 aria-labelledby="edit-user-title"
             >

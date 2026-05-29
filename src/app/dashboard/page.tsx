@@ -88,33 +88,35 @@ export default async function Dashboard({
             {params.welcome === "1" && <LoginWelcomeBurst />}
             {showWelcome && <WelcomeConfetti />}
 
-            <div className="relative z-10 p-6 md:p-10 max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                    <div>
+            <div className="relative z-10 px-4 py-6 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 md:mb-10 gap-5">
+                    <div className="w-full min-w-0">
                         <p className="text-pink-heart text-sm font-semibold mb-1 flex items-center gap-1.5">
-                            <Heart className="w-4 h-4 fill-pink-heart" />
+                            <Heart className="w-4 h-4 fill-pink-heart shrink-0" />
                             Welcome back, {firstName}
                         </p>
-                        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white via-pink-100 to-pink-heart/80 bg-clip-text text-transparent">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white via-pink-100 to-pink-heart/80 bg-clip-text text-transparent">
                             My Love Pages
                         </h1>
-                        <p className="text-gray-400">
+                        <p className="text-gray-400 text-sm sm:text-base">
                             Manage and create your special declarations.
                         </p>
                     </div>
-                    <div className="flex flex-wrap gap-3 items-center">
-                        <LogoutButton />
-                        {isAdmin && <DashboardAdminLink />}
-                        <SubscriptionStatusBadge
-                            isPremium={premiumAccess.isPremium}
-                            status={premiumAccess.status}
-                            label={premiumAccess.label}
-                        />
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 items-stretch sm:items-center w-full lg:w-auto">
+                        <div className="flex flex-wrap gap-2">
+                            <LogoutButton />
+                            {isAdmin && <DashboardAdminLink />}
+                            <SubscriptionStatusBadge
+                                isPremium={premiumAccess.isPremium}
+                                status={premiumAccess.status}
+                                label={premiumAccess.label}
+                            />
+                        </div>
                         <Link
                             href="/create"
-                            className="flex items-center px-6 py-2.5 bg-button-gradient text-white rounded-xl shadow-lg shadow-pink-heart/30 hover:opacity-90 transition-all transform hover:scale-105 font-bold"
+                            className="flex items-center justify-center px-5 py-3 sm:py-2.5 bg-button-gradient text-white rounded-xl shadow-lg shadow-pink-heart/30 hover:opacity-90 transition-all font-bold w-full sm:w-auto"
                         >
-                            <Plus className="w-5 h-5 mr-2" />
+                            <Plus className="w-5 h-5 mr-2 shrink-0" />
                             Create New Page
                         </Link>
                     </div>
@@ -123,7 +125,7 @@ export default async function Dashboard({
                 {lovePages && lovePages.length > 0 ? (
                     <LovePagesManager initialPages={lovePages} />
                 ) : (
-                    <div className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-pink-heart/20 rounded-3xl p-16 text-center backdrop-blur-sm shadow-[0_0_60px_rgba(255,107,157,0.08)]">
+                    <div className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-pink-heart/20 rounded-3xl p-8 sm:p-16 text-center backdrop-blur-sm shadow-[0_0_60px_rgba(255,107,157,0.08)]">
                         <div className="mx-auto h-24 w-24 bg-pink-heart/10 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-pink-heart/40 ring-4 ring-pink-heart/10">
                             <Heart className="h-10 w-10 text-pink-heart fill-pink-heart animate-pulse" />
                         </div>

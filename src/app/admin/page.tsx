@@ -76,8 +76,8 @@ export default async function AdminDashboard() {
     ]).filter((d) => d.value > 0);
 
     return (
-        <div className="space-y-8 max-w-7xl">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div className="space-y-6 sm:space-y-8 max-w-7xl w-full min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
                 <div>
                     <div className="flex items-center gap-2 text-red-primary mb-2">
                         <Sparkles className="h-5 w-5" />

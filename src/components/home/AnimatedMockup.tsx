@@ -313,7 +313,7 @@ export default function AnimatedMockup() {
             <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative border-[14px] border-gray-800 bg-black rounded-[2.5rem] h-[600px] w-[300px] shadow-[0_20px_70px_rgba(255,107,157,0.22)] overflow-hidden"
+                className="relative border-[14px] border-gray-800 bg-black rounded-[2.5rem] h-[min(600px,78vh)] w-[min(300px,92vw)] max-w-full shadow-[0_20px_70px_rgba(255,107,157,0.22)] overflow-hidden mx-auto"
             >
                 <div className="rounded-[2rem] h-full w-full relative overflow-hidden bg-black">
                     <FloatingHearts />

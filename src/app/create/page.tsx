@@ -223,24 +223,24 @@ export default function CreateLovePage() {
     return (
         <div className="min-h-screen bg-black flex flex-col text-white">
             {/* Wizard Header */}
-            <div className="bg-black/80 backdrop-blur-md border-b border-white/10 py-4 px-6 fixed top-16 w-full z-40">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                        <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+            <div className="bg-black/80 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 px-4 sm:px-6 fixed top-0 left-0 right-0 z-40 safe-top">
+                <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors shrink-0 p-1">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
-                        <h1 className="text-lg font-bold text-white">Create Love Page</h1>
+                        <h1 className="text-base sm:text-lg font-bold text-white truncate">Create Love Page</h1>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-1.5 shrink-0">
                         {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className={`h-2 w-8 rounded-full transition-colors ${step >= i ? 'bg-red-primary' : 'bg-gray-800'}`} />
+                            <div key={i} className={`h-2 w-6 sm:w-8 rounded-full transition-colors ${step >= i ? 'bg-red-primary' : 'bg-gray-800'}`} />
                         ))}
                     </div>
                 </div>
             </div>
 
             {/* Content Area */}
-            <div className="flex-grow pt-32 pb-24 px-4 overflow-y-auto">
+            <div className="flex-grow pt-24 sm:pt-28 pb-28 px-4 sm:px-6 overflow-y-auto safe-bottom">
                 <div className="max-w-2xl mx-auto">
                     <AnimatePresence mode="wait">
                         {step === 1 && (
@@ -430,7 +430,7 @@ export default function CreateLovePage() {
             </div>
 
             {/* Footer Actions */}
-            <div className="bg-black border-t border-white/10 py-4 px-6 fixed bottom-0 w-full z-40">
+            <div className="bg-black border-t border-white/10 py-3 sm:py-4 px-4 sm:px-6 fixed bottom-0 left-0 right-0 w-full z-40 safe-bottom">
                 <div className="max-w-4xl mx-auto flex justify-between">
                     {step > 1 ? (
                         <button

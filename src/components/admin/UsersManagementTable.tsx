@@ -103,13 +103,13 @@ export default function UsersManagementTable({ users }: Props) {
                     <table className="min-w-full">
                         <thead>
                             <tr className="border-b border-white/10 bg-black/40">
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                                     User
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                                     Status
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                <th className="px-3 sm:px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                                     Joined
                                 </th>
                                 <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -136,7 +136,7 @@ export default function UsersManagementTable({ users }: Props) {
                                             key={user.id}
                                             className="hover:bg-white/5 transition-colors"
                                         >
-                                            <td className="px-6 py-4">
+                                            <td className="px-3 sm:px-6 py-4">
                                                 <p className="text-sm font-medium text-white">
                                                     {user.full_name || "—"}
                                                 </p>
@@ -144,7 +144,7 @@ export default function UsersManagementTable({ users }: Props) {
                                                     {user.email}
                                                 </p>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-3 sm:px-6 py-4">
                                                 <span
                                                     className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                                                         user.subscription_status === "active"
@@ -158,7 +158,7 @@ export default function UsersManagementTable({ users }: Props) {
                                             <td className="px-6 py-4 text-sm text-gray-400">
                                                 {new Date(user.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-3 sm:px-6 py-4">
                                                 <div className="flex items-center justify-end gap-2 flex-wrap">
                                                     <button
                                                         type="button"

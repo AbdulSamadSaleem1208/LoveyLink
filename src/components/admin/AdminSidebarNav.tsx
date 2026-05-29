@@ -10,18 +10,23 @@ const links = [
     { href: "/admin/payments", label: "Payments", icon: CreditCard, exact: false },
 ];
 
-export default function AdminSidebarNav() {
+type Props = {
+    onNavigate?: () => void;
+};
+
+export default function AdminSidebarNav({ onNavigate }: Props) {
     const pathname = usePathname();
 
     return (
-        <nav className="mt-4 px-3 space-y-1 flex-1">
+        <nav className="mt-2 lg:mt-4 px-3 space-y-1 flex-1 overflow-y-auto">
             {links.map(({ href, label, icon: Icon, exact }) => {
                 const active = exact ? pathname === href : pathname.startsWith(href);
                 return (
                     <Link
                         key={href}
                         href={href}
-                        className={`flex items-center px-4 py-3 rounded-xl transition-all ${
+                        onClick={onNavigate}
+                        className={`flex items-center px-4 py-3.5 rounded-xl transition-all touch-manipulation ${
                             active
                                 ? "bg-gradient-to-r from-red-primary/30 to-pink-hot/20 text-white border border-red-primary/40 shadow-lg shadow-red-900/20"
                                 : "text-gray-400 hover:text-white hover:bg-white/5"

@@ -75,8 +75,8 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
         <>
             <div className={`space-y-6 transition-all duration-300 ${isModalOpen ? 'opacity-40 pointer-events-none scale-[0.99] blur-[2px]' : 'opacity-100'}`}>
                 {/* Toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-zinc-900/80 to-zinc-950/80 backdrop-blur-md p-4 rounded-2xl border border-pink-heart/15 shadow-lg shadow-pink-heart/5">
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-4 bg-gradient-to-r from-zinc-900/80 to-zinc-950/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-pink-heart/15 shadow-lg shadow-pink-heart/5">
+                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                         <button
                             onClick={() => { setView('all'); setSelectionMode(false); }}
                             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center ${view === 'all' && !selectionMode ? 'bg-red-600 text-white shadow-lg shadow-red-900/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
@@ -93,7 +93,7 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                         {selectionMode ? (
                             <>
                                 <span className="text-sm text-red-500 font-medium mr-2">{selectedIds.length} selected</span>

@@ -48,8 +48,8 @@ export default function AdminFilterBar({
                         className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-sm placeholder-gray-500 focus:ring-2 focus:ring-red-primary outline-none"
                     />
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    <div className="flex items-center gap-2 min-w-[140px]">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full">
+                    <div className="flex items-center gap-2 w-full sm:min-w-[140px] sm:flex-1">
                         <SlidersHorizontal className="h-4 w-4 text-gray-500 shrink-0" />
                         <select
                             value={status}
@@ -68,7 +68,7 @@ export default function AdminFilterBar({
                         value={sort}
                         onChange={(e) => onSortChange(e.target.value)}
                         aria-label="Sort order"
-                        className="py-2.5 px-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:ring-2 focus:ring-red-primary outline-none min-w-[160px]"
+                        className="w-full sm:w-auto py-2.5 px-3 rounded-xl bg-black/50 border border-white/10 text-white text-sm focus:ring-2 focus:ring-red-primary outline-none sm:min-w-[160px]"
                     >
                         {sortOptions.map((o) => (
                             <option key={o.value} value={o.value} className="bg-zinc-900">
