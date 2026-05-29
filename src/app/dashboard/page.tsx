@@ -7,6 +7,8 @@ import WelcomeConfetti from "@/components/dashboard/WelcomeConfetti";
 import RefreshSubscriptionButton from "@/components/dashboard/RefreshSubscriptionButton";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import LovePagesManager from "@/components/dashboard/LovePagesManager";
+import SubscriptionStatusPoller from "@/components/dashboard/SubscriptionStatusPoller";
+import { expireUserPremiumIfDue } from "@/lib/subscription-expiration";
 
 // Force dynamic rendering - NEVER cache this page (contains user-specific data)
 export const dynamic = 'force-dynamic';
@@ -18,6 +20,8 @@ export default async function Dashboard() {
     if (!user) {
         redirect("/login");
     }
+
+    await expireUserPremiumIfDue(user.id);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -139,6 +143,7 @@ export default async function Dashboard() {
 
     return (
         <div className="min-h-screen bg-black text-white p-6 md:p-10 relative">
+            <SubscriptionStatusPoller initialIsPremium={isPremium} />
             {showWelcome && <WelcomeConfetti />}
 
             <div className="max-w-7xl mx-auto">

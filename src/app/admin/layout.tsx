@@ -6,8 +6,21 @@ import { LayoutDashboard } from "lucide-react";
 import AdminSignOutButton from "@/components/admin/AdminSignOutButton";
 import AdminSidebarNav from "@/components/admin/AdminSidebarNav";
 import { isOwnerEmail, isAdminRole } from "@/lib/admin";
+import { expireDueSubscriptions } from "@/lib/subscription-expiration";
+import AdminNotificationsBanner, {
+    type AdminNotification,
+} from "@/components/admin/AdminNotificationsBanner";
+import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
+
+function getAdminServiceClient() {
+    return createSupabaseAdminClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+}
 
 export default async function AdminLayout({
     children,
@@ -33,6 +46,22 @@ export default async function AdminLayout({
 
     if (!isOwner && !isAdminRole(adminRole?.role)) {
         redirect("/dashboard");
+    }
+
+    await expireDueSubscriptions();
+
+    let adminNotifications: AdminNotification[] = [];
+    try {
+        const supabaseAdmin = getAdminServiceClient();
+        const { data } = await supabaseAdmin
+            .from("admin_notifications")
+            .select("id, type, user_email, message, created_at")
+            .is("read_at", null)
+            .order("created_at", { ascending: false })
+            .limit(15);
+        adminNotifications = (data ?? []) as AdminNotification[];
+    } catch {
+        adminNotifications = [];
     }
 
     return (
@@ -76,6 +105,7 @@ export default async function AdminLayout({
             </aside>
 
             <main className="relative z-10 flex-1 p-6 md:p-10 overflow-y-auto min-h-screen">
+                <AdminNotificationsBanner notifications={adminNotifications} />
                 {children}
             </main>
         </div>

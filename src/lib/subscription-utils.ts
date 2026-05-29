@@ -25,25 +25,13 @@ const getAdminClient = () => {
  * This can be called periodically or on-demand
  */
 export async function checkAndExpireSubscriptions() {
-    try {
-        const supabase = getAdminClient();
-
-        // Call the database function to expire old subscriptions
-        const { data, error } = await supabase.rpc('expire_old_subscriptions');
-
-        if (error) {
-            console.error('[SubscriptionUtils] Error expiring subscriptions:', error);
-            return { success: false, error: error.message };
-        }
-
-        const expiredCount = data?.[0]?.expired_count || 0;
-        console.log(`[SubscriptionUtils] Expired ${expiredCount} subscriptions`);
-
-        return { success: true, expiredCount };
-    } catch (error: any) {
-        console.error('[SubscriptionUtils] Exception in checkAndExpireSubscriptions:', error);
-        return { success: false, error: error.message };
+    const { expireDueSubscriptions } = await import("@/lib/subscription-expiration");
+    const result = await expireDueSubscriptions();
+    if (!result.success) {
+        return { success: false, error: result.error };
     }
+    console.log(`[SubscriptionUtils] Expired ${result.expiredCount} subscriptions`);
+    return { success: true, expiredCount: result.expiredCount };
 }
 
 /**

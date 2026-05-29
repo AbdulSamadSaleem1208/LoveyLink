@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createClient as createAuthClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { isOwnerEmail, isAdminRole } from "@/lib/admin";
+import { syncSubscriptionForAdminEdit } from "@/lib/subscription-expiration";
 
 // Admin Client
 const supabaseAdmin = createClient(
@@ -117,6 +118,9 @@ export async function revokePremium(userId: string) {
 
         console.log(`[Admin] Successfully updated user ${targetUser.email} to free status`);
 
+        // Bump auth metadata so logged-in user sees revoked premium on next poll
+        await syncSubscriptionForAdminEdit(userId, "free");
+
         // 4. Mark payment_requests as revoked (if any exist)
         // This prevents the fallback logic from granting premium access
         const { data: paymentRequests } = await supabaseAdmin
@@ -202,36 +206,13 @@ export async function updateUser(
             return { error: error.message };
         }
 
-        if (data.subscription_status === "active") {
-            const periodEnd = new Date();
-            periodEnd.setDate(periodEnd.getDate() + 30);
-            const { data: existingSub } = await supabaseAdmin
-                .from("subscriptions")
-                .select("id")
-                .eq("user_id", userId)
-                .maybeSingle();
-
-            const subPayload = {
-                user_id: userId,
-                status: "active",
-                plan_id: "monthly_pkr_500",
-                current_period_end: periodEnd.toISOString(),
-                updated_at: new Date().toISOString(),
-            };
-
-            if (existingSub) {
-                await supabaseAdmin.from("subscriptions").update(subPayload).eq("id", existingSub.id);
-            } else {
-                await supabaseAdmin.from("subscriptions").insert({
-                    ...subPayload,
-                    stripe_subscription_id: `admin_manual_${userId}`,
-                });
-            }
-        }
+        await syncSubscriptionForAdminEdit(userId, data.subscription_status);
 
         revalidatePath("/admin/users");
         revalidatePath("/admin");
         revalidatePath("/dashboard");
+        revalidatePath("/create");
+        revalidatePath("/", "layout");
         return { success: true };
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Update failed";

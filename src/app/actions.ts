@@ -9,6 +9,33 @@ function logDebug(message: string) {
 }
 
 
+export async function getSessionSubscriptionStatus() {
+    try {
+        const supabase = await createClient();
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return { isPremium: false, loggedIn: false };
+        }
+
+        const { expireUserPremiumIfDue } = await import("@/lib/subscription-expiration");
+        await expireUserPremiumIfDue(user.id);
+
+        const status = await checkSubscriptionStatus();
+        return {
+            isPremium: status.isPremium,
+            loggedIn: true,
+            message: status.error,
+            status: status.isPremium ? "active" : "free",
+        };
+    } catch {
+        return { isPremium: false, loggedIn: false };
+    }
+}
+
 export async function checkSubscriptionStatus() {
     try {
         const supabase = await createClient();
@@ -18,6 +45,9 @@ export async function checkSubscriptionStatus() {
             console.error("Auth error in checkSubscriptionStatus:", authError);
             return { isPremium: false, error: "Not logged in" };
         }
+
+        const { expireUserPremiumIfDue } = await import("@/lib/subscription-expiration");
+        await expireUserPremiumIfDue(user.id);
 
         const supabaseAdmin = createSupabaseAdminClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,

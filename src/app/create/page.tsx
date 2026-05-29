@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { checkSubscriptionStatus } from "@/app/actions";
+import { checkSubscriptionStatus, getSessionSubscriptionStatus } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { AnimatePresence, motion } from "framer-motion";
@@ -48,6 +48,33 @@ export default function CreateLovePage() {
             }
         };
         checkUser();
+
+        let wasPremium: boolean | null = null;
+        const pollSubscription = async () => {
+            const result = await getSessionSubscriptionStatus();
+            if (!result.loggedIn) return;
+            if (wasPremium === null) {
+                wasPremium = result.isPremium;
+                return;
+            }
+            if (wasPremium && !result.isPremium) {
+                toast.info(
+                    result.message ??
+                        "Your premium access was updated. You may need to upgrade again to publish."
+                );
+            }
+            wasPremium = result.isPremium;
+        };
+
+        pollSubscription();
+        const interval = setInterval(pollSubscription, 20000);
+        const onFocus = () => void pollSubscription();
+        window.addEventListener("focus", onFocus);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("focus", onFocus);
+        };
     }, [router]);
 
     const nextStep = () => setStep(s => Math.min(s + 1, 4));
