@@ -1,25 +1,56 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, Music2 } from "lucide-react";
 
 const SLIDE_COUNT = 6;
 const ROTATE_MS = 5200;
 
-/** Curated romantic Unsplash photos — warm, high-contrast, couple-focused */
+/** Bundled in /public/mockup — always loads (no external CDN dependency) */
 const PHOTOS = {
-    silhouette: "https://images.unsplash.com/photo-1516589178581-6cd08396b0a7?q=80&w=900&auto=format&fit=crop",
-    hands: "https://images.unsplash.com/photo-1522673607218-f9a9b6775f0c?q=80&w=900&auto=format&fit=crop",
-    forehead: "https://images.unsplash.com/photo-1520785643436-9e2f72f7f4e0?q=80&w=900&auto=format&fit=crop",
-    wedding: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=900&auto=format&fit=crop",
-    sunsetWalk: "https://images.unsplash.com/photo-1529333164204-3a2d3f77c506?q=80&w=900&auto=format&fit=crop",
-    roses: "https://images.unsplash.com/photo-1518895949254-959df862fbf0?q=80&w=800&auto=format&fit=crop",
-    ring: "https://images.unsplash.com/photo-1515934757210-b34fb1222611?q=80&w=900&auto=format&fit=crop",
-    candle: "https://images.unsplash.com/photo-1518568814500-4c191a64a6a0?q=80&w=900&auto=format&fit=crop",
-    embrace: "https://images.unsplash.com/photo-1518199265581-640bb5e88697?q=80&w=900&auto=format&fit=crop",
+    silhouette: "/mockup/silhouette.jpg",
+    hands: "/mockup/hands.jpg",
+    couple: "/mockup/couple.jpg",
+    wedding: "/mockup/wedding.jpg",
+    sunsetWalk: "/mockup/sunset.jpg",
+    roses: "/mockup/roses.jpg",
+    beach: "/mockup/beach.jpg",
+    embrace: "/mockup/embrace.jpg",
 } as const;
+
+const FALLBACK_IMG = PHOTOS.silhouette;
+
+function MockupImage({
+    src,
+    alt,
+    className = "absolute inset-0 h-full w-full object-cover",
+}: {
+    src: string;
+    alt: string;
+    className?: string;
+}) {
+    const [current, setCurrent] = useState(src);
+
+    useEffect(() => {
+        setCurrent(src);
+    }, [src]);
+
+    return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+            src={current}
+            alt={alt}
+            className={className}
+            loading="eager"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            onError={() => {
+                if (current !== FALLBACK_IMG) setCurrent(FALLBACK_IMG);
+            }}
+        />
+    );
+}
 
 function FloatingPhoneHearts() {
     return (
@@ -61,12 +92,12 @@ function KenBurnsPhoto({
     return (
         <div className={`absolute inset-0 overflow-hidden ${className}`}>
             <motion.div
-                className="absolute inset-0"
+                className="absolute inset-0 h-full w-full origin-center"
                 initial={{ scale: 1 }}
                 animate={{ scale: zoom }}
                 transition={{ duration: ROTATE_MS / 1000, ease: "linear" }}
             >
-                <Image src={src} alt={alt} fill className="object-cover" sizes="300px" unoptimized />
+                <MockupImage src={src} alt={alt} />
             </motion.div>
         </div>
     );
@@ -133,7 +164,7 @@ function SlideJuliet() {
 function SlideCinematic() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurnsPhoto src={PHOTOS.forehead} alt="Couple" zoom={1.18} />
+            <KenBurnsPhoto src={PHOTOS.couple} alt="Couple" zoom={1.18} />
             <div className="absolute inset-0 bg-gradient-to-b from-pink-900/20 via-transparent to-black z-10" />
             <div className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
                 <motion.div
@@ -190,7 +221,11 @@ function SlideRomeo() {
                 className="w-full mt-4 rounded-2xl overflow-hidden border border-pink-heart/20 bg-zinc-900/90 backdrop-blur"
             >
                 <div className="relative h-24 w-full">
-                    <Image src={PHOTOS.candle} alt="" fill className="object-cover opacity-60" unoptimized />
+                    <MockupImage
+                        src={PHOTOS.embrace}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover opacity-60"
+                    />
                     <div className="absolute inset-0 bg-black/50 flex items-center px-3 gap-3">
                         <div className="w-10 h-10 rounded-full bg-pink-heart/90 flex items-center justify-center shrink-0">
                             <Music2 className="w-5 h-5 text-white" />
@@ -261,7 +296,7 @@ function SlideMemories() {
                         style={{ top: p.top, left: p.left, zIndex: p.z }}
                     >
                         <div className="relative aspect-[4/5] overflow-hidden">
-                            <Image src={p.src} alt="" fill className="object-cover" sizes="160px" unoptimized />
+                            <MockupImage src={p.src} alt="Memory" />
                         </div>
                         <p className="absolute bottom-1.5 left-0 right-0 text-center text-[7px] text-gray-500">
                             forever us ♥
@@ -291,7 +326,7 @@ function SlideGallery() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="relative w-full aspect-[4/5] rounded-[1.85rem] overflow-hidden border-2 border-pink-heart/50 shadow-[0_0_40px_rgba(255,107,157,0.4)] mb-2.5"
             >
-                <KenBurnsPhoto src={PHOTOS.ring} alt="Love" zoom={1.14} />
+                <KenBurnsPhoto src={PHOTOS.beach} alt="Love" zoom={1.14} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent z-10" />
                 <p className="absolute bottom-4 left-0 right-0 z-20 text-center text-[11px] text-white font-serif italic px-3">
                     You make every day feel like magic ✨
@@ -303,7 +338,7 @@ function SlideGallery() {
                     whileHover={{ scale: 1.02 }}
                     className="relative aspect-square rounded-2xl overflow-hidden border border-white/20"
                 >
-                    <Image src={PHOTOS.roses} alt="" fill className="object-cover" sizes="140px" unoptimized />
+                    <MockupImage src={PHOTOS.roses} alt="Roses" />
                 </motion.div>
                 <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-pink-heart/40 shadow-lg shadow-pink-heart/20">
                     <KenBurnsPhoto src={PHOTOS.embrace} alt="" zoom={1.1} />
