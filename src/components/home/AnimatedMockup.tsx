@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, Music2 } from "lucide-react";
 
 const ROTATE_MS = 5000;
-const IMG_VER = "3";
+const IMG_VER = "4";
 
-/** Only couple / relationship / in-love photos (local bundles) */
+/** Man & woman in love — couple relationship photos (Pexels, bundled locally) */
 const RELATIONSHIP = {
     coupleBeach: `/mockup/relationship-01.jpg?v=${IMG_VER}`,
     coupleHug: `/mockup/relationship-02.jpg?v=${IMG_VER}`,
@@ -106,7 +106,7 @@ function SlideOurRelationshipHero() {
             <p className="text-gray-400 text-xs mt-1 text-center">Couple in love ♥</p>
             <p className="font-serif text-[1.5rem] text-[#ff6b9d] mt-1">Juliet &amp; Romeo</p>
             <div className="w-full flex-1 min-h-[265px] mt-3 rounded-t-[2.25rem] overflow-hidden border-2 border-white/90 relative">
-                <KenBurns src={RELATIONSHIP.coupleBeach} alt="Boyfriend and girlfriend in love" zoom={1.14} />
+                <KenBurns src={RELATIONSHIP.coupleBeach} alt="Man and woman couple in love on beach" zoom={1.14} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent z-10" />
                 <p className="absolute bottom-3 inset-x-0 text-center text-[10px] text-white/85 z-20 tracking-widest uppercase">
                     In love forever
@@ -119,7 +119,7 @@ function SlideOurRelationshipHero() {
 function SlideInLove() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurns src={RELATIONSHIP.coupleRomantic} alt="Romantic couple in love" zoom={1.15} />
+            <KenBurns src={RELATIONSHIP.coupleRomantic} alt="Man and woman romantic couple" zoom={1.15} />
             <div className="absolute inset-0 bg-gradient-to-b from-pink-900/30 to-black/85 z-10" />
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
                 <Sparkles className="w-7 h-7 text-pink-heart mb-3" />
@@ -147,7 +147,7 @@ function SlideLoveLetter() {
                 <p className="text-center text-xl font-bold text-[#ff6b9d]">With all my love</p>
             </div>
             <div className="relative h-32 mt-4 rounded-2xl overflow-hidden border border-pink-heart/30">
-                <CouplePhoto src={RELATIONSHIP.coupleHug} alt="Couple hugging in love" />
+                <CouplePhoto src={RELATIONSHIP.coupleHug} alt="Man and woman hugging in love" />
                 <div className="absolute inset-0 bg-black/35 flex items-center gap-3 px-3">
                     <div className="w-9 h-9 rounded-full bg-pink-heart flex items-center justify-center">
                         <Music2 className="w-4 h-4 text-white" />
@@ -168,7 +168,7 @@ function SlideRelationshipMemories() {
     return (
         <div className="w-full h-full min-h-[560px] pt-9 px-2 pb-6 bg-black">
             <h2 className="text-center text-base font-bold text-white">Our Relationship</h2>
-            <p className="text-center text-[9px] text-pink-heart/80 mb-3">Couple photos only ♥</p>
+            <p className="text-center text-[9px] text-pink-heart/80 mb-3">Man &amp; woman in love ♥</p>
             <div className="relative flex-1 min-h-[360px]">
                 {pics.map((p, i) => (
                     <motion.div
@@ -202,7 +202,7 @@ function SlideCoupleLove() {
             </p>
             <h2 className="text-center text-xl font-bold text-[#ff6b9d] mb-3">My Love</h2>
             <div className="relative w-full aspect-[4/5] rounded-[1.8rem] overflow-hidden border-2 border-pink-heart/45 mb-2">
-                <KenBurns src={RELATIONSHIP.coupleHappy} alt="Happy couple in love" zoom={1.13} />
+                <KenBurns src={RELATIONSHIP.coupleHappy} alt="Happy man and woman in love" zoom={1.13} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 z-10" />
                 <p className="absolute bottom-4 inset-x-0 z-20 text-center text-[11px] text-white font-serif italic px-2">
                     Two people, one beautiful relationship
@@ -239,7 +239,7 @@ function SlideForeverTogether() {
 function SlideTrueLoveKiss() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurns src={RELATIONSHIP.coupleKiss} alt="Couple kissing in love" zoom={1.1} />
+            <KenBurns src={RELATIONSHIP.coupleKiss} alt="Man and woman kissing" zoom={1.1} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-pink-900/20 z-10" />
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
                 <Heart className="w-11 h-11 text-pink-heart fill-pink-heart mb-3" />
@@ -260,7 +260,7 @@ function SlideSoulmates() {
     ];
     return (
         <div className="relative w-full h-full min-h-[560px]">
-            <KenBurns src={RELATIONSHIP.coupleWedding} alt="Couple wedding in love" zoom={1.12} />
+            <KenBurns src={RELATIONSHIP.coupleWedding} alt="Man and woman couple in love" zoom={1.12} />
             <div className="absolute inset-0 bg-gradient-to-b from-black/45 to-black/85 z-10" />
             <div className="absolute top-14 inset-x-0 z-20 text-center px-4">
                 <h2 className="text-2xl font-bold text-white">Soulmates</h2>
