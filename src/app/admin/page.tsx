@@ -26,7 +26,8 @@ export default async function AdminDashboard() {
     const [
         { count: userCount },
         { count: pageCount },
-        { count: subCount },
+        { count: publishedPageCount },
+        { count: premiumUserCount },
         { count: qrScanCount },
         { count: pendingPayments },
         { data: recentPayments },
@@ -37,7 +38,14 @@ export default async function AdminDashboard() {
     ] = await Promise.all([
         supabaseAdmin.from("users").select("*", { count: "exact", head: true }),
         supabaseAdmin.from("love_pages").select("*", { count: "exact", head: true }),
-        supabaseAdmin.from("subscriptions").select("*", { count: "exact", head: true }).eq("status", "active"),
+        supabaseAdmin
+            .from("love_pages")
+            .select("*", { count: "exact", head: true })
+            .eq("published", true),
+        supabaseAdmin
+            .from("users")
+            .select("*", { count: "exact", head: true })
+            .eq("subscription_status", "active"),
         supabaseAdmin.from("qr_scans").select("*", { count: "exact", head: true }),
         supabaseAdmin
             .from("payment_requests")
@@ -103,15 +111,17 @@ export default async function AdminDashboard() {
                     glow="shadow-blue-500/10"
                 />
                 <AdminStatCard
-                    title="Premium Active"
-                    value={subCount ?? 0}
+                    title="Premium Users"
+                    value={premiumUserCount ?? 0}
+                    subtitle="Matches app access"
                     icon={<CreditCard className="w-7 h-7 text-white" />}
                     gradient="from-emerald-600/80 to-emerald-900/80"
                     glow="shadow-emerald-500/10"
                 />
                 <AdminStatCard
-                    title="Love Pages"
-                    value={pageCount ?? 0}
+                    title="Published Pages"
+                    value={publishedPageCount ?? 0}
+                    subtitle={`${pageCount ?? 0} total created`}
                     icon={<Heart className="w-7 h-7 text-white fill-white/20" />}
                     gradient="from-red-600/80 to-rose-900/80"
                     glow="shadow-red-500/20"

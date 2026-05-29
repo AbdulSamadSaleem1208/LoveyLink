@@ -20,7 +20,7 @@ export default async function AdminUsersPage() {
         .from("users")
         .select("id, email, full_name, subscription_status, created_at")
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(500);
 
     return (
         <div className="max-w-6xl space-y-8">

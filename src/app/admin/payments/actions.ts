@@ -174,6 +174,9 @@ export async function approvePayment(paymentId: string) {
         );
 
         revalidatePath('/', 'layout');
+        revalidatePath('/admin');
+        revalidatePath('/admin/payments');
+        revalidatePath('/admin/users');
         return { success: true };
     } catch (error: any) {
         console.error("Approve Payment Error:", error);
@@ -197,9 +200,10 @@ export async function rejectPayment(paymentId: string) {
 
         if (error) throw error;
 
+        revalidatePath('/admin');
         revalidatePath('/admin/payments');
         return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Reject Payment Error:", error);
         return { error: error.message };
     }

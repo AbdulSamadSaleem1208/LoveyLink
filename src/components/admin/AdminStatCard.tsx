@@ -3,12 +3,13 @@ import { ReactNode } from "react";
 type Props = {
     title: string;
     value: number | string;
+    subtitle?: string;
     icon: ReactNode;
     gradient: string;
     glow: string;
 };
 
-export default function AdminStatCard({ title, value, icon, gradient, glow }: Props) {
+export default function AdminStatCard({ title, value, subtitle, icon, gradient, glow }: Props) {
     return (
         <div
             className={`relative overflow-hidden rounded-2xl border border-white/10 p-6 shadow-lg ${glow}`}
@@ -22,6 +23,9 @@ export default function AdminStatCard({ title, value, icon, gradient, glow }: Pr
                 <div>
                     <p className="text-sm font-medium text-white/80">{title}</p>
                     <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
+                    {subtitle && (
+                        <p className="text-xs text-white/60 mt-0.5">{subtitle}</p>
+                    )}
                 </div>
             </div>
         </div>
