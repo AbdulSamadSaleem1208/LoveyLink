@@ -15,7 +15,9 @@ const config: Config = {
                     dark: "#881337",   // Rose-900
                 },
                 pink: {
-                    hot: "#DB2777" // Pink-600
+                    hot: "#DB2777",
+                    heart: "#FF6B9D",
+                    light: "#FFB3C6",
                 },
                 background: {
                     main: "#000000", // Pure black

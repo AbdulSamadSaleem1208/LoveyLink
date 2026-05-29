@@ -33,7 +33,7 @@ export default function CreateLovePage() {
         sender_name: "",
         recipient_name: "",
         message: "",
-        theme: "#E11D48",
+        theme: "#FF6B9D",
         images: [],
         music_url: ""
     });
@@ -342,7 +342,7 @@ export default function CreateLovePage() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-300 mb-3">Theme Color</label>
                                     <div className="flex flex-wrap gap-4 justify-center">
-                                        {['#E11D48', '#DB2777', '#9333EA', '#2563EB', '#059669', '#000000'].map((color) => (
+                                        {['#FF6B9D', '#DB2777', '#E11D48', '#9333EA', '#2563EB', '#000000'].map((color) => (
                                             <button
                                                 key={color}
                                                 onClick={() => setFormData({ ...formData, theme: color })}

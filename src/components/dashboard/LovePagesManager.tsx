@@ -164,7 +164,7 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                             )}
 
                             <div className="flex justify-between items-start mb-4">
-                                <div className="h-12 w-12 bg-red-primary/10 rounded-full flex items-center justify-center text-red-primary group-hover:bg-red-primary group-hover:text-white transition-colors">
+                                <div className="h-12 w-12 bg-pink-heart/10 rounded-full flex items-center justify-center text-pink-heart group-hover:bg-pink-heart group-hover:text-white transition-colors">
                                     <HeartIcon className="w-6 h-6 fill-current" />
                                 </div>
                                 {page.published ? (

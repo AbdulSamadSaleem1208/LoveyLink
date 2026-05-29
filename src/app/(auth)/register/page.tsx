@@ -49,7 +49,7 @@ export default function RegisterPage() {
                 <div className="max-w-md w-full bg-background-card rounded-2xl shadow-xl p-8 border border-white/10 text-center">
                     <div className="flex justify-center mb-6">
                         <div className="h-16 w-16 bg-red-primary/10 rounded-full flex items-center justify-center border border-red-primary/20">
-                            <Heart className="h-8 w-8 text-green-500 fill-green-500" />
+                            <Heart className="h-8 w-8 text-pink-heart fill-pink-heart" />
                         </div>
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-4">Check your email</h2>

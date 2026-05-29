@@ -37,9 +37,9 @@ export default async function Home() {
       <section className="relative pt-20 pb-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
           {/* Background Hearts Pattern can be added here using CSS or SVG */}
-          <div className="absolute top-20 left-10 text-red-primary animate-bounce delay-100"><Heart size={40} className="fill-current" /></div>
-          <div className="absolute top-40 right-20 text-red-primary animate-pulse"><Heart size={60} className="fill-current" /></div>
-          <div className="absolute bottom-20 left-1/4 text-red-primary animate-bounce delay-700"><Heart size={30} className="fill-current" /></div>
+          <div className="absolute top-20 left-10 text-pink-heart animate-bounce delay-100"><Heart size={40} className="fill-current" /></div>
+          <div className="absolute top-40 right-20 text-pink-heart animate-pulse"><Heart size={60} className="fill-current" /></div>
+          <div className="absolute bottom-20 left-1/4 text-pink-heart animate-bounce delay-700"><Heart size={30} className="fill-current" /></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -48,7 +48,7 @@ export default async function Home() {
             {/* Left Content */}
             <div className="flex-1 space-y-8">
               <div className="inline-flex items-center px-4 py-2 rounded-full border border-red-primary/30 bg-red-primary/10 text-red-primary text-sm backdrop-blur-sm shadow-[0_0_15px_rgba(255,0,51,0.3)]">
-                <Heart className="w-4 h-4 mr-2 text-red-primary fill-current" />
+                <Heart className="w-4 h-4 mr-2 text-pink-heart fill-current" />
                 Want to start?
               </div>
 
@@ -68,7 +68,7 @@ export default async function Home() {
                   href={user ? "/dashboard" : "/register"}
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-lg text-white bg-button-gradient hover:opacity-90 shadow-lg shadow-red-900/50 transition-all transform hover:scale-105"
                 >
-                  <Heart className="w-5 h-5 mr-3 fill-white" />
+                  <Heart className="w-5 h-5 mr-3 heart-white fill-current" />
                   {user ? "Go to Dashboard" : "Create my page"}
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </Link>

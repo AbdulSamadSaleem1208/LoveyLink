@@ -2,11 +2,11 @@
 
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
-import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import SpotifyEmbed from "./SpotifyEmbed";
+import LovePagePhotoGallery from "./LovePagePhotoGallery";
+import FloatingHearts from "@/components/ui/FloatingHearts";
 
-// Types matching DB schema approximately
 export interface LovePageData {
     title: string;
     recipient_name: string;
@@ -18,27 +18,42 @@ export interface LovePageData {
         primaryColor?: string;
         backgroundColor?: string;
         fontFamily?: string;
-        effects?: string[]; // 'hearts', 'sparkles'
+        effects?: string[];
     };
 }
 
-export default function LovePageRenderer({ data, preview = false }: { data: LovePageData; preview?: boolean }) {
+const DEFAULT_PINK = "#FF6B9D";
+
+export default function LovePageRenderer({
+    data,
+    preview = false,
+}: {
+    data: LovePageData;
+    preview?: boolean;
+}) {
     const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
         setHasMounted(true);
     }, []);
 
-    const bgColor = data.theme_config?.backgroundColor || "#FFF1F2"; // Default blush
-    const primaryColor = data.theme_config?.primaryColor || "#9B1C1C"; // Default red
+    const bgColor = data.theme_config?.backgroundColor || "#0a0a0a";
+    const primaryColor = data.theme_config?.primaryColor || DEFAULT_PINK;
+    const isDarkBg =
+        !data.theme_config?.backgroundColor ||
+        data.theme_config.backgroundColor === "#000000" ||
+        data.theme_config.backgroundColor.toLowerCase() === "#0a0a0a";
+
+    const textMuted = isDarkBg ? "text-gray-300" : "text-gray-700";
+    const textBody = isDarkBg ? "text-gray-200" : "text-gray-800";
 
     if (!hasMounted) {
         return (
             <div
                 className="min-h-screen w-full flex items-center justify-center"
-                style={{ backgroundColor: data.theme_config?.backgroundColor || "#FFF1F2" }}
+                style={{ backgroundColor: bgColor }}
             >
-                <Heart className="h-12 w-12 animate-pulse opacity-40" style={{ color: data.theme_config?.primaryColor || "#9B1C1C" }} />
+                <Heart className="h-12 w-12 animate-pulse text-pink-heart fill-pink-heart" />
             </div>
         );
     }
@@ -48,99 +63,115 @@ export default function LovePageRenderer({ data, preview = false }: { data: Love
             className="min-h-screen w-full overflow-x-hidden flex flex-col items-center py-12 px-4 relative"
             style={{
                 backgroundColor: bgColor,
-                fontFamily: data.theme_config?.fontFamily || 'var(--font-outfit)'
+                fontFamily: data.theme_config?.fontFamily || "var(--font-outfit)",
             }}
         >
-            {/* Background Effects (Simplified for now) */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {/* Creating some floating hearts manually or via loop could go here */}
-            </div>
+            <FloatingHearts count={6} />
+
+            <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    background: `radial-gradient(ellipse at top, ${primaryColor}18 0%, transparent 55%)`,
+                }}
+            />
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.8 }}
                 className="text-center z-10 max-w-4xl w-full"
             >
                 <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.5, type: "spring" }}
+                    initial={{ scale: 0, rotate: -20 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                     className="inline-block mb-6"
                 >
-                    <Heart className="h-20 w-20 mx-auto drop-shadow-lg animate-pulse" style={{ fill: primaryColor, color: primaryColor }} />
+                    <div className="relative">
+                        <div
+                            className="absolute inset-0 blur-2xl rounded-full opacity-50"
+                            style={{ backgroundColor: primaryColor }}
+                        />
+                        <Heart className="relative h-20 w-20 mx-auto text-pink-heart fill-pink-heart drop-shadow-[0_0_20px_rgba(255,107,157,0.6)] animate-pulse" />
+                    </div>
                 </motion.div>
 
-                <h1 className="text-4xl md:text-7xl font-bold mb-6 drop-shadow-sm" style={{ color: primaryColor }}>
+                <motion.h1
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45 }}
+                    className="text-4xl md:text-7xl font-bold mb-6 drop-shadow-sm"
+                    style={{ color: primaryColor }}
+                >
                     {data.title || "My Love Page"}
-                </h1>
+                </motion.h1>
 
-                <div className="mb-12">
-                    <p className="text-xl md:text-2xl text-gray-700 font-light">To my dearest,</p>
-                    <h2 className="text-3xl md:text-5xl font-serif mt-2 mb-4" style={{ color: primaryColor }}>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="mb-8"
+                >
+                    <p className={`text-xl md:text-2xl font-light ${textMuted}`}>
+                        To my dearest,
+                    </p>
+                    <h2
+                        className="text-3xl md:text-5xl font-serif mt-2 mb-4"
+                        style={{ color: primaryColor }}
+                    >
                         {data.recipient_name || "Recipient Name"}
                     </h2>
-                </div>
+                </motion.div>
             </motion.div>
 
-            {/* Photo Gallery */}
-            {data.images && data.images.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mb-16 z-10">
-                    {data.images.map((img, idx) => (
-                        <motion.div
-                            key={idx}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: idx * 0.1 }}
-                            className="relative aspect-square rounded-2xl overflow-hidden shadow-xl border-4 border-white transform rotate-2 hover:rotate-0 transition-transform duration-300"
-                        >
-                            <Image
-                                src={img}
-                                alt={`Love memory ${idx + 1}`}
-                                fill
-                                className="object-cover"
-                            />
-                        </motion.div>
-                    ))}
-                </div>
-            )}
+            <LovePagePhotoGallery images={data.images} primaryColor={primaryColor} />
 
-            {/* Love Note */}
             <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="bg-white/60 backdrop-blur-sm p-8 md:p-12 rounded-3xl shadow-lg max-w-2xl w-full border border-red-50 text-center z-10 mx-auto"
+                transition={{ duration: 0.7 }}
+                className={`backdrop-blur-md p-8 md:p-12 rounded-3xl shadow-xl max-w-2xl w-full text-center z-10 mx-auto border ${
+                    isDarkBg
+                        ? "bg-white/5 border-pink-heart/20"
+                        : "bg-white/70 border-pink-heart/30"
+                }`}
             >
-                <p className="text-lg md:text-xl leading-relaxed whitespace-pre-wrap text-gray-800 font-serif italic">
-                    "{data.message || "Write your beautiful message here..."}"
+                <p
+                    className={`text-lg md:text-xl leading-relaxed whitespace-pre-wrap font-serif italic ${textBody}`}
+                >
+                    &ldquo;{data.message || "Write your beautiful message here..."}&rdquo;
                 </p>
 
-                <div className="mt-8 pt-8 border-t border-red-100">
-                    <p className="text-gray-500 text-sm uppercase tracking-widest">With all my love</p>
+                <div
+                    className={`mt-8 pt-8 border-t ${isDarkBg ? "border-white/10" : "border-pink-heart/20"}`}
+                >
+                    <p className={`text-sm uppercase tracking-widest ${textMuted}`}>
+                        With all my love
+                    </p>
                     <p className="text-2xl font-bold mt-2" style={{ color: primaryColor }}>
                         {data.sender_name || "Your Name"}
                     </p>
                 </div>
             </motion.div>
 
-            {/* Spotify Music Player */}
             {data.music_url && !preview && (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.3 }}
                     className="mt-12 w-full max-w-md mx-auto z-10"
                 >
                     <SpotifyEmbed url={data.music_url} />
                 </motion.div>
             )}
 
-            {/* Footer for the page */}
-            <div className="mt-20 text-center text-gray-500 text-sm z-10 pb-10">
-                <p>Created with <Heart className="inline h-3 w-3 text-red-500 fill-red-500" /> using Love Link</p>
+            <div className={`mt-20 text-center text-sm z-10 pb-10 ${textMuted}`}>
+                <p>
+                    Created with{" "}
+                    <Heart className="inline h-3.5 w-3.5 text-pink-heart fill-pink-heart" /> using
+                    LoveyLink
+                </p>
             </div>
         </div>
     );

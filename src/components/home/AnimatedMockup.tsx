@@ -36,7 +36,7 @@ export default function AnimatedMockup() {
                         {currentIndex === 0 ? (
                             // Format 1: Juliet
                             <div className="flex flex-col items-center w-full h-full pt-14 px-4 overflow-hidden">
-                                <Heart className="w-16 h-16 text-red-600 fill-current mb-6 shadow-sm shadow-red-900/50" />
+                                <Heart className="w-16 h-16 text-pink-heart fill-pink-heart mb-6 shadow-sm shadow-pink-heart/30" />
                                 <h2 className="font-bold text-3xl text-[#ff3366] mb-4 tracking-tight">
                                     For my love
                                 </h2>
@@ -93,7 +93,7 @@ export default function AnimatedMockup() {
 
                                 {/* Footer branding */}
                                 <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center text-[10px] text-gray-500 font-medium">
-                                    Created with <Heart className="w-3 h-3 text-red-600 fill-current mx-1" /> using Love Link
+                                    Created with <Heart className="w-3 h-3 text-pink-heart fill-pink-heart mx-1" /> using LoveyLink
                                 </div>
                             </div>
                         )}

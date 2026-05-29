@@ -191,7 +191,7 @@ export default async function Dashboard() {
                 ) : (
                     <div className="bg-background-card border border-white/10 rounded-3xl p-16 text-center text-white border-dashed">
                         <div className="mx-auto h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-gray-700">
-                            <Heart className="h-10 w-10 text-red-primary animate-pulse" />
+                            <Heart className="h-10 w-10 text-pink-heart fill-pink-heart animate-pulse" />
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-2">No love pages yet</h3>
                         <p className="text-gray-400 mb-8 max-w-md mx-auto">Start creating your first romantic page to share with your loved one! It only takes a minute.</p>

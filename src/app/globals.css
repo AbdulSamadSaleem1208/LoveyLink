@@ -3,6 +3,8 @@
 :root {
   --background: #000000;
   --foreground: #FFFFFF;
+  --heart-pink: #FF6B9D;
+  --heart-pink-light: #FFB3C6;
 }
 
 body {
@@ -17,10 +19,18 @@ body {
   }
 }
 
-/* Brand hearts on public/marketing pages only (not admin dashboard stats) */
-main:not([data-admin]) .lucide-heart.text-red-primary,
-main:not([data-admin]) .text-red-primary.lucide-heart {
-  color: #ff0033 !important;
-  fill: #ff0033 !important;
-  stroke: #ff0033 !important;
+/* Pink hearts across marketing, auth, dashboard, and love pages */
+main:not([data-admin]) .lucide-heart,
+.lucide-heart.text-pink-heart,
+.text-pink-heart.lucide-heart {
+  color: var(--heart-pink) !important;
+  fill: var(--heart-pink) !important;
+  stroke: var(--heart-pink) !important;
+}
+
+/* Keep white hearts only when explicitly requested */
+.lucide-heart.heart-white {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
 }
