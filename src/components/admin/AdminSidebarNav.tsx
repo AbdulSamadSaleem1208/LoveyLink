@@ -14,20 +14,20 @@ export default function AdminSidebarNav() {
     const pathname = usePathname();
 
     return (
-        <nav className="mt-6 px-4 space-y-2">
+        <nav className="mt-4 px-3 space-y-1 flex-1">
             {links.map(({ href, label, icon: Icon, exact }) => {
                 const active = exact ? pathname === href : pathname.startsWith(href);
                 return (
                     <Link
                         key={href}
                         href={href}
-                        className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
+                        className={`flex items-center px-4 py-3 rounded-xl transition-all ${
                             active
-                                ? "bg-gray-800 text-white"
-                                : "text-gray-400 hover:text-white hover:bg-gray-800"
+                                ? "bg-gradient-to-r from-red-primary/30 to-pink-hot/20 text-white border border-red-primary/40 shadow-lg shadow-red-900/20"
+                                : "text-gray-400 hover:text-white hover:bg-white/5"
                         }`}
                     >
-                        <Icon className="w-5 h-5 mr-3 shrink-0" />
+                        <Icon className={`w-5 h-5 mr-3 shrink-0 ${active ? "text-red-primary" : ""}`} />
                         {label}
                     </Link>
                 );

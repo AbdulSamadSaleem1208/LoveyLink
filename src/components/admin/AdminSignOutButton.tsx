@@ -22,7 +22,7 @@ export default function AdminSignOutButton() {
     return (
         <button
             onClick={handleSignOut}
-            className="flex items-center w-full px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-left"
+            className="flex items-center w-full px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors text-left"
         >
             <LogOut className="w-5 h-5 mr-3" />
             Sign Out

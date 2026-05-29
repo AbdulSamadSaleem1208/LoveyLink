@@ -31,7 +31,7 @@ export default function RevokePremiumButton({ userId }: { userId: string }) {
         <button
             onClick={handleRevoke}
             disabled={loading}
-            className="text-red-600 hover:text-red-900 ml-4 flex items-center gap-1 text-sm font-medium disabled:opacity-50"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-400 border border-amber-500/30 hover:bg-amber-500/10 disabled:opacity-50"
             title="Revoke Premium"
         >
             {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserX className="w-4 h-4" />}

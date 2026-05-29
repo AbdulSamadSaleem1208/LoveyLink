@@ -151,8 +151,123 @@ export async function revokePremium(userId: string) {
             message: `Successfully revoked premium for ${targetUser.email}`
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
         console.error('[Admin] Revoke Exception:', error);
-        return { error: `System error: ${error.message}` };
+        return { error: `System error: ${message}` };
+    }
+}
+
+async function verifyAdminRequester() {
+    const authClient = await createAuthClient();
+    const { data: { user: requester } } = await authClient.auth.getUser();
+
+    if (!requester) {
+        return { error: "Unauthorized" as const, requester: null };
+    }
+
+    const { data: adminRole } = await supabaseAdmin
+        .from("admin_roles")
+        .select("role")
+        .eq("user_id", requester.id)
+        .single();
+
+    const isOwner = isOwnerEmail(requester.email);
+
+    if (!isOwner && (!adminRole || !isAdminRole(adminRole.role))) {
+        return { error: "Forbidden" as const, requester: null };
+    }
+
+    return { requester, error: null };
+}
+
+export async function updateUser(
+    userId: string,
+    data: { full_name: string; subscription_status: string }
+) {
+    try {
+        const auth = await verifyAdminRequester();
+        if (auth.error) return { error: auth.error };
+
+        const { error } = await supabaseAdmin
+            .from("users")
+            .update({
+                full_name: data.full_name || null,
+                subscription_status: data.subscription_status,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", userId);
+
+        if (error) {
+            return { error: error.message };
+        }
+
+        if (data.subscription_status === "active") {
+            const periodEnd = new Date();
+            periodEnd.setDate(periodEnd.getDate() + 30);
+            const { data: existingSub } = await supabaseAdmin
+                .from("subscriptions")
+                .select("id")
+                .eq("user_id", userId)
+                .maybeSingle();
+
+            const subPayload = {
+                user_id: userId,
+                status: "active",
+                plan_id: "monthly_pkr_500",
+                current_period_end: periodEnd.toISOString(),
+                updated_at: new Date().toISOString(),
+            };
+
+            if (existingSub) {
+                await supabaseAdmin.from("subscriptions").update(subPayload).eq("id", existingSub.id);
+            } else {
+                await supabaseAdmin.from("subscriptions").insert({
+                    ...subPayload,
+                    stripe_subscription_id: `admin_manual_${userId}`,
+                });
+            }
+        }
+
+        revalidatePath("/admin/users");
+        revalidatePath("/admin");
+        revalidatePath("/dashboard");
+        return { success: true };
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Update failed";
+        return { error: message };
+    }
+}
+
+export async function deleteUser(userId: string) {
+    try {
+        const auth = await verifyAdminRequester();
+        if (auth.error) return { error: auth.error };
+
+        if (auth.requester?.id === userId) {
+            return { error: "You cannot delete your own account" };
+        }
+
+        await supabaseAdmin.from("love_pages").delete().eq("user_id", userId);
+        await supabaseAdmin.from("subscriptions").delete().eq("user_id", userId);
+        await supabaseAdmin.from("payment_requests").delete().eq("user_id", userId);
+        await supabaseAdmin.from("admin_roles").delete().eq("user_id", userId);
+
+        const { error: profileError } = await supabaseAdmin.from("users").delete().eq("id", userId);
+        if (profileError) {
+            return { error: profileError.message };
+        }
+
+        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+        if (authError) {
+            return { error: authError.message };
+        }
+
+        revalidatePath("/admin/users");
+        revalidatePath("/admin");
+        return { success: true };
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Delete failed";
+        return { error: message };
     }
 }
