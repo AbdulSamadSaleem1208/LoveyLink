@@ -120,9 +120,21 @@ export default function CreateLovePage() {
                 return;
             }
 
+            if (!formData.title.trim()) {
+                toast.error("Please add a page title before publishing");
+                setPublishing(false);
+                setStep(1);
+                return;
+            }
 
+            if (!formData.recipient_name.trim()) {
+                toast.error("Please add their name before publishing — it is used for your share link");
+                setPublishing(false);
+                setStep(1);
+                return;
+            }
 
-            const slug = buildLovePageSlug(formData.recipient_name || 'love');
+            const slug = buildLovePageSlug(formData.recipient_name);
 
             // Convert Spotify URL to embed format if needed
             let musicUrl = formData.music_url;

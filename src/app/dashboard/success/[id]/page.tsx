@@ -2,11 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import QRDisplay from "@/components/qr/QRDisplay";
 import Link from "next/link";
-import { CheckCircle, ArrowLeft } from "lucide-react";
+import { CheckCircle, ArrowLeft, AlertCircle } from "lucide-react";
 import { headers } from "next/headers";
 import { resolveSiteUrlFromHost } from "@/lib/site-url";
+import { repairBrokenSlugForPage } from "@/lib/love-page-slug-repair";
+import { isBrokenSlug } from "@/lib/slug";
 
-// Force dynamic rendering - NEVER cache this page (contains user-specific data)
 export const dynamic = 'force-dynamic';
 
 type Props = {
@@ -38,9 +39,10 @@ export default async function SuccessPage({ params }: Props) {
         return notFound();
     }
 
-    const publicUrl = `${siteUrl}/lp/${page.slug}`;
+    const { slug: repairedSlug, repaired } = await repairBrokenSlugForPage(page, user.id);
+    const publicUrl = `${siteUrl}/lp/${repairedSlug}`;
+    const hadBrokenSlug = repaired || isBrokenSlug(page.slug);
 
-    // Log QR creation if not exists (Server side logic)
     const { data: qr } = await supabase
         .from('qr_codes')
         .select('*')
@@ -52,6 +54,8 @@ export default async function SuccessPage({ params }: Props) {
             page_id: page.id,
             qr_data: publicUrl
         });
+    } else if (repaired || qr.qr_data !== publicUrl) {
+        await supabase.from('qr_codes').update({ qr_data: publicUrl }).eq('page_id', page.id);
     }
 
     return (
@@ -67,6 +71,19 @@ export default async function SuccessPage({ params }: Props) {
                 <p className="text-text-muted mb-8">
                     Your love page representing <span className="font-semibold text-red-primary">{page.title}</span> is now live.
                 </p>
+
+                {hadBrokenSlug && (
+                    <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-left text-sm text-amber-900">
+                        <AlertCircle className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
+                        <p>
+                            {repaired
+                                ? "Your share link was invalid and has been fixed. Download or share the new QR code below — old QR codes will not work."
+                                : "Your share link may be invalid. Open this page from the dashboard after adding a recipient name, or create a new page."}
+                        </p>
+                    </div>
+                )}
+
+                <p className="text-xs text-gray-500 mb-4 break-all">{publicUrl}</p>
 
                 <QRDisplay url={publicUrl} title={page.title} message={page.message} />
 

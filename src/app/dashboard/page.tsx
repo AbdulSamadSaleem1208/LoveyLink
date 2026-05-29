@@ -96,6 +96,16 @@ export default async function Dashboard() {
         console.error("Dashboard Data Fetch Error:", error);
     }
 
+    if (lovePages && lovePages.length > 0) {
+        const { repairBrokenSlugForPage } = await import('@/lib/love-page-slug-repair');
+        lovePages = await Promise.all(
+            lovePages.map(async (page) => {
+                const { slug, repaired } = await repairBrokenSlugForPage(page, user.id);
+                return repaired ? { ...page, slug } : page;
+            })
+        );
+    }
+
     let isPremium = !!sub;
 
     if (isPremium && sub?.current_period_end) {
