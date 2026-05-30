@@ -96,13 +96,13 @@ function DashboardShellInner({
 
     const sidebarContent = (
         <>
-            <div className="p-4 border-b border-white/10 shrink-0">
+            <div className="p-4 border-b border-pink-heart/25 shrink-0 bg-gradient-to-br from-pink-heart/15 via-zinc-950/50 to-violet-600/10">
                 <Link
                     href="/dashboard"
                     onClick={closeSidebar}
-                    className="flex items-center gap-3 group min-w-0"
+                    className="flex items-center gap-3 group min-w-0 cursor-pointer rounded-xl p-1 -m-1 hover:bg-white/5 transition-colors"
                 >
-                    <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-pink-heart/50 shrink-0">
+                    <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-pink-heart shadow-lg shadow-pink-heart/30 shrink-0 group-hover:ring-pink-heart/80 transition-all">
                         <Image src="/logo.png" alt="LoveyLink" fill className="object-cover" />
                     </div>
                     {!sidebarCollapsed && (
@@ -121,10 +121,10 @@ function DashboardShellInner({
                         <p className="text-sm text-white font-medium mt-3 truncate">{displayName}</p>
                         <p className="text-xs text-gray-500 truncate">{userEmail}</p>
                         <div
-                            className={`mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                            className={`mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border shadow-sm ${
                                 isPremium
-                                    ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                                    : "bg-white/5 text-gray-400 border-white/10"
+                                    ? "bg-gradient-to-r from-amber-500/25 to-orange-500/15 text-amber-200 border-amber-400/40"
+                                    : "bg-gradient-to-r from-zinc-700/50 to-zinc-800/50 text-gray-300 border-white/15"
                             }`}
                         >
                             {isPremium && <Crown className="w-3 h-3" />}
@@ -145,19 +145,26 @@ function DashboardShellInner({
                 </Suspense>
             </div>
 
-            <div className="shrink-0 p-3 border-t border-pink-heart/15 space-y-2 bg-gradient-to-t from-zinc-950 via-zinc-950/98 to-zinc-950/90">
-                {!sidebarCollapsed && (
-                    <Link
-                        href="/"
-                        onClick={closeSidebar}
-                        className="group flex items-center px-4 py-2.5 text-sky-200/90 hover:text-white hover:bg-sky-500/15 border border-sky-500/20 hover:border-sky-400/40 rounded-xl transition-all duration-200 text-sm font-medium cursor-pointer hover:shadow-md hover:shadow-sky-500/10"
+            <div className="shrink-0 p-3 border-t border-pink-heart/20 space-y-2 bg-gradient-to-t from-sky-950/20 via-zinc-950 to-red-950/15">
+                <Link
+                    href="/"
+                    onClick={closeSidebar}
+                    title={sidebarCollapsed ? "Website Home" : undefined}
+                    className={`group flex items-center text-sky-100 hover:text-white bg-gradient-to-r from-sky-600/20 to-blue-600/15 border border-sky-400/35 hover:border-sky-300/60 hover:from-sky-500/30 hover:to-blue-500/25 rounded-xl transition-all duration-200 font-semibold cursor-pointer hover:shadow-lg hover:shadow-sky-500/20 hover:-translate-y-0.5 active:scale-[0.98] ${
+                        sidebarCollapsed
+                            ? "justify-center p-3.5"
+                            : "px-3.5 py-3 text-sm gap-3"
+                    }`}
+                >
+                    <span
+                        className={`flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-sky-500/40 to-blue-600/30 border border-sky-300/40 group-hover:scale-105 transition-transform ${
+                            sidebarCollapsed ? "h-10 w-10" : "h-9 w-9"
+                        }`}
                     >
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/20 border border-sky-400/30 mr-3 shrink-0 group-hover:bg-sky-500/30">
-                            <Home className="w-4 h-4 text-sky-300" />
-                        </span>
-                        Website Home
-                    </Link>
-                )}
+                        <Home className="w-4 h-4 text-white" />
+                    </span>
+                    {!sidebarCollapsed && <span>Website Home</span>}
+                </Link>
                 <DashboardSignOutButton
                     onNavigate={closeSidebar}
                     collapsed={sidebarCollapsed}
@@ -180,7 +187,7 @@ function DashboardShellInner({
                 <button
                     type="button"
                     onClick={() => setSidebarOpen(true)}
-                    className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
+                    className="p-2.5 rounded-xl bg-pink-heart/15 border border-pink-heart/35 text-white hover:bg-pink-heart/25 hover:border-pink-heart/50 cursor-pointer transition-all"
                     aria-label="Open menu"
                 >
                     <Menu className="h-5 w-5" />
@@ -241,7 +248,7 @@ function DashboardShellInner({
                     <button
                         type="button"
                         onClick={toggleCollapsed}
-                        className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                        className="p-2.5 rounded-xl bg-violet-500/15 border border-violet-400/30 text-violet-200 hover:text-white hover:bg-violet-500/25 hover:border-violet-300/50 cursor-pointer transition-all"
                         aria-label={sidebarCollapsed ? "Show sidebar" : "Hide sidebar"}
                         title={sidebarCollapsed ? "Show menu" : "Hide menu"}
                     >

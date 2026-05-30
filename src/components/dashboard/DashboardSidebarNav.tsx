@@ -21,32 +21,44 @@ type NavLink = {
 
 const accentStyles = {
     pink: {
-        idle: "text-gray-300 hover:text-white hover:bg-pink-heart/15 hover:border-pink-heart/35 border-white/5",
-        icon: "text-pink-heart/80 group-hover:text-pink-heart",
+        idle: "text-white/90 bg-pink-heart/10 border-pink-heart/25 hover:bg-pink-heart/20 hover:border-pink-heart/45 hover:shadow-lg hover:shadow-pink-heart/20 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-pink-heart/30 to-red-primary/20 border-pink-heart/40 group-hover:from-pink-heart/45 group-hover:to-red-primary/30 group-hover:border-pink-heart/60",
+        icon: "text-pink-heart group-hover:text-white",
         active:
-            "bg-gradient-to-r from-pink-heart/30 to-red-primary/20 text-white border-pink-heart/50 shadow-lg shadow-pink-heart/15",
-        activeIcon: "text-pink-heart",
+            "bg-gradient-to-r from-pink-heart/35 to-red-primary/25 text-white border-pink-heart/55 shadow-lg shadow-pink-heart/25",
+        activeIconBox: "bg-white/15 border-white/25",
+        activeIcon: "text-white",
     },
     emerald: {
-        idle: "text-gray-300 hover:text-white hover:bg-emerald-500/15 hover:border-emerald-500/35 border-white/5",
-        icon: "text-emerald-400/90 group-hover:text-emerald-300",
+        idle: "text-white/90 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-500/20 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-emerald-500/30 to-teal-500/20 border-emerald-400/40 group-hover:from-emerald-400/45 group-hover:border-emerald-300/55",
+        icon: "text-emerald-300 group-hover:text-white",
         active:
-            "bg-gradient-to-r from-emerald-500/25 to-teal-500/15 text-white border-emerald-400/45 shadow-lg shadow-emerald-500/10",
-        activeIcon: "text-emerald-300",
+            "bg-gradient-to-r from-emerald-500/30 to-teal-500/20 text-white border-emerald-400/55 shadow-lg shadow-emerald-500/20",
+        activeIconBox: "bg-white/15 border-white/25",
+        activeIcon: "text-emerald-100",
     },
     amber: {
-        idle: "text-amber-200/90 hover:text-amber-100 hover:bg-amber-500/20 hover:border-amber-400/40 border-amber-500/20 bg-amber-500/5",
-        icon: "text-amber-400 group-hover:text-amber-300",
+        idle: "text-amber-100 bg-amber-500/12 border-amber-400/35 hover:bg-amber-500/22 hover:border-amber-300/55 hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-amber-500/35 to-orange-500/25 border-amber-400/45 group-hover:from-amber-400/50 group-hover:border-amber-300/60",
+        icon: "text-amber-300 group-hover:text-amber-50",
         active:
-            "bg-gradient-to-r from-amber-500/30 to-orange-500/20 text-white border-amber-400/50 shadow-lg shadow-amber-500/15",
-        activeIcon: "text-amber-300",
+            "bg-gradient-to-r from-amber-500/35 to-orange-500/25 text-white border-amber-400/55 shadow-lg shadow-amber-500/25",
+        activeIconBox: "bg-white/15 border-white/25",
+        activeIcon: "text-amber-50",
     },
     violet: {
-        idle: "text-gray-300 hover:text-white hover:bg-violet-500/15 hover:border-violet-500/35 border-white/5",
-        icon: "text-violet-400/90 group-hover:text-violet-300",
+        idle: "text-white/90 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400/50 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-violet-500/30 to-purple-500/20 border-violet-400/40 group-hover:from-violet-400/45 group-hover:border-violet-300/55",
+        icon: "text-violet-300 group-hover:text-white",
         active:
-            "bg-gradient-to-r from-violet-500/25 to-purple-500/15 text-white border-violet-400/45 shadow-lg shadow-violet-500/10",
-        activeIcon: "text-violet-300",
+            "bg-gradient-to-r from-violet-500/30 to-purple-500/20 text-white border-violet-400/55 shadow-lg shadow-violet-500/20",
+        activeIconBox: "bg-white/15 border-white/25",
+        activeIcon: "text-violet-100",
     },
 };
 
@@ -100,7 +112,7 @@ export default function DashboardSidebarNav({
     ];
 
     return (
-        <nav className="py-2 px-2 space-y-1.5">
+        <nav className="py-3 px-2 space-y-2">
             {links.map(({ href, label, icon: Icon, active, accent }) => {
                 const style = accentStyles[accent];
                 return (
@@ -109,27 +121,25 @@ export default function DashboardSidebarNav({
                         href={href}
                         onClick={onNavigate}
                         title={collapsed ? label : undefined}
-                        className={`group flex items-center rounded-xl border transition-all duration-200 cursor-pointer touch-manipulation ${
-                            collapsed ? "justify-center p-3.5" : "px-4 py-3"
+                        className={`group flex items-center rounded-xl border transition-all duration-200 cursor-pointer touch-manipulation active:scale-[0.98] ${
+                            collapsed ? "justify-center p-3.5" : "px-3.5 py-3"
                         } ${active ? style.active : style.idle}`}
                     >
                         <span
-                            className={`flex items-center justify-center shrink-0 rounded-lg border transition-colors ${
-                                collapsed ? "h-9 w-9" : "h-8 w-8 mr-3"
-                            } ${
-                                active
-                                    ? "bg-white/10 border-white/20"
-                                    : "bg-zinc-800/80 border-white/10 group-hover:border-white/20"
-                            }`}
+                            className={`flex items-center justify-center shrink-0 rounded-xl border transition-all duration-200 ${
+                                collapsed ? "h-10 w-10" : "h-9 w-9 mr-3"
+                            } ${active ? style.activeIconBox : style.iconBox}`}
                         >
                             <Icon
-                                className={`w-5 h-5 shrink-0 ${
+                                className={`w-5 h-5 shrink-0 transition-colors ${
                                     active ? style.activeIcon : style.icon
                                 }`}
                             />
                         </span>
                         {!collapsed && (
-                            <span className="font-medium text-sm">{label}</span>
+                            <span className="font-semibold text-sm tracking-tight">
+                                {label}
+                            </span>
                         )}
                     </Link>
                 );

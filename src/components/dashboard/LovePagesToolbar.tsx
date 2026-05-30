@@ -48,7 +48,7 @@ export default function LovePagesToolbar({
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="Search pages…"
-                    className="visible-input w-full pl-9 pr-9 py-2.5 rounded-full bg-zinc-800 border border-white/20 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-pink-heart/40 focus:ring-1 focus:ring-pink-heart/30"
+                    className="visible-input w-full pl-9 pr-9 py-2.5 rounded-full bg-zinc-800/90 border border-pink-heart/25 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-pink-heart/55 focus:ring-2 focus:ring-pink-heart/30 hover:border-pink-heart/40 transition-colors cursor-text"
                 />
                 {search && (
                     <button

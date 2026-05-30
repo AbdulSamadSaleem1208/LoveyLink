@@ -288,11 +288,17 @@ export default function CreateLovePage() {
                             </h1>
                         </div>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0" aria-label={`Step ${step} of 4`}>
                         {[1, 2, 3, 4].map((i) => (
                             <div
                                 key={i}
-                                className={`h-2 w-5 sm:w-7 rounded-full transition-colors ${step >= i ? "bg-pink-heart" : "bg-zinc-800"}`}
+                                className={`h-2.5 rounded-full transition-all duration-300 ${
+                                    step === i
+                                        ? "w-8 sm:w-10 bg-gradient-to-r from-pink-heart to-red-primary shadow-lg shadow-pink-heart/50"
+                                        : step > i
+                                          ? "w-5 sm:w-7 bg-pink-heart/70"
+                                          : "w-5 sm:w-7 bg-zinc-700/90 border border-white/15"
+                                }`}
                             />
                         ))}
                     </div>
