@@ -9,9 +9,15 @@ import { useRouter } from "next/navigation";
 interface EasypaisaModalProps {
     isOpen: boolean;
     onClose: () => void;
+    /** Where to send the user after a successful payment submit (default: dashboard) */
+    redirectAfterSubmit?: string;
 }
 
-export default function EasypaisaModal({ isOpen, onClose }: EasypaisaModalProps) {
+export default function EasypaisaModal({
+    isOpen,
+    onClose,
+    redirectAfterSubmit = "/dashboard?payment=submitted",
+}: EasypaisaModalProps) {
     const [trxId, setTrxId] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -56,7 +62,7 @@ export default function EasypaisaModal({ isOpen, onClose }: EasypaisaModalProps)
 
             toast.success("Payment submitted for verification!");
             onClose();
-            // Optional: Redirect to a status page or refresh
+            router.push(redirectAfterSubmit);
             router.refresh();
         } catch (error: any) {
             console.error(error);

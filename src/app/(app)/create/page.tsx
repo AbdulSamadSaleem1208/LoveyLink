@@ -150,7 +150,7 @@ export default function CreateLovePage() {
             if (!isPremium) {
                 toast.error("Upgrade to Premium to publish & unlock QR code");
                 // Optional: redirect to pricing after a short delay
-                setTimeout(() => router.push("/pricing"), 1500);
+                setTimeout(() => router.push("/dashboard?upgrade=1"), 1500);
                 return;
             }
 

@@ -50,6 +50,14 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
+    // Logged-in users: pricing/payment flows live on the dashboard
+    if (user && request.nextUrl.pathname === '/pricing') {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        url.searchParams.set('upgrade', '1')
+        return NextResponse.redirect(url)
+    }
+
     return supabaseResponse
 }
 

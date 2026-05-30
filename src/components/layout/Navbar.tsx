@@ -33,9 +33,12 @@ export default function Navbar() {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
-        router.refresh();
         setUser(null);
+        router.push("/login");
+        router.refresh();
     };
+
+    const pricingHref = user ? "/dashboard?upgrade=1" : "/pricing";
 
     const navLinks = [
         { name: "Home", href: "/" },
@@ -69,7 +72,7 @@ export default function Navbar() {
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
-                                href={link.href}
+                                href={link.name === "Pricing" ? pricingHref : link.href}
                                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                             >
                                 {link.name}
@@ -125,7 +128,7 @@ export default function Navbar() {
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
-                                href={link.href}
+                                href={link.name === "Pricing" ? pricingHref : link.href}
                                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
                                 onClick={() => setIsOpen(false)}
                             >

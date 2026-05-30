@@ -29,7 +29,7 @@ export default function SubscriptionStatusBadge({ isPremium, status, label }: Pr
                 <AlertCircle className="w-4 h-4 text-gray-400" />
                 <span className="text-sm font-medium text-gray-300">{label}</span>
                 <Link
-                    href="/pricing"
+                    href="/dashboard?upgrade=1"
                     className="ml-1 text-xs font-bold text-pink-heart hover:text-pink-light"
                 >
                     Upgrade
@@ -42,7 +42,7 @@ export default function SubscriptionStatusBadge({ isPremium, status, label }: Pr
         <div className="flex items-center gap-2">
             <RefreshSubscriptionButton />
             <Link
-                href="/pricing"
+                href="/dashboard?upgrade=1"
                 className="flex items-center px-4 py-2 bg-gradient-to-r from-pink-heart/10 to-purple-500/10 border border-pink-heart/30 text-white rounded-xl hover:border-pink-heart/60 transition-all"
             >
                 <Sparkles className="w-4 h-4 mr-2 text-pink-heart" />

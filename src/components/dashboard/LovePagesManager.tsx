@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Heart as HeartIcon, Check as CheckIcon, Trash2 as TrashIcon, LayoutGrid as GridIcon, Clock as ClockIcon, Filter as FilterIcon } from "lucide-react";
 import Link from "next/link";
 import DeletePageButton from "./DeletePageButton";
-import { deleteLovePage } from "@/app/dashboard/actions";
+import { deleteLovePage } from "@/app/(app)/dashboard/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
