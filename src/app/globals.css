@@ -45,28 +45,13 @@ body {
   }
 }
 
-/* Pink hearts — dashboard, auth, pricing, etc. (homepage uses softer rose below) */
-main:not([data-admin]):not([data-home-page]) .lucide-heart,
-main:not([data-admin]):not([data-home-page]) .lucide-heart.text-pink-heart,
-main:not([data-admin]):not([data-home-page]) .text-pink-heart.lucide-heart {
+/* Pink hearts across marketing, auth, dashboard, and love pages */
+main:not([data-admin]) .lucide-heart,
+.lucide-heart.text-pink-heart,
+.text-pink-heart.lucide-heart {
   color: var(--heart-pink) !important;
   fill: var(--heart-pink) !important;
   stroke: var(--heart-pink) !important;
-}
-
-/* Homepage: softer rose accents (easier on the eyes) */
-[data-home-page] {
-  --home-rose: #c9a3b1;
-  --home-rose-light: #e8d4dc;
-  --home-rose-muted: #9a7a86;
-}
-
-[data-home-page] .lucide-heart,
-[data-home-page] .lucide-heart.text-pink-heart,
-[data-home-page] .text-pink-heart.lucide-heart {
-  color: var(--home-rose) !important;
-  fill: var(--home-rose) !important;
-  stroke: var(--home-rose) !important;
 }
 
 /* Keep white hearts only when explicitly requested */
