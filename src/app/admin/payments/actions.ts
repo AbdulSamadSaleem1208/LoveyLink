@@ -3,38 +3,35 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { isOwnerEmail, isAdminRole, PREMIUM_PLAN_ID } from "@/lib/admin";
+import { isOwnerEmail, isAdminRole } from "@/lib/admin";
+import { grantPremiumForPayment } from "@/lib/grant-premium";
 
-// Initialize Supabase Admin Client with Service Role Key for privileged operations
 const supabaseAdmin = createSupabaseAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
         auth: {
             autoRefreshToken: false,
-            persistSession: false
-        }
+            persistSession: false,
+        },
     }
 );
 
-/**
- * Verifies that the current user is authenticated and has an admin role.
- * Throws an error if not authorized.
- */
 async function verifyAdmin() {
     const supabase = await createClient();
+    const {
+        data: { user },
+        error: authError,
+    } = await supabase.auth.getUser();
 
-    // 1. Check Authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
         throw new Error("Unauthorized: Please log in");
     }
 
-    // 2. Check Admin Role
     const { data: adminRole, error: roleError } = await supabase
-        .from('admin_roles')
-        .select('role')
-        .eq('user_id', user.id)
+        .from("admin_roles")
+        .select("role")
+        .eq("user_id", user.id)
         .single();
 
     const isOwner = isOwnerEmail(user.email);
@@ -48,164 +45,88 @@ async function verifyAdmin() {
 
 export async function approvePayment(paymentId: string) {
     try {
-        console.log(`Processing approval for payment: ${paymentId}`);
-
-        // Step 1: Verify Admin Access
         await verifyAdmin();
 
-        // Step 2: Prevent Double Approval & Fetch Payment
         const { data: payment, error: fetchError } = await supabaseAdmin
-            .from('payment_requests')
-            .select('*')
-            .eq('id', paymentId)
+            .from("payment_requests")
+            .select("*")
+            .eq("id", paymentId)
             .single();
 
         if (fetchError || !payment) {
             throw new Error("Payment request not found");
         }
 
-        if (payment.status !== 'pending') {
-            // If already approved, log and proceed to structure check (idempotency)
-            console.log(`Payment is ${payment.status}, ensuring user status is active...`);
-            if (payment.status === 'rejected') throw new Error(`Payment is already ${payment.status}`);
-        } else {
-            // Step 3: Update Payment Status
+        if (payment.status === "rejected") {
+            throw new Error("Payment was rejected and cannot be approved");
+        }
+
+        // Grant premium FIRST — only mark payment approved after success
+        const grant = await grantPremiumForPayment(payment.user_id, payment.id);
+
+        if (!grant.success) {
+            const hint = grant.error?.includes("subscriptions")
+                ? " Run supabase/migrations/20260530_create_subscriptions_table.sql in Supabase SQL Editor."
+                : "";
+            return { error: `${grant.error}${hint}` };
+        }
+
+        if (payment.status === "pending") {
             const { error: updatePaymentError } = await supabaseAdmin
-                .from('payment_requests')
+                .from("payment_requests")
                 .update({
-                    status: 'approved',
-                    updated_at: new Date().toISOString()
+                    status: "approved",
+                    updated_at: new Date().toISOString(),
                 })
-                .eq('id', paymentId);
+                .eq("id", paymentId);
 
-            if (updatePaymentError) throw new Error(`Failed to update payment: ${updatePaymentError.message}`);
+            if (updatePaymentError) {
+                return {
+                    error: `Premium was granted but payment status failed to update: ${updatePaymentError.message}`,
+                };
+            }
         }
 
-        // Step 4: Handle Subscription (Manual Upsert)
-        const manualSubscriptionId = `manual_easypaisa_${paymentId}`;
-        const currentPeriodEnd = new Date();
-        currentPeriodEnd.setDate(currentPeriodEnd.getDate() + 30); // Add 30 days
+        revalidatePath("/", "layout");
+        revalidatePath("/admin");
+        revalidatePath("/admin/payments");
+        revalidatePath("/admin/users");
+        revalidatePath("/dashboard");
 
-        const { data: existingSub } = await supabaseAdmin
-            .from('subscriptions')
-            .select('id')
-            .eq('user_id', payment.user_id)
-            .maybeSingle();
-
-        const subscriptionData = {
-            user_id: payment.user_id,
-            status: 'active',
-            plan_id: PREMIUM_PLAN_ID,
-            current_period_end: currentPeriodEnd.toISOString(),
-            updated_at: new Date().toISOString(),
-            // Only set stripe_subscription_id on insert to avoid unique constraint if we are updating by ID
-            ...(existingSub ? {} : { stripe_subscription_id: manualSubscriptionId })
+        return {
+            success: true,
+            message: grant.usedPaymentFallback
+                ? "User upgraded to premium (payment record). Run subscriptions migration for full tracking."
+                : "Payment approved and user upgraded to premium for 30 days.",
         };
-
-        if (existingSub) {
-            const { error: upError } = await supabaseAdmin
-                .from('subscriptions')
-                .update(subscriptionData)
-                .eq('id', existingSub.id);
-            if (upError) {
-                throw new Error(`Failed to update subscription: ${upError.message}`);
-            }
-        } else {
-            const { error: insError } = await supabaseAdmin
-                .from('subscriptions')
-                .insert(subscriptionData);
-            if (insError) {
-                throw new Error(`Failed to create subscription: ${insError.message}`);
-            }
-        }
-
-        const { data: { user: targetUser }, error: userError } = await supabaseAdmin.auth.admin.getUserById(payment.user_id);
-
-        if (userError || !targetUser?.email) {
-            throw new Error("Could not find auth user for this payment");
-        }
-
-        console.log(`Updating public.users for ${payment.user_id} with status 'active'...`);
-
-        // Check if user exists in public.users
-        const { data: publicUser, error: checkError } = await supabaseAdmin
-            .from('users')
-            .select('id')
-            .eq('id', payment.user_id)
-            .maybeSingle();
-
-        if (checkError) console.error("Error checking public user:", checkError);
-
-        let updateUserError = null;
-
-        if (publicUser) {
-            // Update
-            const { error } = await supabaseAdmin
-                .from('users')
-                .update({
-                    subscription_status: 'active',
-                    subscription_id: existingSub?.id || manualSubscriptionId,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', payment.user_id);
-            updateUserError = error;
-        } else {
-            // Insert
-            const { error } = await supabaseAdmin
-                .from('users')
-                .insert({
-                    id: payment.user_id,
-                    email: targetUser.email,
-                    subscription_status: 'active',
-                    subscription_id: existingSub?.id || manualSubscriptionId,
-                    updated_at: new Date().toISOString()
-                });
-            updateUserError = error;
-        }
-
-        if (updateUserError) {
-            throw new Error(`Failed to update user profile: ${updateUserError.message}`);
-        }
-
-        // B. Auth Metadata
-        await supabaseAdmin.auth.admin.updateUserById(
-            payment.user_id,
-            { user_metadata: { show_premium_welcome: true } }
-        );
-
-        revalidatePath('/', 'layout');
-        revalidatePath('/admin');
-        revalidatePath('/admin/payments');
-        revalidatePath('/admin/users');
-        return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Approval failed";
         console.error("Approve Payment Error:", error);
-        return { error: error.message };
+        return { error: message };
     }
 }
 
 export async function rejectPayment(paymentId: string) {
     try {
-        console.log(`Rejecting payment: ${paymentId}`);
-
         await verifyAdmin();
 
         const { error } = await supabaseAdmin
-            .from('payment_requests')
+            .from("payment_requests")
             .update({
-                status: 'rejected',
-                updated_at: new Date().toISOString()
+                status: "rejected",
+                updated_at: new Date().toISOString(),
             })
-            .eq('id', paymentId);
+            .eq("id", paymentId);
 
         if (error) throw error;
 
-        revalidatePath('/admin');
-        revalidatePath('/admin/payments');
+        revalidatePath("/admin");
+        revalidatePath("/admin/payments");
         return { success: true };
     } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Reject failed";
         console.error("Reject Payment Error:", error);
-        return { error: error.message };
+        return { error: message };
     }
 }
 
@@ -213,11 +134,10 @@ export async function getPaymentRequests() {
     try {
         await verifyAdmin();
 
-        // 1. Fetch Payments
         const { data: payments, error: paymentsError } = await supabaseAdmin
-            .from('payment_requests')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .from("payment_requests")
+            .select("*")
+            .order("created_at", { ascending: false });
 
         if (paymentsError) throw paymentsError;
 
@@ -225,30 +145,37 @@ export async function getPaymentRequests() {
             return { data: [] };
         }
 
-        // 2. Fetch Users via Auth Admin API (Bypass public.users table issues)
-        const userIds = Array.from(new Set(payments.map((p: any) => p.user_id)));
+        const userIds = Array.from(new Set(payments.map((p) => p.user_id)));
+        const userMap = new Map<string, { email: string; full_name: string }>();
 
-        const userMap = new Map();
+        await Promise.all(
+            userIds.map(async (uid) => {
+                const {
+                    data: { user },
+                    error,
+                } = await supabaseAdmin.auth.admin.getUserById(uid);
+                if (!error && user) {
+                    userMap.set(uid, {
+                        email: user.email ?? "Unknown",
+                        full_name:
+                            (user.user_metadata?.full_name as string) || "Unknown",
+                    });
+                }
+            })
+        );
 
-        await Promise.all(userIds.map(async (uid: any) => {
-            const { data: { user }, error } = await supabaseAdmin.auth.admin.getUserById(uid);
-            if (!error && user) {
-                userMap.set(uid, {
-                    email: user.email,
-                    full_name: user.user_metadata?.full_name || 'Unknown'
-                });
-            }
-        }));
-
-        // 3. Join in memory (userMap is already populated above)
-        const joinedData = payments.map((p: any) => ({
+        const joinedData = payments.map((p) => ({
             ...p,
-            users: userMap.get(p.user_id) || { email: 'Unknown', full_name: 'Unknown' }
+            users: userMap.get(p.user_id) || {
+                email: "Unknown",
+                full_name: "Unknown",
+            },
         }));
 
         return { data: joinedData };
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Fetch failed";
         console.error("Fetch Payments Error:", error);
-        return { error: error.message };
+        return { error: message };
     }
 }

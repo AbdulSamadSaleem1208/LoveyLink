@@ -130,7 +130,11 @@ export default function AdminPaymentsPage() {
                 throw new Error(result.error);
             }
 
-            toast.success(`Payment ${action}d successfully`);
+            const msg =
+                "message" in result && typeof result.message === "string"
+                    ? result.message
+                    : `Payment ${action}d successfully`;
+            toast.success(msg);
             await fetchPayments();
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : "Action failed";
@@ -291,6 +295,25 @@ export default function AdminPaymentsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right space-x-2">
+                                            {payment.status === "approved" && (
+                                                <button
+                                                    onClick={() =>
+                                                        handleAction(payment.id, "approve")
+                                                    }
+                                                    disabled={
+                                                        !!processingId &&
+                                                        processingId !== payment.id
+                                                    }
+                                                    title="Re-apply premium if upgrade failed"
+                                                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 disabled:opacity-40"
+                                                >
+                                                    {processingId === payment.id ? (
+                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                    ) : (
+                                                        "Sync premium"
+                                                    )}
+                                                </button>
+                                            )}
                                             {payment.status === "pending" && (
                                                 <>
                                                     <button
