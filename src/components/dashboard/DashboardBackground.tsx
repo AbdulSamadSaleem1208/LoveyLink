@@ -6,9 +6,10 @@ import { Heart } from "lucide-react";
 export default function DashboardBackground() {
     return (
         <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,107,157,0.12)_0%,transparent_45%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_90%_80%,rgba(219,39,119,0.1)_0%,transparent_40%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,rgba(147,51,234,0.06)_0%,transparent_35%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,107,157,0.22)_0%,transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_90%_80%,rgba(219,39,119,0.18)_0%,transparent_45%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,rgba(147,51,234,0.12)_0%,transparent_40%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_20%,rgba(56,189,248,0.08)_0%,transparent_35%)]" />
 
             {[...Array(6)].map((_, i) => (
                 <motion.div

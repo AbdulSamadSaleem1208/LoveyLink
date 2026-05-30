@@ -69,10 +69,14 @@ export default function LovePagesToolbar({
                             key={value}
                             type="button"
                             onClick={() => onStatusChange(value)}
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
                                 statusFilter === value
-                                    ? "bg-pink-heart/20 text-pink-heart border border-pink-heart/40"
-                                    : "text-gray-400 border border-transparent hover:text-white hover:bg-white/5"
+                                    ? "bg-gradient-to-r from-pink-heart/35 to-red-primary/25 text-white border border-pink-heart/50 shadow-md shadow-pink-heart/20"
+                                    : value === "published"
+                                      ? "text-emerald-300/90 border border-emerald-500/25 hover:bg-emerald-500/15 hover:text-emerald-200"
+                                      : value === "draft"
+                                        ? "text-amber-300/90 border border-amber-500/25 hover:bg-amber-500/15 hover:text-amber-200"
+                                        : "text-gray-300 border border-white/10 hover:text-white hover:bg-white/10 hover:border-white/20"
                             }`}
                         >
                             {label}

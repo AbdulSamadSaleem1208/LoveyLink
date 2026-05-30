@@ -145,14 +145,16 @@ function DashboardShellInner({
                 </Suspense>
             </div>
 
-            <div className="shrink-0 p-3 border-t border-white/10 space-y-1 bg-zinc-950/95">
+            <div className="shrink-0 p-3 border-t border-pink-heart/15 space-y-2 bg-gradient-to-t from-zinc-950 via-zinc-950/98 to-zinc-950/90">
                 {!sidebarCollapsed && (
                     <Link
                         href="/"
                         onClick={closeSidebar}
-                        className="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors text-sm"
+                        className="group flex items-center px-4 py-2.5 text-sky-200/90 hover:text-white hover:bg-sky-500/15 border border-sky-500/20 hover:border-sky-400/40 rounded-xl transition-all duration-200 text-sm font-medium cursor-pointer hover:shadow-md hover:shadow-sky-500/10"
                     >
-                        <Home className="w-5 h-5 mr-3 shrink-0" />
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/20 border border-sky-400/30 mr-3 shrink-0 group-hover:bg-sky-500/30">
+                            <Home className="w-4 h-4 text-sky-300" />
+                        </span>
                         Website Home
                     </Link>
                 )}
@@ -211,7 +213,8 @@ function DashboardShellInner({
             <aside
                 className={`
                     fixed lg:sticky top-0 left-0 z-[70] lg:z-20
-                    h-[100dvh] flex flex-col border-r border-white/10 bg-zinc-950/98 backdrop-blur-xl
+                    h-[100dvh] flex flex-col border-r border-pink-heart/20 bg-zinc-950/98 backdrop-blur-xl
+                    shadow-[inset_-1px_0_0_0_rgba(255,107,157,0.15)]
                     transition-all duration-300 ease-out
                     ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
                     ${showDesktopSidebar ? "lg:translate-x-0 lg:w-64" : "lg:translate-x-0 lg:w-0 lg:border-r-0 lg:overflow-hidden lg:pointer-events-none lg:opacity-0"}
@@ -258,7 +261,8 @@ function DashboardShellInner({
                         <button
                             type="button"
                             onClick={handleSignOut}
-                            className="ml-auto flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-red-300 border border-red-500/25 hover:bg-red-500/10"
+                            aria-label="Sign out of your account"
+                            className="ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer select-none text-red-100 border border-red-500/45 bg-gradient-to-r from-red-950/60 to-rose-950/50 hover:from-red-600/35 hover:to-rose-600/25 hover:border-red-400/70 hover:text-white hover:shadow-lg hover:shadow-red-500/25 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
                         >
                             <LogOut className="h-4 w-4" />
                             Sign Out

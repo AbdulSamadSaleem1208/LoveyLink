@@ -202,7 +202,7 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                                         ? selectedIds.includes(page.id)
                                             ? "border-pink-heart/50 bg-pink-heart/5 cursor-pointer"
                                             : "border-white/10 opacity-80 cursor-pointer"
-                                        : "border-white/10 bg-zinc-900/50 hover:border-pink-heart/30 hover:shadow-lg hover:shadow-pink-heart/5"
+                                        : "border-white/10 bg-gradient-to-br from-zinc-900/90 via-zinc-900/70 to-pink-heart/5 hover:border-pink-heart/40 hover:shadow-lg hover:shadow-pink-heart/15"
                                 }`}
                             >
                                 {!selectionMode && (
@@ -233,7 +233,7 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                                 )}
 
                                 <div className="flex items-start justify-between gap-2 mb-4">
-                                    <div className="h-11 w-11 rounded-xl bg-pink-heart/10 flex items-center justify-center text-pink-heart">
+                                    <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-pink-heart/25 to-red-primary/15 border border-pink-heart/30 flex items-center justify-center text-pink-heart shadow-inner">
                                         <HeartIcon className="w-5 h-5 fill-current" />
                                     </div>
                                     <span
@@ -262,14 +262,14 @@ export default function LovePagesManager({ initialPages }: { initialPages: Page[
                                                 : `/dashboard/success/${page.id}`
                                         }
                                         onClick={(e) => selectionMode && e.preventDefault()}
-                                        className="flex-1 text-center text-sm py-2 rounded-lg bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                                        className="flex-1 text-center text-sm py-2 rounded-lg font-medium cursor-pointer bg-pink-heart/15 text-pink-200 border border-pink-heart/30 hover:bg-pink-heart/25 hover:text-white transition-all"
                                     >
                                         {page.published ? "View" : "Preview"}
                                     </Link>
                                     <Link
                                         href={`/dashboard/success/${page.id}`}
                                         onClick={(e) => selectionMode && e.preventDefault()}
-                                        className="flex-1 text-center text-sm py-2 rounded-lg bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                                        className="flex-1 text-center text-sm py-2 rounded-lg font-medium cursor-pointer bg-violet-500/15 text-violet-200 border border-violet-500/30 hover:bg-violet-500/25 hover:text-white transition-all"
                                     >
                                         QR
                                     </Link>

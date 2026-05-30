@@ -12,7 +12,7 @@ type Props = {
 
 export default function DashboardAccountActions({ isPremium, status, label }: Props) {
     return (
-        <div className="mb-6 rounded-2xl border border-white/10 bg-gradient-to-r from-zinc-900/80 to-zinc-950/80 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="mb-6 rounded-2xl border border-pink-heart/20 bg-gradient-to-r from-pink-heart/10 via-zinc-900/80 to-violet-500/10 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-inner">
             <SubscriptionStatusBadge
                 isPremium={isPremium}
                 status={status}
