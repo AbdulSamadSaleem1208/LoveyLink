@@ -26,7 +26,12 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         <>
             {showMarketingChrome && <SplashScreen />}
             {showMarketingChrome && <Navbar />}
-            <main className="flex-grow">{children}</main>
+            <main
+                className="flex-grow"
+                {...(pathname === "/" ? { "data-home-page": true } : {})}
+            >
+                {children}
+            </main>
             {showMarketingChrome && <Footer />}
         </>
     );

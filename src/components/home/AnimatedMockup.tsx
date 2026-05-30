@@ -72,7 +72,7 @@ function GlowHeart({ size = "w-14 h-14" }: { size?: string }) {
     return (
         <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 1.8, repeat: Infinity }}>
             <Heart
-                className={`${size} text-pink-heart fill-pink-heart drop-shadow-[0_0_18px_rgba(255,107,157,0.85)]`}
+                className={`${size} text-rose-300/70 fill-rose-300/70 drop-shadow-[0_0_12px_rgba(201,163,177,0.35)]`}
             />
         </motion.div>
     );
@@ -84,7 +84,7 @@ function FloatingHearts() {
             {[0, 1, 2, 3, 4].map((i) => (
                 <motion.span
                     key={i}
-                    className="absolute text-pink-heart/25 pointer-events-none z-[5]"
+                    className="absolute text-rose-300/20 pointer-events-none z-[5]"
                     style={{ left: `${12 + i * 17}%`, bottom: `${10 + (i % 3) * 10}%` }}
                     animate={{ y: [0, -30, 0], opacity: [0.15, 0.5, 0.15] }}
                     transition={{ duration: 3 + i * 0.3, repeat: Infinity, delay: i * 0.5 }}
@@ -100,11 +100,11 @@ function SlideOurRelationshipHero() {
     return (
         <div className="flex flex-col items-center w-full h-full min-h-[560px] pt-10 px-4 pb-2 bg-black">
             <GlowHeart />
-            <h2 className="font-bold text-[1.55rem] text-[#ff6b9d] mt-3 text-center">
+            <h2 className="font-bold text-[1.55rem] text-rose-200/90 mt-3 text-center">
                 Our Relationship
             </h2>
             <p className="text-gray-400 text-xs mt-1 text-center">Couple in love ♥</p>
-            <p className="font-serif text-[1.5rem] text-[#ff6b9d] mt-1">Juliet &amp; Romeo</p>
+            <p className="font-serif text-[1.5rem] text-rose-200/85 mt-1">Juliet &amp; Romeo</p>
             <div className="w-full flex-1 min-h-[265px] mt-3 rounded-t-[2.25rem] overflow-hidden border-2 border-white/90 relative">
                 <KenBurns src={RELATIONSHIP.coupleBeach} alt="Man and woman couple in love on beach" zoom={1.14} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent z-10" />
@@ -120,11 +120,11 @@ function SlideInLove() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
             <KenBurns src={RELATIONSHIP.coupleRomantic} alt="Man and woman romantic couple" zoom={1.15} />
-            <div className="absolute inset-0 bg-gradient-to-b from-pink-900/30 to-black/85 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-b from-rose-950/25 to-black/85 z-10" />
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
-                <Sparkles className="w-7 h-7 text-pink-heart mb-3" />
+                <Sparkles className="w-7 h-7 text-rose-300/70 mb-3" />
                 <h2 className="text-2xl font-bold text-white">In Love</h2>
-                <p className="text-sm text-pink-100/90 mt-2 font-serif italic">
+                <p className="text-sm text-gray-300 mt-2 font-serif italic">
                     Boyfriend &amp; girlfriend — one relationship
                 </p>
             </div>
@@ -138,18 +138,18 @@ function SlideLoveLetter() {
             <div className="bg-gradient-to-br from-zinc-400 to-zinc-600 rounded-3xl p-5 ring-1 ring-white/20 shadow-2xl">
                 <p className="font-serif italic text-[#1a2634] text-[13px] text-center leading-relaxed">
                     &ldquo;Our relationship is my favorite love story. Every day I fall in love with
-                    you again.&rdquo; <span className="text-[#ff6b9d]">♥</span>
+                    you again.&rdquo; <span className="text-rose-400/80">♥</span>
                 </p>
                 <div className="h-px bg-white/45 my-4" />
                 <p className="text-[9px] text-center tracking-[0.2em] uppercase text-[#3d5166] font-bold">
                     Your partner
                 </p>
-                <p className="text-center text-xl font-bold text-[#ff6b9d]">With all my love</p>
+                <p className="text-center text-xl font-bold text-rose-300/80">With all my love</p>
             </div>
-            <div className="relative h-32 mt-4 rounded-2xl overflow-hidden border border-pink-heart/30">
+            <div className="relative h-32 mt-4 rounded-2xl overflow-hidden border border-white/15">
                 <CouplePhoto src={RELATIONSHIP.coupleHug} alt="Man and woman hugging in love" />
                 <div className="absolute inset-0 bg-black/35 flex items-center gap-3 px-3">
-                    <div className="w-9 h-9 rounded-full bg-pink-heart flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-full bg-rose-800/60 flex items-center justify-center">
                         <Music2 className="w-4 h-4 text-white" />
                     </div>
                     <p className="text-[11px] font-bold text-white">Our relationship song ♥</p>
@@ -168,7 +168,7 @@ function SlideRelationshipMemories() {
     return (
         <div className="w-full h-full min-h-[560px] pt-9 px-2 pb-6 bg-black">
             <h2 className="text-center text-base font-bold text-white">Our Relationship</h2>
-            <p className="text-center text-[9px] text-pink-heart/80 mb-3">Man &amp; woman in love ♥</p>
+            <p className="text-center text-[9px] text-rose-300/50 mb-3">Man &amp; woman in love ♥</p>
             <div className="relative flex-1 min-h-[360px]">
                 {pics.map((p, i) => (
                     <motion.div
@@ -197,11 +197,11 @@ function SlideRelationshipMemories() {
 function SlideCoupleLove() {
     return (
         <div className="w-full h-full min-h-[560px] pt-9 px-3 pb-5 bg-black">
-            <p className="text-center text-[9px] uppercase tracking-[0.25em] text-pink-heart">
+            <p className="text-center text-[9px] uppercase tracking-[0.25em] text-rose-300/50">
                 Our relationship
             </p>
-            <h2 className="text-center text-xl font-bold text-[#ff6b9d] mb-3">My Love</h2>
-            <div className="relative w-full aspect-[4/5] rounded-[1.8rem] overflow-hidden border-2 border-pink-heart/45 mb-2">
+            <h2 className="text-center text-xl font-bold text-rose-200/90 mb-3">My Love</h2>
+            <div className="relative w-full aspect-[4/5] rounded-[1.8rem] overflow-hidden border-2 border-white/20 mb-2">
                 <KenBurns src={RELATIONSHIP.coupleHappy} alt="Happy man and woman in love" zoom={1.13} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 z-10" />
                 <p className="absolute bottom-4 inset-x-0 z-20 text-center text-[11px] text-white font-serif italic px-2">
@@ -212,7 +212,7 @@ function SlideCoupleLove() {
                 <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/15">
                     <CouplePhoto src={RELATIONSHIP.coupleWalk} alt="Couple walking together" />
                 </div>
-                <div className="relative aspect-square rounded-2xl overflow-hidden border border-pink-heart/35">
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/15">
                     <KenBurns src={RELATIONSHIP.coupleHug} alt="Couple embrace" zoom={1.08} />
                 </div>
             </div>
@@ -228,7 +228,7 @@ function SlideForeverTogether() {
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-12 text-center px-5">
                 <GlowHeart size="w-11 h-11" />
                 <h2 className="text-2xl font-bold text-white mt-3">Forever Together</h2>
-                <p className="text-xs text-pink-100/90 mt-2 font-serif italic">
+                <p className="text-xs text-gray-300 mt-2 font-serif italic">
                     Our relationship, our love, our life
                 </p>
             </div>
@@ -240,11 +240,11 @@ function SlideTrueLoveKiss() {
     return (
         <div className="relative w-full h-full min-h-[560px]">
             <KenBurns src={RELATIONSHIP.coupleKiss} alt="Man and woman kissing" zoom={1.1} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-pink-900/20 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-rose-950/15 z-10" />
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
-                <Heart className="w-11 h-11 text-pink-heart fill-pink-heart mb-3" />
+                <Heart className="w-11 h-11 text-rose-300/70 fill-rose-300/70 mb-3" />
                 <h2 className="text-2xl font-bold text-white">True Love</h2>
-                <p className="text-sm text-pink-100/90 mt-2 font-serif italic">
+                <p className="text-sm text-gray-300 mt-2 font-serif italic">
                     A real relationship, real love
                 </p>
             </div>
@@ -264,7 +264,7 @@ function SlideSoulmates() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/45 to-black/85 z-10" />
             <div className="absolute top-14 inset-x-0 z-20 text-center px-4">
                 <h2 className="text-2xl font-bold text-white">Soulmates</h2>
-                <p className="text-sm text-pink-200/90 mt-2 font-serif italic">
+                <p className="text-sm text-gray-300 mt-2 font-serif italic">
                     Our relationship is built on love
                 </p>
             </div>
@@ -306,14 +306,14 @@ export default function AnimatedMockup() {
     return (
         <div className="relative mx-auto">
             <motion.div
-                className="absolute -inset-4 rounded-[3rem] bg-pink-heart/20 blur-3xl -z-10"
-                animate={{ opacity: [0.3, 0.5, 0.3] }}
+                className="absolute -inset-4 rounded-[3rem] bg-rose-900/15 blur-3xl -z-10"
+                animate={{ opacity: [0.15, 0.28, 0.15] }}
                 transition={{ duration: 4, repeat: Infinity }}
             />
             <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative border-[14px] border-gray-800 bg-black rounded-[2.5rem] h-[min(600px,78vh)] w-[min(300px,92vw)] max-w-full shadow-[0_20px_70px_rgba(255,107,157,0.22)] overflow-hidden mx-auto"
+                className="relative border-[14px] border-gray-800 bg-black rounded-[2.5rem] h-[min(600px,78vh)] w-[min(300px,92vw)] max-w-full shadow-[0_20px_50px_rgba(0,0,0,0.45)] overflow-hidden mx-auto"
             >
                 <div className="rounded-[2rem] h-full w-full relative overflow-hidden bg-black">
                     <FloatingHearts />
@@ -337,7 +337,7 @@ export default function AnimatedMockup() {
                                 aria-label={`Our relationship slide ${i + 1}`}
                                 onClick={() => setIndex(i)}
                                 className={`h-1.5 rounded-full transition-all ${
-                                    i === index ? "w-5 bg-pink-heart" : "w-1.5 bg-white/30"
+                                    i === index ? "w-5 bg-rose-300/60" : "w-1.5 bg-white/25"
                                 }`}
                             />
                         ))}

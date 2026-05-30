@@ -65,7 +65,15 @@ export default function Navbar() {
                                 className="h-10 w-10 rounded-full group-hover:scale-110 transition-transform"
                                 priority
                             />
-                            <span className="font-bold text-2xl text-white tracking-tight group-hover:text-red-primary transition-colors">LoveyLink.</span>
+                            <span
+                                className={`font-bold text-2xl text-white tracking-tight transition-colors ${
+                                    pathname === "/"
+                                        ? "group-hover:text-rose-200/90"
+                                        : "group-hover:text-red-primary"
+                                }`}
+                            >
+                                LoveyLink.
+                            </span>
                         </Link>
                     </div>
 
