@@ -21,14 +21,11 @@ type NavLink = {
 
 const accentStyles = {
     pink: {
-        idle: "text-white/90 bg-pink-heart/10 border-pink-heart/30 hover:bg-pink-heart/25 hover:border-pink-heart/55 hover:shadow-lg hover:shadow-pink-heart/25 hover:-translate-y-0.5",
-        active:
-            "text-white bg-pink-heart/25 border-2 border-pink-heart/70 shadow-lg shadow-pink-heart/30 hover:bg-pink-heart/35 hover:border-pink-heart hover:shadow-xl hover:shadow-pink-heart/40 hover:-translate-y-0.5",
-        iconBox:
-            "bg-gradient-to-br from-pink-heart/35 to-red-primary/25 border-pink-heart/45 group-hover:from-pink-heart/55 group-hover:to-red-primary/40 group-hover:border-pink-heart group-hover:scale-105 group-hover:shadow-md group-hover:shadow-pink-heart/30",
-        activeIconBox:
-            "bg-gradient-to-br from-pink-heart to-red-primary border-pink-heart/80 shadow-md shadow-pink-heart/40 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-pink-heart/50",
-        icon: "text-pink-heart group-hover:text-white",
+        idle: "text-pink-light/95 hover:text-white",
+        active: "text-white",
+        iconBox: "group-hover:scale-105",
+        activeIconBox: "group-hover:scale-105",
+        icon: "text-[#FF6B9D] group-hover:text-white",
         activeIcon: "text-white",
     },
     emerald: {
@@ -119,6 +116,14 @@ export default function DashboardSidebarNav({
         <nav className="py-3 px-2 space-y-2">
             {links.map(({ href, label, icon: Icon, active, accent }) => {
                 const style = accentStyles[accent];
+                const pinkNavClass =
+                    accent === "pink"
+                        ? active
+                            ? "dashboard-nav-pink--active"
+                            : "dashboard-nav-pink--idle"
+                        : "";
+                const pinkIconClass = accent === "pink" ? "dashboard-nav-pink-icon" : "";
+
                 return (
                     <Link
                         key={href}
@@ -127,12 +132,12 @@ export default function DashboardSidebarNav({
                         title={collapsed ? label : undefined}
                         className={`group flex items-center rounded-xl border transition-all duration-200 cursor-pointer touch-manipulation active:scale-[0.98] ${
                             collapsed ? "justify-center p-3.5" : "px-3.5 py-3"
-                        } ${active ? style.active : style.idle}`}
+                        } ${pinkNavClass} ${active ? style.active : style.idle}`}
                     >
                         <span
                             className={`flex items-center justify-center shrink-0 rounded-xl border transition-all duration-200 ${
                                 collapsed ? "h-10 w-10" : "h-9 w-9 mr-3"
-                            } ${active ? style.activeIconBox : style.iconBox}`}
+                            } ${pinkIconClass} ${active ? style.activeIconBox : style.iconBox}`}
                         >
                             <Icon
                                 className={`w-5 h-5 shrink-0 transition-colors ${
@@ -141,7 +146,11 @@ export default function DashboardSidebarNav({
                             />
                         </span>
                         {!collapsed && (
-                            <span className="font-semibold text-sm tracking-tight">
+                            <span
+                                className={`font-semibold text-sm tracking-tight ${
+                                    accent === "pink" ? "text-pink-light group-hover:text-white" : ""
+                                }`}
+                            >
                                 {label}
                             </span>
                         )}
