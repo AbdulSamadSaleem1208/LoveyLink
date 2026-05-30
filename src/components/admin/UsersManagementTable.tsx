@@ -6,6 +6,7 @@ import UserEditModal, { type AdminUserRow } from "./UserEditModal";
 import RevokePremiumButton from "./RevokePremiumButton";
 import AdminFilterBar from "./AdminFilterBar";
 import { formatSubscriptionStatus } from "@/lib/admin";
+import { normalizeFullName } from "@/lib/display-name";
 
 type Props = {
     users: AdminUserRow[];
@@ -144,7 +145,7 @@ export default function UsersManagementTable({ users }: Props) {
                                         >
                                             <td className="px-3 sm:px-6 py-4">
                                                 <p className="text-sm font-medium text-white">
-                                                    {user.full_name || "—"}
+                                                    {normalizeFullName(user.full_name) || "—"}
                                                 </p>
                                                 <p className="text-xs text-gray-500">
                                                     {user.email}

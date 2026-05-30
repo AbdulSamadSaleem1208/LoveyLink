@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { isOwnerEmail, isAdminRole } from "@/lib/admin";
 import { resolvePremiumAccess } from "@/lib/premium-access";
+import { getUserDisplayInfo } from "@/lib/get-user-display";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +33,7 @@ export default async function AppShellLayout({
         isAdmin = !!adminRole && isAdminRole(adminRole.role);
     }
 
-    const displayName =
-        (user.user_metadata?.full_name as string) ||
-        user.email?.split("@")?.[0] ||
-        "Member";
+    const { displayName } = await getUserDisplayInfo(supabase, user);
 
     return (
         <DashboardShell

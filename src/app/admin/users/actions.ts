@@ -5,6 +5,7 @@ import { createClient as createAuthClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { isOwnerEmail, isAdminRole } from "@/lib/admin";
 import { syncSubscriptionForAdminEdit } from "@/lib/subscription-expiration";
+import { normalizeFullName } from "@/lib/display-name";
 
 // Admin Client
 const supabaseAdmin = createClient(
@@ -193,14 +194,26 @@ export async function updateUser(
         const auth = await verifyAdminRequester();
         if (auth.error) return { error: auth.error };
 
+        const fullName = normalizeFullName(data.full_name) || null;
+
         const { error } = await supabaseAdmin
             .from("users")
             .update({
-                full_name: data.full_name || null,
+                full_name: fullName,
                 subscription_status: data.subscription_status,
                 updated_at: new Date().toISOString(),
             })
             .eq("id", userId);
+
+        if (!error && fullName) {
+            const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+            await supabaseAdmin.auth.admin.updateUserById(userId, {
+                user_metadata: {
+                    ...(authUser.user?.user_metadata ?? {}),
+                    full_name: fullName,
+                },
+            });
+        }
 
         if (error) {
             return { error: error.message };

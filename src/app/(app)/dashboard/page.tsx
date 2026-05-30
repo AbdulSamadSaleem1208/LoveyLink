@@ -9,6 +9,7 @@ import { expireUserPremiumIfDue } from "@/lib/subscription-expiration";
 import { resolvePremiumAccess } from "@/lib/premium-access";
 import LoginWelcomeBurst from "@/components/dashboard/LoginWelcomeBurst";
 import DashboardAccountActions from "@/components/dashboard/DashboardAccountActions";
+import { getUserDisplayInfo } from "@/lib/get-user-display";
 
 export const dynamic = "force-dynamic";
 
@@ -60,10 +61,7 @@ export default async function Dashboard({
         });
     }
 
-    const firstName =
-        user.user_metadata?.full_name?.split(" ")?.[0] ||
-        user.email?.split("@")?.[0] ||
-        "there";
+    const { displayName, firstName } = await getUserDisplayInfo(supabase, user);
 
     const showUpgradeBanner =
         params.upgrade === "1" && !premiumAccess.isPremium;
@@ -83,9 +81,12 @@ export default async function Dashboard({
                 <div className="absolute top-0 right-0 w-48 h-48 bg-pink-heart/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
                     <div>
-                        <p className="text-pink-heart text-sm font-semibold mb-2 flex items-center gap-1.5">
+                        <p className="text-pink-heart text-sm font-semibold mb-1 flex items-center gap-1.5">
                             <Heart className="w-4 h-4 fill-pink-heart shrink-0" />
-                            Welcome back, {firstName}
+                            Welcome back
+                        </p>
+                        <p className="text-lg sm:text-xl font-bold text-white mb-2 truncate">
+                            {displayName}
                         </p>
                         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                             Your love pages

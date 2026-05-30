@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { normalizeFullName } from "@/lib/display-name";
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
@@ -88,7 +89,9 @@ export default function Navbar() {
                                     className="text-gray-300 hover:text-white font-medium flex items-center gap-2"
                                 >
                                     <User className="h-4 w-4" />
-                                    {user?.user_metadata?.full_name || "My Account"}
+                                    {normalizeFullName(
+                                        user?.user_metadata?.full_name as string
+                                    ) || "My Account"}
                                 </Link>
                                 <button
                                     onClick={handleSignOut}

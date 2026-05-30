@@ -118,7 +118,14 @@ function DashboardShellInner({
                 </Link>
                 {!sidebarCollapsed && (
                     <>
-                        <p className="text-sm text-white font-medium mt-3 truncate">{displayName}</p>
+                        <div className="mt-3 min-w-0">
+                            <p className="text-[11px] font-semibold uppercase tracking-wider text-pink-heart">
+                                Welcome back
+                            </p>
+                            <p className="text-sm text-white font-semibold truncate leading-snug">
+                                {displayName}
+                            </p>
+                        </div>
                         <p className="text-xs text-gray-500 truncate">{userEmail}</p>
                         <div
                             className={`mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border shadow-sm ${

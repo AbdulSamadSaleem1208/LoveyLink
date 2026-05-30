@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { getCanonicalSiteUrl, resolveSiteUrlFromHost } from "@/lib/site-url";
 import { getPostLoginPath } from "@/lib/admin-session";
+import { normalizeFullName } from "@/lib/display-name";
 
 const getSiteUrl = async () => {
     if (process.env.NEXT_PUBLIC_SITE_URL) {
@@ -58,7 +59,7 @@ export async function signup(formData: FormData) {
     const data = {
         email: formData.get("email") as string,
         password: formData.get("password") as string,
-        full_name: formData.get("full_name") as string,
+        full_name: normalizeFullName(formData.get("full_name") as string),
     };
 
     const { error } = await supabase.auth.signUp({
