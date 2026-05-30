@@ -196,12 +196,18 @@ export default async function AdminDashboard() {
                     subtitle="Last 14 days"
                     data={signupSeries}
                     accent="blue"
+                    xAxisLabel="Date (day)"
+                    yAxisLabel="New users"
+                    valueUnit="signups"
                 />
                 <AdminBarChart
                     title="Love pages created"
                     subtitle="Last 14 days"
                     data={pagesSeries}
                     accent="red"
+                    xAxisLabel="Date (day)"
+                    yAxisLabel="Pages created"
+                    valueUnit="pages"
                 />
             </div>
 
@@ -212,6 +218,9 @@ export default async function AdminDashboard() {
                         subtitle="Last 14 days — someone opened a page from a QR"
                         data={qrScanSeries}
                         accent="purple"
+                        xAxisLabel="Date (day)"
+                        yAxisLabel="QR scans"
+                        valueUnit="scans"
                     />
                 </div>
                 <AdminQrScanActivity
