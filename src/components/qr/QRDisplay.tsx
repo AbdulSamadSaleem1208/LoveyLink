@@ -15,13 +15,13 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
         const data = mode === 'link' ? url : (message || "No message provided");
 
         QRCode.toDataURL(data, {
-            width: 400,
+            width: 480,
             margin: 2,
             color: {
-                dark: "#9B1C1C",
-                light: "#FFF1F2",
+                dark: "#BE123C",
+                light: "#FFF5F8",
             },
-            errorCorrectionLevel: 'H'
+            errorCorrectionLevel: "H",
         }).then(setQrSrc);
     }, [url, mode, message]);
 
@@ -94,9 +94,28 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
     return (
         <div className="flex flex-col items-center space-y-5" ref={actionsRef}>
             {/* QR Code — always visible */}
-            <div className="bg-white p-4 rounded-xl shadow-lg border-2 border-red-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qrSrc} alt={`QR Code for ${title}`} className="w-64 h-64 md:w-80 md:h-80" />
+            <div className="relative w-fit">
+                <div
+                    className="absolute -inset-[3px] rounded-[1.35rem] opacity-70 blur-[2px]"
+                    style={{
+                        background:
+                            "linear-gradient(135deg, #FF6B9D 0%, #FF0033 45%, #DB2777 100%)",
+                    }}
+                    aria-hidden
+                />
+                <div className="relative rounded-[1.25rem] bg-gradient-to-br from-white via-rose-50/95 to-pink-50 p-5 shadow-[0_10px_40px_rgba(255,107,157,0.22)] ring-1 ring-pink-light/40">
+                    <div className="rounded-xl bg-white/95 p-3 shadow-inner ring-1 ring-pink-heart/15">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={qrSrc}
+                            alt={`QR Code for ${title}`}
+                            className="w-64 h-64 md:w-80 md:h-80 rounded-lg"
+                        />
+                    </div>
+                    <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-pink-hot/90">
+                        Scan to share
+                    </p>
+                </div>
             </div>
 
             {/* Toggle button to show/hide actions */}
