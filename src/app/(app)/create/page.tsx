@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { buildLovePageSlug } from "@/lib/slug";
 import ThemePresetPicker from "@/components/create/ThemePresetPicker";
+import CreateStepIndicator from "@/components/create/CreateStepIndicator";
 import { visibleInputClass } from "@/lib/form-input-styles";
 import CreateFormField from "@/components/create/CreateFormField";
 import {
@@ -274,7 +275,7 @@ export default function CreateLovePage() {
                     <div className="flex items-center gap-2 min-w-0">
                         <Link
                             href="/dashboard"
-                            className="text-gray-400 hover:text-white transition-colors shrink-0 p-2 rounded-lg hover:bg-white/5"
+                            className="text-pink-heart/80 hover:text-white shrink-0 p-2 rounded-xl border border-transparent hover:border-pink-heart/40 hover:bg-pink-heart/15 cursor-pointer transition-all"
                             aria-label="Back to dashboard"
                         >
                             <ArrowLeft className="w-5 h-5" />
@@ -288,20 +289,7 @@ export default function CreateLovePage() {
                             </h1>
                         </div>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0" aria-label={`Step ${step} of 4`}>
-                        {[1, 2, 3, 4].map((i) => (
-                            <div
-                                key={i}
-                                className={`h-2.5 rounded-full transition-all duration-300 ${
-                                    step === i
-                                        ? "w-8 sm:w-10 bg-gradient-to-r from-pink-heart to-red-primary shadow-lg shadow-pink-heart/50"
-                                        : step > i
-                                          ? "w-5 sm:w-7 bg-pink-heart/70"
-                                          : "w-5 sm:w-7 bg-zinc-700/90 border border-white/15"
-                                }`}
-                            />
-                        ))}
-                    </div>
+                    <CreateStepIndicator step={step} />
                 </div>
             </div>
 
@@ -322,9 +310,9 @@ export default function CreateLovePage() {
                                         Required fields must be filled before you can publish.
                                     </p>
                                     <div className="mt-3 flex items-center gap-2">
-                                        <div className="flex-1 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                                        <div className="flex-1 h-2 rounded-full bg-zinc-800/80 overflow-hidden border border-white/10">
                                             <div
-                                                className="h-full bg-pink-heart transition-all duration-300"
+                                                className="h-full bg-gradient-to-r from-pink-heart via-red-primary to-amber-400 transition-all duration-300 shadow-[0_0_12px_rgba(255,107,157,0.5)]"
                                                 style={{ width: `${(basicsProgress / 4) * 100}%` }}
                                             />
                                         </div>

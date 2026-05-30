@@ -59,6 +59,14 @@ main:not([data-admin]) .lucide-heart,
   cursor: pointer;
 }
 
+[data-dashboard] nav a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-dashboard] nav a:hover {
+  cursor: pointer;
+}
+
 /* Prevent browser autofill from hiding typed text (light blue + white text) */
 /* Native selects fallback (prefer DarkSelect component) */
 select,

@@ -201,7 +201,7 @@ function DashboardShellInner({
                 <button
                     type="button"
                     onClick={toggleCollapsed}
-                    className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white"
+                    className="p-2.5 rounded-xl bg-violet-500/15 border border-violet-400/35 text-violet-200 hover:text-white hover:bg-violet-500/25 hover:border-violet-300/50 cursor-pointer transition-all"
                     aria-label="Toggle sidebar"
                 >
                     <PanelLeftClose className="h-5 w-5" />

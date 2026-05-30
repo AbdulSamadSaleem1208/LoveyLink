@@ -21,44 +21,48 @@ type NavLink = {
 
 const accentStyles = {
     pink: {
-        idle: "text-white/90 bg-pink-heart/10 border-pink-heart/25 hover:bg-pink-heart/20 hover:border-pink-heart/45 hover:shadow-lg hover:shadow-pink-heart/20 hover:-translate-y-0.5",
-        iconBox:
-            "bg-gradient-to-br from-pink-heart/30 to-red-primary/20 border-pink-heart/40 group-hover:from-pink-heart/45 group-hover:to-red-primary/30 group-hover:border-pink-heart/60",
-        icon: "text-pink-heart group-hover:text-white",
+        idle: "text-white/90 bg-pink-heart/10 border-pink-heart/30 hover:bg-pink-heart/25 hover:border-pink-heart/55 hover:shadow-lg hover:shadow-pink-heart/25 hover:-translate-y-0.5",
         active:
-            "bg-gradient-to-r from-pink-heart/35 to-red-primary/25 text-white border-pink-heart/55 shadow-lg shadow-pink-heart/25",
-        activeIconBox: "bg-white/15 border-white/25",
+            "text-white bg-pink-heart/25 border-2 border-pink-heart/70 shadow-lg shadow-pink-heart/30 hover:bg-pink-heart/35 hover:border-pink-heart hover:shadow-xl hover:shadow-pink-heart/40 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-pink-heart/35 to-red-primary/25 border-pink-heart/45 group-hover:from-pink-heart/55 group-hover:to-red-primary/40 group-hover:border-pink-heart group-hover:scale-105 group-hover:shadow-md group-hover:shadow-pink-heart/30",
+        activeIconBox:
+            "bg-gradient-to-br from-pink-heart to-red-primary border-pink-heart/80 shadow-md shadow-pink-heart/40 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-pink-heart/50",
+        icon: "text-pink-heart group-hover:text-white",
         activeIcon: "text-white",
     },
     emerald: {
-        idle: "text-white/90 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-500/20 hover:-translate-y-0.5",
-        iconBox:
-            "bg-gradient-to-br from-emerald-500/30 to-teal-500/20 border-emerald-400/40 group-hover:from-emerald-400/45 group-hover:border-emerald-300/55",
-        icon: "text-emerald-300 group-hover:text-white",
+        idle: "text-white/90 bg-emerald-500/10 border-emerald-500/35 hover:bg-emerald-500/22 hover:border-emerald-400/55 hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5",
         active:
-            "bg-gradient-to-r from-emerald-500/30 to-teal-500/20 text-white border-emerald-400/55 shadow-lg shadow-emerald-500/20",
-        activeIconBox: "bg-white/15 border-white/25",
-        activeIcon: "text-emerald-100",
+            "text-white bg-emerald-500/22 border-2 border-emerald-400/65 shadow-lg shadow-emerald-500/25 hover:bg-emerald-500/32 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-500/35 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-emerald-500/35 to-teal-500/25 border-emerald-400/45 group-hover:from-emerald-400/55 group-hover:border-emerald-300 group-hover:scale-105 group-hover:shadow-md group-hover:shadow-emerald-500/25",
+        activeIconBox:
+            "bg-gradient-to-br from-emerald-500 to-teal-500 border-emerald-300/70 shadow-md shadow-emerald-500/30 group-hover:scale-105 group-hover:shadow-lg",
+        icon: "text-emerald-300 group-hover:text-white",
+        activeIcon: "text-white",
     },
     amber: {
-        idle: "text-amber-100 bg-amber-500/12 border-amber-400/35 hover:bg-amber-500/22 hover:border-amber-300/55 hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5",
-        iconBox:
-            "bg-gradient-to-br from-amber-500/35 to-orange-500/25 border-amber-400/45 group-hover:from-amber-400/50 group-hover:border-amber-300/60",
-        icon: "text-amber-300 group-hover:text-amber-50",
+        idle: "text-amber-100 bg-amber-500/12 border-amber-400/40 hover:bg-amber-500/24 hover:border-amber-300/60 hover:shadow-lg hover:shadow-amber-500/25 hover:-translate-y-0.5",
         active:
-            "bg-gradient-to-r from-amber-500/35 to-orange-500/25 text-white border-amber-400/55 shadow-lg shadow-amber-500/25",
-        activeIconBox: "bg-white/15 border-white/25",
-        activeIcon: "text-amber-50",
+            "text-white bg-amber-500/22 border-2 border-amber-400/65 shadow-lg shadow-amber-500/25 hover:bg-amber-500/32 hover:border-amber-300 hover:shadow-xl hover:shadow-amber-500/35 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-amber-500/40 to-orange-500/30 border-amber-400/50 group-hover:scale-105 group-hover:shadow-md group-hover:shadow-amber-500/25",
+        activeIconBox:
+            "bg-gradient-to-br from-amber-400 to-orange-500 border-amber-300/70 shadow-md group-hover:scale-105 group-hover:shadow-lg",
+        icon: "text-amber-300 group-hover:text-amber-50",
+        activeIcon: "text-white",
     },
     violet: {
-        idle: "text-white/90 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400/50 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5",
-        iconBox:
-            "bg-gradient-to-br from-violet-500/30 to-purple-500/20 border-violet-400/40 group-hover:from-violet-400/45 group-hover:border-violet-300/55",
-        icon: "text-violet-300 group-hover:text-white",
+        idle: "text-white/90 bg-violet-500/10 border-violet-500/35 hover:bg-violet-500/22 hover:border-violet-400/55 hover:shadow-lg hover:shadow-violet-500/25 hover:-translate-y-0.5",
         active:
-            "bg-gradient-to-r from-violet-500/30 to-purple-500/20 text-white border-violet-400/55 shadow-lg shadow-violet-500/20",
-        activeIconBox: "bg-white/15 border-white/25",
-        activeIcon: "text-violet-100",
+            "text-white bg-violet-500/22 border-2 border-violet-400/65 shadow-lg shadow-violet-500/25 hover:bg-violet-500/32 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-500/35 hover:-translate-y-0.5",
+        iconBox:
+            "bg-gradient-to-br from-violet-500/35 to-purple-500/25 border-violet-400/45 group-hover:from-violet-400/55 group-hover:scale-105 group-hover:shadow-md group-hover:shadow-violet-500/25",
+        activeIconBox:
+            "bg-gradient-to-br from-violet-500 to-purple-600 border-violet-300/70 shadow-md group-hover:scale-105 group-hover:shadow-lg",
+        icon: "text-violet-300 group-hover:text-white",
+        activeIcon: "text-white",
     },
 };
 
