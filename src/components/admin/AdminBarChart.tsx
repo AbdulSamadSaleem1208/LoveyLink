@@ -9,6 +9,8 @@ type Props = {
     accent?: "red" | "pink" | "purple" | "blue";
 };
 
+const CHART_HEIGHT_PX = 120;
+
 const accents = {
     red: { bar: "from-red-500 to-red-700", glow: "shadow-red-500/20" },
     pink: { bar: "from-pink-500 to-rose-600", glow: "shadow-pink-500/20" },
@@ -33,23 +35,32 @@ export default function AdminBarChart({
                 <h3 className="text-lg font-bold text-white">{title}</h3>
                 {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
             </div>
-            <div className="flex items-end justify-between gap-1 h-40">
+            <div className="flex items-end justify-between gap-1 sm:gap-2 min-h-[168px]">
                 {data.map((point) => {
-                    const heightPct = (point.value / max) * 100;
+                    const barHeightPx =
+                        point.value > 0
+                            ? Math.max(Math.round((point.value / max) * CHART_HEIGHT_PX), 6)
+                            : 2;
+
                     return (
                         <div
                             key={point.label}
-                            className="flex flex-1 flex-col items-center justify-end gap-2 min-w-0"
+                            className="flex flex-1 flex-col items-center justify-end min-w-0 h-[168px]"
                         >
-                            <span className="text-[10px] font-semibold text-gray-400 tabular-nums">
+                            <span className="text-[10px] font-semibold text-gray-400 tabular-nums mb-1 shrink-0">
                                 {point.value}
                             </span>
                             <div
-                                className={`w-full max-w-[28px] rounded-t-md bg-gradient-to-t ${style.bar} opacity-90 transition-all hover:opacity-100`}
-                                style={{ height: `${Math.max(heightPct, 4)}%` }}
-                                title={`${point.label}: ${point.value}`}
-                            />
-                            <span className="text-[9px] text-gray-500 truncate w-full text-center">
+                                className="flex-1 w-full flex items-end justify-center min-h-0 mb-1"
+                                aria-hidden
+                            >
+                                <div
+                                    className={`w-full max-w-[28px] rounded-t-md bg-gradient-to-t ${style.bar} transition-all hover:brightness-110`}
+                                    style={{ height: `${barHeightPx}px` }}
+                                    title={`${point.label}: ${point.value}`}
+                                />
+                            </div>
+                            <span className="text-[9px] text-gray-500 truncate w-full text-center shrink-0 leading-tight">
                                 {point.label}
                             </span>
                         </div>

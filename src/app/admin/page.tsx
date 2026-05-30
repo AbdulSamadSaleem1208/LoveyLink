@@ -1,10 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
-import { Users, CreditCard, Heart, QrCode, Sparkles } from "lucide-react";
+import { Users, CreditCard, Heart, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { formatDistanceToNow, subDays } from "date-fns";
+import { formatDistanceToNow, startOfDay, subDays } from "date-fns";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBarChart from "@/components/admin/AdminBarChart";
 import AdminDonutChart from "@/components/admin/AdminDonutChart";
+import AdminQrScanActivity, { type QrScanActivityItem } from "@/components/admin/AdminQrScanActivity";
 import { buildDailySeries } from "@/lib/admin-analytics";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,29 @@ function getAdminClient() {
     );
 }
 
+type RawQrScanRow = {
+    id: string;
+    scanned_at: string;
+    scanner_device: string | null;
+    qr_codes: {
+        love_pages: { title: string; slug: string } | { title: string; slug: string }[] | null;
+    } | null;
+};
+
+function mapQrScanRow(raw: RawQrScanRow): QrScanActivityItem | null {
+    const nested = raw.qr_codes?.love_pages;
+    const page = Array.isArray(nested) ? nested[0] : nested;
+    if (!page?.slug) return null;
+
+    return {
+        id: raw.id,
+        scanned_at: raw.scanned_at,
+        scanner_device: raw.scanner_device,
+        pageTitle: page.title || "Love page",
+        pageSlug: page.slug,
+    };
+}
+
 export default async function AdminDashboard() {
     const supabaseAdmin = getAdminClient();
     const since = subDays(new Date(), 14).toISOString();
@@ -29,6 +53,8 @@ export default async function AdminDashboard() {
         { count: publishedPageCount },
         { count: premiumUserCount },
         { count: qrScanCount },
+        { data: qrScanRows },
+        { data: recentQrScans },
         { count: pendingPayments },
         { data: recentPayments },
         { data: recentUsers },
@@ -49,6 +75,21 @@ export default async function AdminDashboard() {
             .select("*", { count: "exact", head: true })
             .eq("subscription_status", "active"),
         supabaseAdmin.from("qr_scans").select("*", { count: "exact", head: true }),
+        supabaseAdmin.from("qr_scans").select("scanned_at").gte("scanned_at", since),
+        supabaseAdmin
+            .from("qr_scans")
+            .select(
+                `
+                id,
+                scanned_at,
+                scanner_device,
+                qr_codes (
+                    love_pages ( title, slug )
+                )
+            `
+            )
+            .order("scanned_at", { ascending: false })
+            .limit(10),
         supabaseAdmin
             .from("payment_requests")
             .select("*", { count: "exact", head: true })
@@ -81,6 +122,14 @@ export default async function AdminDashboard() {
 
     const signupSeries = buildDailySeries(userRows ?? [], 14);
     const pagesSeries = buildDailySeries(pageRows ?? [], 14);
+    const qrScanSeries = buildDailySeries(qrScanRows ?? [], 14, "scanned_at");
+    const todayStart = startOfDay(new Date());
+    const scansToday = (qrScanRows ?? []).filter(
+        (r) => new Date(r.scanned_at) >= todayStart
+    ).length;
+    const qrScanActivity = (recentQrScans ?? [])
+        .map((row) => mapQrScanRow(row as RawQrScanRow))
+        .filter((row): row is QrScanActivityItem => row !== null);
     const paymentBreakdown = [
         { name: "pending", value: pendingPayments ?? 0 },
         { name: "approved", value: approvedPayCount ?? 0 },
@@ -115,7 +164,7 @@ export default async function AdminDashboard() {
                 ) : null}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <AdminStatCard
                     title="Total Users"
                     value={userCount ?? 0}
@@ -139,13 +188,6 @@ export default async function AdminDashboard() {
                     gradient="from-red-600/80 to-rose-900/80"
                     glow="shadow-red-500/20"
                 />
-                <AdminStatCard
-                    title="QR Scans"
-                    value={qrScanCount ?? 0}
-                    icon={<QrCode className="w-7 h-7 text-white" />}
-                    gradient="from-purple-600/80 to-violet-900/80"
-                    glow="shadow-purple-500/10"
-                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -160,6 +202,22 @@ export default async function AdminDashboard() {
                     subtitle="Last 14 days"
                     data={pagesSeries}
                     accent="red"
+                />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                    <AdminBarChart
+                        title="QR code scans"
+                        subtitle="Last 14 days — someone opened a page from a QR"
+                        data={qrScanSeries}
+                        accent="purple"
+                    />
+                </div>
+                <AdminQrScanActivity
+                    scans={qrScanActivity}
+                    totalScans={qrScanCount ?? 0}
+                    scansToday={scansToday}
                 />
             </div>
 

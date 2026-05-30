@@ -2,10 +2,13 @@ import { format, subDays, startOfDay } from "date-fns";
 
 export type ChartPoint = { label: string; value: number };
 
+type DatedRow = { created_at?: string; scanned_at?: string };
+
 /** Group rows by day for the last N days (oldest → newest). */
 export function buildDailySeries(
-    rows: { created_at: string }[],
-    days = 14
+    rows: DatedRow[],
+    days = 14,
+    dateKey: "created_at" | "scanned_at" = "created_at"
 ): ChartPoint[] {
     const today = startOfDay(new Date());
     const series: ChartPoint[] = [];
@@ -15,7 +18,9 @@ export function buildDailySeries(
         const label = format(day, "MMM d");
         const nextDay = subDays(today, i - 1);
         const count = rows.filter((r) => {
-            const d = new Date(r.created_at);
+            const raw = r[dateKey];
+            if (!raw) return false;
+            const d = new Date(raw);
             return d >= day && d < nextDay;
         }).length;
         series.push({ label, value: count });
