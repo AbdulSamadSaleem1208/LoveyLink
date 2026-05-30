@@ -8,6 +8,7 @@ import SubscriptionStatusPoller from "@/components/dashboard/SubscriptionStatusP
 import { expireUserPremiumIfDue } from "@/lib/subscription-expiration";
 import { resolvePremiumAccess } from "@/lib/premium-access";
 import LoginWelcomeBurst from "@/components/dashboard/LoginWelcomeBurst";
+import DashboardAccountActions from "@/components/dashboard/DashboardAccountActions";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,12 @@ export default async function Dashboard({
             />
             {params.welcome === "1" && <LoginWelcomeBurst />}
             {showWelcome && <WelcomeConfetti />}
+
+            <DashboardAccountActions
+                isPremium={premiumAccess.isPremium}
+                status={premiumAccess.status}
+                label={premiumAccess.label}
+            />
 
             <div className="mb-8 md:mb-10">
                 <p className="text-pink-heart text-sm font-semibold mb-1 flex items-center gap-1.5">

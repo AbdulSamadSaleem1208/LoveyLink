@@ -10,6 +10,7 @@ import { BackButton } from "@/components/ui/back-button";
 import FloatingHearts from "@/components/ui/FloatingHearts";
 import LoginSparkles from "@/components/auth/LoginSparkles";
 import Image from "next/image";
+import { visibleInputClass } from "@/lib/form-input-styles";
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -149,7 +150,8 @@ export default function LoginPage() {
                                     type="email"
                                     autoComplete="email"
                                     required
-                                    className="block w-full px-3 py-2.5 border border-white/10 rounded-xl text-white bg-black/50 focus:outline-none focus:ring-2 focus:ring-pink-heart focus:border-pink-heart sm:text-sm transition-all"
+                                    className={visibleInputClass}
+                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </motion.div>
@@ -169,7 +171,8 @@ export default function LoginPage() {
                                     type={showPassword ? "text" : "password"}
                                     autoComplete="current-password"
                                     required
-                                    className="block w-full px-3 py-2.5 border border-white/10 rounded-xl text-white bg-black/50 focus:outline-none focus:ring-2 focus:ring-pink-heart focus:border-pink-heart sm:text-sm transition-all pr-10"
+                                    className={`${visibleInputClass} pr-11`}
+                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                                 <button
                                     type="button"

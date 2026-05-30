@@ -58,6 +58,15 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
+    // Logged-in users: go to app dashboard (not marketing login/register)
+    const guestAuthPaths = ['/login', '/register', '/forgot-password']
+    if (user && guestAuthPaths.includes(request.nextUrl.pathname)) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        url.search = ''
+        return NextResponse.redirect(url)
+    }
+
     return supabaseResponse
 }
 

@@ -8,7 +8,9 @@ import {
     Crown,
     Shield,
     Home,
+    RefreshCw,
 } from "lucide-react";
+import RefreshSubscriptionButton from "@/components/dashboard/RefreshSubscriptionButton";
 
 type Props = {
     isAdmin: boolean;
@@ -61,7 +63,8 @@ export default function DashboardSidebarNav({
     ];
 
     return (
-        <nav className="mt-2 lg:mt-4 px-3 space-y-1 flex-1 overflow-y-auto">
+        <nav className="mt-2 lg:mt-4 px-3 space-y-1 flex-1 overflow-y-auto flex flex-col">
+            <div className="space-y-1">
             {links.map(({ href, label, icon: Icon, active }) => (
                 <Link
                     key={href}
@@ -79,6 +82,21 @@ export default function DashboardSidebarNav({
                     {label}
                 </Link>
             ))}
+            </div>
+            {!isPremium && (
+                <div className="mt-4 pt-4 border-t border-white/10 px-1">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-2 px-3">
+                        After payment
+                    </p>
+                    <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+                        <div className="flex items-center gap-2 text-gray-400 text-xs mb-2">
+                            <RefreshCw className="w-3.5 h-3.5 shrink-0" />
+                            <span>Paid but not Premium yet?</span>
+                        </div>
+                        <RefreshSubscriptionButton />
+                    </div>
+                </div>
+            )}
         </nav>
     );
 }

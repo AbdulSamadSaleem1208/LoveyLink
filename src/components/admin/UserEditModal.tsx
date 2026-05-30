@@ -5,6 +5,7 @@ import { X, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateUser, deleteUser } from "@/app/admin/users/actions";
 import { useRouter } from "next/navigation";
+import { visibleInputClass, visibleSelectClass } from "@/lib/form-input-styles";
 
 export type AdminUserRow = {
     id: string;
@@ -109,7 +110,8 @@ export default function UserEditModal({ user, onClose }: Props) {
                             id="full_name"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg bg-black/50 border border-white/10 text-white text-sm focus:ring-2 focus:ring-red-primary outline-none"
+                            className={visibleInputClass}
+                            style={{ WebkitTextFillColor: "#ffffff" }}
                         />
                     </div>
                     <div>
@@ -120,7 +122,7 @@ export default function UserEditModal({ user, onClose }: Props) {
                             id="sub_status"
                             value={status ?? "free"}
                             onChange={(e) => setStatus(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg bg-black/50 border border-white/10 text-white text-sm focus:ring-2 focus:ring-red-primary outline-none"
+                            className={visibleSelectClass}
                         >
                             <option value="free">Free</option>
                             <option value="active">Active (Premium)</option>

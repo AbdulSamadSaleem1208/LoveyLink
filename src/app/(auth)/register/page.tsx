@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Heart, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { visibleInputClass } from "@/lib/form-input-styles";
 
 export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
@@ -107,7 +108,8 @@ export default function RegisterPage() {
                                     type="text"
                                     autoComplete="name"
                                     required
-                                    className="appearance-none block w-full px-3 py-2 border border-white/10 rounded-lg shadow-sm placeholder-gray-500 text-white bg-black/50 focus:outline-none focus:ring-red-primary focus:border-red-primary sm:text-sm transition-colors"
+                                    className={visibleInputClass}
+                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </div>
@@ -123,7 +125,8 @@ export default function RegisterPage() {
                                     type="email"
                                     autoComplete="email"
                                     required
-                                    className="appearance-none block w-full px-3 py-2 border border-white/10 rounded-lg shadow-sm placeholder-gray-500 text-white bg-black/50 focus:outline-none focus:ring-red-primary focus:border-red-primary sm:text-sm transition-colors"
+                                    className={visibleInputClass}
+                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </div>
@@ -139,7 +142,8 @@ export default function RegisterPage() {
                                     type="password"
                                     autoComplete="new-password"
                                     required
-                                    className="appearance-none block w-full px-3 py-2 border border-white/10 rounded-lg shadow-sm placeholder-gray-500 text-white bg-black/50 focus:outline-none focus:ring-red-primary focus:border-red-primary sm:text-sm transition-colors"
+                                    className={visibleInputClass}
+                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </div>
