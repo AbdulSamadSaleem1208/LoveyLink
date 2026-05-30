@@ -60,38 +60,49 @@ export default async function SuccessPage({ params }: Props) {
 
     return (
         <div className="flex flex-col items-center justify-center py-4">
-            <div className="max-w-2xl w-full bg-white rounded-3xl shadow-xl p-8 md:p-12 text-center border border-red-50 animate-fade-in text-gray-900">
-                <div className="flex justify-center mb-6">
-                    <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle className="h-10 w-10 text-green-600" />
+            <div className="relative max-w-2xl w-full overflow-hidden rounded-3xl border border-pink-heart/25 bg-gradient-to-br from-zinc-900/95 via-zinc-900/90 to-pink-heart/10 p-8 md:p-12 text-center shadow-[0_20px_60px_rgba(255,107,157,0.15)] animate-fade-in">
+                <div
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,107,157,0.18)_0%,transparent_55%)]"
+                    aria-hidden
+                />
+
+                <div className="relative">
+                    <div className="flex justify-center mb-6">
+                        <div className="h-20 w-20 rounded-full bg-gradient-to-br from-pink-heart/30 to-red-primary/20 border border-pink-heart/40 flex items-center justify-center shadow-[0_0_28px_rgba(255,107,157,0.35)]">
+                            <CheckCircle className="h-10 w-10 text-pink-heart" />
+                        </div>
                     </div>
-                </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Published Successfully!</h1>
-                <p className="text-text-muted mb-8">
-                    Your love page representing <span className="font-semibold text-red-primary">{page.title}</span> is now live.
-                </p>
+                    <h1 className="text-3xl font-bold text-white mb-2">Published Successfully!</h1>
+                    <p className="text-text-secondary mb-8">
+                        Your love page representing{" "}
+                        <span className="font-semibold text-pink-heart">{page.title}</span> is now live.
+                    </p>
 
-                {hadBrokenSlug && (
-                    <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-left text-sm text-amber-900">
-                        <AlertCircle className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
-                        <p>
-                            {repaired
-                                ? "Your share link was invalid and has been fixed. Download or share the new QR code below — old QR codes will not work."
-                                : "Your share link may be invalid. Open this page from the dashboard after adding a recipient name, or create a new page."}
-                        </p>
+                    {hadBrokenSlug && (
+                        <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-left text-sm text-amber-100">
+                            <AlertCircle className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
+                            <p>
+                                {repaired
+                                    ? "Your share link was invalid and has been fixed. Download or share the new QR code below — old QR codes will not work."
+                                    : "Your share link may be invalid. Open this page from the dashboard after adding a recipient name, or create a new page."}
+                            </p>
+                        </div>
+                    )}
+
+                    <p className="text-xs text-gray-400 mb-4 break-all font-mono">{publicUrl}</p>
+
+                    <QRDisplay url={publicUrl} title={page.title} message={page.message} />
+
+                    <div className="mt-10 border-t border-white/10 pt-8">
+                        <Link
+                            href="/dashboard"
+                            className="text-text-muted hover:text-pink-light flex items-center justify-center transition-colors"
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2" />
+                            Return to Dashboard
+                        </Link>
                     </div>
-                )}
-
-                <p className="text-xs text-gray-500 mb-4 break-all">{publicUrl}</p>
-
-                <QRDisplay url={publicUrl} title={page.title} message={page.message} />
-
-                <div className="mt-10 border-t border-gray-100 pt-8">
-                    <Link href="/dashboard" className="text-text-muted hover:text-gray-900 flex items-center justify-center">
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Return to Dashboard
-                    </Link>
                 </div>
             </div>
         </div>

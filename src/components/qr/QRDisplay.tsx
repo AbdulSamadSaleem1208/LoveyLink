@@ -120,17 +120,17 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
 
             {/* Toggle button to show/hide actions */}
             <button
-                onClick={() => setShowActions(prev => !prev)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowActions(prev => !prev); }}
+                onClick={() => setShowActions((prev) => !prev)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") setShowActions((prev) => !prev);
+                }}
                 aria-expanded={showActions}
                 aria-controls="qr-actions-panel"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                style={{
-                    backgroundColor: '#0052cc',
-                    color: '#ffffff',
-                }}
-                onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.backgroundColor = '#003d99'; }}
-                onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.backgroundColor = '#0052cc'; }}
+                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-heart/60 focus:ring-offset-2 focus:ring-offset-zinc-900 ${
+                    showActions
+                        ? "bg-zinc-800/90 border border-pink-heart/40 hover:border-pink-heart/70 hover:bg-zinc-800"
+                        : "bg-button-gradient shadow-lg shadow-pink-heart/25 hover:opacity-90"
+                }`}
             >
                 {showActions ? (
                     <>
@@ -150,27 +150,30 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
                 id="qr-actions-panel"
                 role="region"
                 aria-label="QR Code actions"
-                className={`w-full max-w-sm overflow-hidden transition-all duration-300 ease-in-out ${showActions ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                    }`}
+                className={`w-full max-w-sm overflow-hidden transition-all duration-300 ease-in-out ${
+                    showActions ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                }`}
             >
-                <div className="flex flex-col items-center space-y-4 pt-2 pb-1">
+                <div className="flex flex-col items-center space-y-4 pt-3 pb-1 rounded-2xl border border-white/10 bg-zinc-900/50 px-4 py-4 mt-1">
                     {/* Mode Toggle */}
-                    <div className="flex space-x-2 p-1 rounded-lg" style={{ backgroundColor: '#f0f0f0' }}>
+                    <div className="flex w-full max-w-xs p-1 rounded-xl bg-zinc-800/80 border border-white/10">
                         <button
-                            onClick={() => setMode('link')}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-400 ${mode === 'link'
-                                ? 'bg-white shadow text-gray-900 font-bold'
-                                : 'text-gray-500 hover:text-gray-900'
-                                }`}
+                            onClick={() => setMode("link")}
+                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-pink-heart/50 ${
+                                mode === "link"
+                                    ? "bg-button-gradient text-white font-bold shadow-md shadow-pink-heart/20"
+                                    : "text-gray-400 hover:text-white"
+                            }`}
                         >
                             Link to Page
                         </button>
                         <button
-                            onClick={() => setMode('text')}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-400 ${mode === 'text'
-                                ? 'bg-white shadow text-gray-900 font-bold'
-                                : 'text-gray-500 hover:text-gray-900'
-                                }`}
+                            onClick={() => setMode("text")}
+                            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-pink-heart/50 ${
+                                mode === "text"
+                                    ? "bg-button-gradient text-white font-bold shadow-md shadow-pink-heart/20"
+                                    : "text-gray-400 hover:text-white"
+                            }`}
                         >
                             Message Only
                         </button>
@@ -180,10 +183,7 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
                     <div className="flex flex-wrap justify-center gap-3">
                         <button
                             onClick={handleShare}
-                            className="flex items-center px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            style={{ backgroundColor: '#f0f0f0', color: '#333333' }}
-                            onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.backgroundColor = '#e0e0e0'; }}
-                            onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.backgroundColor = '#f0f0f0'; }}
+                            className="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-gray-200 bg-zinc-800/90 border border-white/15 hover:border-pink-heart/40 hover:bg-pink-heart/10 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-heart/50"
                         >
                             <Share2 className="w-4 h-4 mr-2" />
                             Share
@@ -192,24 +192,18 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
                         <a
                             href={qrSrc}
                             download={`love-page-qr-${title}-${mode}.png`}
-                            className="flex items-center px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            style={{ backgroundColor: '#0052cc', color: '#ffffff' }}
-                            onMouseEnter={(e) => { (e.target as HTMLAnchorElement).style.backgroundColor = '#003d99'; }}
-                            onMouseLeave={(e) => { (e.target as HTMLAnchorElement).style.backgroundColor = '#0052cc'; }}
+                            className="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-white bg-button-gradient shadow-lg shadow-pink-heart/20 hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-heart/50"
                         >
                             <Download className="w-4 h-4 mr-2" />
                             Download QR
                         </a>
 
-                        {mode === 'link' && (
+                        {mode === "link" && (
                             <a
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                style={{ backgroundColor: '#f0f0f0', color: '#333333' }}
-                                onMouseEnter={(e) => { (e.target as HTMLAnchorElement).style.backgroundColor = '#e0e0e0'; }}
-                                onMouseLeave={(e) => { (e.target as HTMLAnchorElement).style.backgroundColor = '#f0f0f0'; }}
+                                className="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-gray-200 bg-zinc-800/90 border border-white/15 hover:border-pink-heart/40 hover:bg-pink-heart/10 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-heart/50"
                             >
                                 <ExternalLink className="w-4 h-4 mr-2" />
                                 Open Page
@@ -218,8 +212,8 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
                     </div>
 
                     {/* Description */}
-                    <p className="text-xs text-gray-400 max-w-xs text-center">
-                        {mode === 'link'
+                    <p className="text-xs text-gray-500 max-w-xs text-center">
+                        {mode === "link"
                             ? "Scans directly to your Love Page with music & photos."
                             : "Scans as plain text. The user will see your message immediately."}
                     </p>
