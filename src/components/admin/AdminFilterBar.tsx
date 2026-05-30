@@ -1,6 +1,7 @@
 "use client";
 
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, X } from "lucide-react";
+import DarkSelect from "@/components/ui/DarkSelect";
 
 export type SortOption = { value: string; label: string };
 
@@ -20,7 +21,7 @@ type Props = {
 };
 
 const inputClass =
-    "w-full py-3 px-4 rounded-xl bg-zinc-800 border border-white/20 text-white text-base placeholder:text-gray-400 caret-red-primary focus:ring-2 focus:ring-red-primary/60 focus:border-red-primary/50 outline-none shadow-inner";
+    "visible-input w-full py-3 px-4 rounded-xl bg-zinc-800 border border-white/20 text-white text-base placeholder:text-gray-400 caret-red-primary focus:outline-none focus:ring-2 focus:ring-red-primary/60 focus:border-red-primary/50 shadow-inner";
 
 export default function AdminFilterBar({
     search,
@@ -66,7 +67,6 @@ export default function AdminFilterBar({
                             onChange={(e) => onSearchChange(e.target.value)}
                             placeholder={searchPlaceholder}
                             className={`${inputClass} pl-11 pr-11`}
-                            style={{ WebkitTextFillColor: "#ffffff" }}
                         />
                         {search.length > 0 && (
                             <button
@@ -90,53 +90,25 @@ export default function AdminFilterBar({
                 </div>
 
                 <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full lg:w-auto lg:min-w-[280px]">
-                    <div className="flex-1 min-w-[140px] space-y-2">
-                        <label
-                            htmlFor="admin-filter-status"
-                            className="block text-xs font-semibold uppercase tracking-wider text-gray-300"
-                        >
-                            Status
-                        </label>
-                        <div className="relative flex items-center">
-                            <SlidersHorizontal
-                                className="absolute left-3.5 h-4 w-4 text-gray-400 pointer-events-none"
-                                aria-hidden
-                            />
-                            <select
-                                id="admin-filter-status"
-                                value={status}
-                                onChange={(e) => onStatusChange(e.target.value)}
-                                aria-label="Filter by status"
-                                className={`${inputClass} pl-10 appearance-none cursor-pointer`}
-                            >
-                                {statusOptions.map((o) => (
-                                    <option key={o.value} value={o.value} className="bg-zinc-900 text-white">
-                                        {o.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="flex-1 min-w-[140px]">
+                        <DarkSelect
+                            id="admin-filter-status"
+                            label="Status"
+                            value={status}
+                            onChange={onStatusChange}
+                            options={statusOptions}
+                            ariaLabel="Filter by status"
+                        />
                     </div>
-                    <div className="flex-1 min-w-[140px] space-y-2">
-                        <label
-                            htmlFor="admin-filter-sort"
-                            className="block text-xs font-semibold uppercase tracking-wider text-gray-300"
-                        >
-                            Sort
-                        </label>
-                        <select
+                    <div className="flex-1 min-w-[140px]">
+                        <DarkSelect
                             id="admin-filter-sort"
+                            label="Sort"
                             value={sort}
-                            onChange={(e) => onSortChange(e.target.value)}
-                            aria-label="Sort order"
-                            className={`${inputClass} cursor-pointer appearance-none`}
-                        >
-                            {sortOptions.map((o) => (
-                                <option key={o.value} value={o.value} className="bg-zinc-900 text-white">
-                                    {o.label}
-                                </option>
-                            ))}
-                        </select>
+                            onChange={onSortChange}
+                            options={sortOptions}
+                            ariaLabel="Sort order"
+                        />
                     </div>
                     {hasFilters && onClear && (
                         <div className="flex items-end">

@@ -54,6 +54,20 @@ main:not([data-admin]) .lucide-heart,
 }
 
 /* Prevent browser autofill from hiding typed text (light blue + white text) */
+/* Native selects fallback (prefer DarkSelect component) */
+select,
+select.visible-input {
+  color-scheme: dark;
+  background-color: #27272a;
+  color: #ffffff;
+}
+
+select option,
+select optgroup {
+  background-color: #27272a;
+  color: #ffffff;
+}
+
 input.visible-input:-webkit-autofill,
 input.visible-input:-webkit-autofill:hover,
 input.visible-input:-webkit-autofill:focus,

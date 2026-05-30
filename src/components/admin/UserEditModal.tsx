@@ -5,7 +5,8 @@ import { X, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateUser, deleteUser } from "@/app/admin/users/actions";
 import { useRouter } from "next/navigation";
-import { visibleInputClass, visibleSelectClass } from "@/lib/form-input-styles";
+import { visibleInputClass } from "@/lib/form-input-styles";
+import DarkSelect from "@/components/ui/DarkSelect";
 
 export type AdminUserRow = {
     id: string;
@@ -114,22 +115,19 @@ export default function UserEditModal({ user, onClose }: Props) {
                             style={{ WebkitTextFillColor: "#ffffff" }}
                         />
                     </div>
-                    <div>
-                        <label htmlFor="sub_status" className="block text-xs font-medium text-gray-400 mb-1">
-                            Subscription
-                        </label>
-                        <select
-                            id="sub_status"
-                            value={status ?? "free"}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className={visibleSelectClass}
-                        >
-                            <option value="free">Free</option>
-                            <option value="active">Active (Premium)</option>
-                            <option value="past_due">Past due</option>
-                            <option value="canceled">Canceled</option>
-                        </select>
-                    </div>
+                    <DarkSelect
+                        id="sub_status"
+                        label="Subscription"
+                        value={status ?? "free"}
+                        onChange={setStatus}
+                        ariaLabel="Subscription status"
+                        options={[
+                            { value: "free", label: "Free" },
+                            { value: "active", label: "Active (Premium)" },
+                            { value: "past_due", label: "Past due" },
+                            { value: "canceled", label: "Canceled" },
+                        ]}
+                    />
                 </div>
 
                 <div className="flex flex-col gap-2 border-t border-white/10 px-6 py-4">

@@ -1,9 +1,16 @@
 "use client";
 
 import { Search, X } from "lucide-react";
+import DarkSelect from "@/components/ui/DarkSelect";
 
 export type StatusFilter = "all" | "published" | "draft";
 export type SortKey = "newest" | "oldest" | "title";
+
+const SORT_OPTIONS = [
+    { value: "newest", label: "Newest" },
+    { value: "oldest", label: "Oldest" },
+    { value: "title", label: "A–Z" },
+];
 
 type Props = {
     search: string;
@@ -41,7 +48,7 @@ export default function LovePagesToolbar({
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="Search pages…"
-                    className="w-full pl-9 pr-9 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-pink-heart/40 focus:ring-1 focus:ring-pink-heart/30"
+                    className="visible-input w-full pl-9 pr-9 py-2.5 rounded-full bg-zinc-800 border border-white/20 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-pink-heart/40 focus:ring-1 focus:ring-pink-heart/30"
                 />
                 {search && (
                     <button
@@ -74,20 +81,17 @@ export default function LovePagesToolbar({
                 </div>
 
                 <div className="flex items-center gap-3 text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-400">
                         <span className="text-white font-medium">{resultCount}</span>
-                        <span className="text-gray-600"> / {totalCount}</span>
+                        <span className="text-gray-500"> / {totalCount}</span>
                     </span>
-                    <select
+                    <DarkSelect
+                        size="sm"
                         value={sort}
-                        onChange={(e) => onSortChange(e.target.value as SortKey)}
-                        aria-label="Sort pages"
-                        className="py-1.5 pl-3 pr-8 rounded-full bg-white/5 border border-white/10 text-gray-300 text-sm focus:outline-none focus:border-pink-heart/40"
-                    >
-                        <option value="newest">Newest</option>
-                        <option value="oldest">Oldest</option>
-                        <option value="title">A–Z</option>
-                    </select>
+                        onChange={(v) => onSortChange(v as SortKey)}
+                        options={SORT_OPTIONS}
+                        ariaLabel="Sort pages"
+                    />
                 </div>
             </div>
         </div>

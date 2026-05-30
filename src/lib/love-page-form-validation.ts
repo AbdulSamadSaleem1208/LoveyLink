@@ -9,7 +9,9 @@ export type LovePageFieldErrors = Partial<
     Record<keyof LovePageFormFields, string>
 >;
 
-const MIN_MESSAGE_LENGTH = 10;
+export const MIN_MESSAGE_LENGTH = 10;
+export const MIN_TITLE_LENGTH = 2;
+export const MIN_RECIPIENT_LENGTH = 2;
 
 export function validateLovePageBasics(
     data: LovePageFormFields

@@ -17,6 +17,7 @@ import {
     validateLovePageBasics,
     isLovePageBasicsValid,
     basicsCompletionCount,
+    MIN_MESSAGE_LENGTH,
     type LovePageFieldErrors,
 } from "@/lib/love-page-form-validation";
 
@@ -87,6 +88,10 @@ export default function CreateLovePage() {
         };
     }, [router]);
 
+    const patchFormData = (patch: Partial<LovePageData>) => {
+        setFormData((prev) => ({ ...prev, ...patch }));
+    };
+
     const clearFieldError = (key: keyof LovePageFieldErrors) => {
         setFieldErrors((prev) => {
             if (!prev[key]) return prev;
@@ -101,7 +106,8 @@ export default function CreateLovePage() {
             const errors = validateLovePageBasics(formData);
             if (Object.keys(errors).length > 0) {
                 setFieldErrors(errors);
-                toast.error("Please complete all required fields");
+                const first = Object.values(errors)[0];
+                toast.error(first ?? "Please complete all required fields");
                 return;
             }
             setFieldErrors({});
@@ -329,7 +335,7 @@ export default function CreateLovePage() {
                                         required
                                         value={formData.title}
                                         onChange={(v) => {
-                                            setFormData({ ...formData, title: v });
+                                            patchFormData({ title: v });
                                             clearFieldError("title");
                                         }}
                                         placeholder="e.g. For My Love"
@@ -342,7 +348,7 @@ export default function CreateLovePage() {
                                             required
                                             value={formData.sender_name}
                                             onChange={(v) => {
-                                                setFormData({ ...formData, sender_name: v });
+                                                patchFormData({ sender_name: v });
                                                 clearFieldError("sender_name");
                                             }}
                                             placeholder="Your name"
@@ -354,7 +360,7 @@ export default function CreateLovePage() {
                                             required
                                             value={formData.recipient_name}
                                             onChange={(v) => {
-                                                setFormData({ ...formData, recipient_name: v });
+                                                patchFormData({ recipient_name: v });
                                                 clearFieldError("recipient_name");
                                             }}
                                             placeholder="Their name"
@@ -369,12 +375,22 @@ export default function CreateLovePage() {
                                         rows={5}
                                         value={formData.message}
                                         onChange={(v) => {
-                                            setFormData({ ...formData, message: v });
+                                            patchFormData({ message: v });
                                             clearFieldError("message");
                                         }}
                                         placeholder="Write something from your heart…"
                                         error={fieldErrors.message}
                                     />
+                                    <p
+                                        className={`text-xs mt-1 ${
+                                            formData.message.trim().length >= MIN_MESSAGE_LENGTH
+                                                ? "text-green-400/90"
+                                                : "text-gray-500"
+                                        }`}
+                                    >
+                                        {formData.message.trim().length}/{MIN_MESSAGE_LENGTH}{" "}
+                                        characters (message minimum)
+                                    </p>
                                 </div>
                             </motion.div>
                         )}
@@ -457,9 +473,7 @@ export default function CreateLovePage() {
                                     </label>
                                     <ThemePresetPicker
                                         selected={formData.theme}
-                                        onSelect={(primary) =>
-                                            setFormData({ ...formData, theme: primary })
-                                        }
+                                        onSelect={(primary) => patchFormData({ theme: primary })}
                                     />
                                 </div>
 
@@ -470,7 +484,14 @@ export default function CreateLovePage() {
                                         <input
                                             type="text"
                                             value={formData.music_url}
-                                            onChange={e => setFormData({ ...formData, music_url: e.target.value })}
+                                            onChange={(e) =>
+                                                patchFormData({ music_url: e.target.value })
+                                            }
+                                            onInput={(e) =>
+                                                patchFormData({
+                                                    music_url: (e.target as HTMLInputElement).value,
+                                                })
+                                            }
                                             className={`${visibleInputClass} pl-10`}
                                             placeholder="https://open.spotify.com/track/..."
                                         />
@@ -543,8 +564,11 @@ export default function CreateLovePage() {
                         <button
                             type="button"
                             onClick={tryNextStep}
-                            disabled={step === 1 && !basicsComplete}
-                            className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className={`px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 ${
+                                step === 1 && !basicsComplete
+                                    ? "opacity-70"
+                                    : ""
+                            }`}
                         >
                             Continue
                         </button>
@@ -552,8 +576,9 @@ export default function CreateLovePage() {
                         <button
                             type="button"
                             onClick={tryGoToPreview}
-                            disabled={!basicsComplete}
-                            className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className={`px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 ${
+                                !basicsComplete ? "opacity-70" : ""
+                            }`}
                         >
                             Preview & publish
                         </button>
@@ -561,7 +586,7 @@ export default function CreateLovePage() {
                         <button
                             type="button"
                             onClick={handlePublish}
-                            disabled={publishing || !basicsComplete}
+                            disabled={publishing}
                             className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             {publishing ? (

@@ -56,6 +56,9 @@ export default function CreateFormField(props: Props) {
                         rows={props.rows ?? 4}
                         value={props.value}
                         onChange={(e) => props.onChange(e.target.value)}
+                        onInput={(e) =>
+                            props.onChange((e.target as HTMLTextAreaElement).value)
+                        }
                         placeholder={props.placeholder}
                         className={inputClass}
                     />
@@ -65,6 +68,9 @@ export default function CreateFormField(props: Props) {
                         type={props.type ?? "text"}
                         value={props.value}
                         onChange={(e) => props.onChange(e.target.value)}
+                        onInput={(e) =>
+                            props.onChange((e.target as HTMLInputElement).value)
+                        }
                         placeholder={props.placeholder}
                         className={inputClass}
                     />
