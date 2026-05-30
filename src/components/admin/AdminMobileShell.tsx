@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Menu, X } from "lucide-react";
+import { LayoutDashboard, Menu, X, PanelLeft, PanelLeftClose } from "lucide-react";
 import AdminSidebarNav from "@/components/admin/AdminSidebarNav";
 import AdminSignOutButton from "@/components/admin/AdminSignOutButton";
 import AdminNotificationsBanner, {
@@ -29,6 +29,7 @@ export default function AdminMobileShell({
     children,
 }: Props) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const pathname = usePathname();
 
     const pageTitle =
@@ -75,9 +76,11 @@ export default function AdminMobileShell({
                 <p className="text-xs text-gray-500 mt-3 truncate">{userEmail}</p>
             </div>
 
-            <AdminSidebarNav onNavigate={closeSidebar} />
+            <div className="flex-1 min-h-0 overflow-y-auto">
+                <AdminSidebarNav onNavigate={closeSidebar} />
+            </div>
 
-            <div className="mt-auto p-4 border-t border-white/10 space-y-2 shrink-0">
+            <div className="shrink-0 p-3 border-t border-white/10 space-y-1 bg-zinc-950/95">
                 <Link
                     href="/dashboard"
                     onClick={closeSidebar}
@@ -133,11 +136,12 @@ export default function AdminMobileShell({
 
             <aside
                 className={`
-                    fixed lg:sticky top-0 left-0 z-[70] lg:z-10
-                    h-full min-h-[100dvh] w-[min(280px,85vw)] lg:w-64
-                    flex flex-col border-r border-white/10 bg-zinc-950/98 lg:bg-zinc-950/95 backdrop-blur-xl
-                    transition-transform duration-300 ease-out
-                    ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+                    fixed lg:sticky top-0 left-0 z-[70] lg:z-20
+                    h-[100dvh] flex flex-col border-r border-white/10 bg-zinc-950/98 backdrop-blur-xl
+                    transition-all duration-300 ease-out
+                    w-[min(280px,88vw)]
+                    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+                    ${sidebarCollapsed ? "lg:w-0 lg:border-r-0 lg:opacity-0 lg:pointer-events-none lg:overflow-hidden" : "lg:translate-x-0 lg:w-64"}
                 `}
             >
                 <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 shrink-0">
@@ -154,10 +158,27 @@ export default function AdminMobileShell({
                 {sidebarContent}
             </aside>
 
-            <main className="relative z-10 flex-1 w-full min-w-0 p-4 sm:p-6 lg:p-10 overflow-x-hidden overflow-y-auto">
-                <AdminNotificationsBanner notifications={notifications} />
-                {children}
-            </main>
+            <div className="relative z-10 flex-1 flex flex-col min-w-0 min-h-0">
+                <div className="hidden lg:flex items-center gap-3 px-6 py-4 border-b border-white/10 bg-zinc-950/60 shrink-0">
+                    <button
+                        type="button"
+                        onClick={() => setSidebarCollapsed((c) => !c)}
+                        className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white"
+                        aria-label={sidebarCollapsed ? "Show admin menu" : "Hide admin menu"}
+                    >
+                        {sidebarCollapsed ? (
+                            <PanelLeft className="h-5 w-5" />
+                        ) : (
+                            <PanelLeftClose className="h-5 w-5" />
+                        )}
+                    </button>
+                    <p className="text-lg font-bold text-white">{pageTitle}</p>
+                </div>
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-10">
+                    <AdminNotificationsBanner notifications={notifications} />
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

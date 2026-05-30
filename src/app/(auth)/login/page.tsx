@@ -151,7 +151,6 @@ export default function LoginPage() {
                                     autoComplete="email"
                                     required
                                     className={visibleInputClass}
-                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </motion.div>

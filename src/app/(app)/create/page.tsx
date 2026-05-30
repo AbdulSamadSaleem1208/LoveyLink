@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { buildLovePageSlug } from "@/lib/slug";
 import ThemePresetPicker from "@/components/create/ThemePresetPicker";
+import { visibleInputClass, visibleTextareaClass } from "@/lib/form-input-styles";
 
 interface LovePageData {
     title: string;
@@ -221,27 +222,39 @@ export default function CreateLovePage() {
     };
 
     return (
-        <div className="min-h-screen bg-black flex flex-col text-white">
-            {/* Wizard Header */}
-            <div className="bg-black/80 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 px-4 sm:px-6 fixed top-0 left-0 right-0 z-40 safe-top">
-                <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+        <div className="flex flex-col text-white -m-4 sm:-m-6 lg:-m-8 min-h-[calc(100dvh-8rem)]">
+            <div className="sticky top-0 z-20 bg-zinc-950/90 backdrop-blur-md border-b border-white/10 py-3 px-4 sm:px-6 shrink-0">
+                <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 min-w-0">
-                        <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors shrink-0 p-1">
+                        <Link
+                            href="/dashboard"
+                            className="text-gray-400 hover:text-white transition-colors shrink-0 p-2 rounded-lg hover:bg-white/5"
+                            aria-label="Back to dashboard"
+                        >
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
-                        <h1 className="text-base sm:text-lg font-bold text-white truncate">Create Love Page</h1>
+                        <div className="min-w-0">
+                            <p className="text-[10px] uppercase tracking-wider text-pink-heart font-semibold">
+                                Step {step} of 4
+                            </p>
+                            <h1 className="text-base sm:text-lg font-bold text-white truncate">
+                                Create Love Page
+                            </h1>
+                        </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                         {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className={`h-2 w-6 sm:w-8 rounded-full transition-colors ${step >= i ? 'bg-red-primary' : 'bg-gray-800'}`} />
+                            <div
+                                key={i}
+                                className={`h-2 w-5 sm:w-7 rounded-full transition-colors ${step >= i ? "bg-pink-heart" : "bg-zinc-800"}`}
+                            />
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* Content Area */}
-            <div className="flex-grow pt-24 sm:pt-28 pb-28 px-4 sm:px-6 overflow-y-auto safe-bottom">
-                <div className="max-w-2xl mx-auto">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 sm:py-8">
+                <div className="max-w-2xl mx-auto rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-8">
                     <AnimatePresence mode="wait">
                         {step === 1 && (
                             <motion.div
@@ -263,7 +276,7 @@ export default function CreateLovePage() {
                                             type="text"
                                             value={formData.title}
                                             onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                            className="block w-full px-4 py-3 bg-background-card border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-red-primary focus:border-transparent outline-none transition-all"
+                                            className={visibleInputClass}
                                             placeholder="e.g. For My Love"
                                         />
                                     </div>
@@ -274,7 +287,7 @@ export default function CreateLovePage() {
                                                 type="text"
                                                 value={formData.sender_name}
                                                 onChange={e => setFormData({ ...formData, sender_name: e.target.value })}
-                                                className="block w-full px-4 py-3 bg-background-card border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-red-primary focus:border-transparent outline-none transition-all"
+                                                className={visibleInputClass}
                                                 placeholder="Note"
                                             />
                                         </div>
@@ -284,7 +297,7 @@ export default function CreateLovePage() {
                                                 type="text"
                                                 value={formData.recipient_name}
                                                 onChange={e => setFormData({ ...formData, recipient_name: e.target.value })}
-                                                className="block w-full px-4 py-3 bg-background-card border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-red-primary focus:border-transparent outline-none transition-all"
+                                                className={visibleInputClass}
                                                 placeholder="Juliet"
                                             />
                                         </div>
@@ -295,7 +308,7 @@ export default function CreateLovePage() {
                                             value={formData.message}
                                             onChange={e => setFormData({ ...formData, message: e.target.value })}
                                             rows={4}
-                                            className="block w-full px-4 py-3 bg-background-card border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-red-primary focus:border-transparent outline-none transition-all resize-none"
+                                            className={visibleTextareaClass}
                                             placeholder="Write something from your heart..."
                                         />
                                     </div>
@@ -387,7 +400,7 @@ export default function CreateLovePage() {
                                             type="text"
                                             value={formData.music_url}
                                             onChange={e => setFormData({ ...formData, music_url: e.target.value })}
-                                            className="block w-full pl-10 pr-4 py-3 bg-background-card border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-red-primary focus:border-transparent outline-none transition-all"
+                                            className={`${visibleInputClass} pl-10`}
                                             placeholder="https://open.spotify.com/track/..."
                                         />
                                     </div>
@@ -429,9 +442,8 @@ export default function CreateLovePage() {
                 </div>
             </div>
 
-            {/* Footer Actions */}
-            <div className="bg-black border-t border-white/10 py-3 sm:py-4 px-4 sm:px-6 fixed bottom-0 left-0 right-0 w-full z-40 safe-bottom">
-                <div className="max-w-4xl mx-auto flex justify-between">
+            <div className="sticky bottom-0 z-20 bg-zinc-950/95 backdrop-blur-md border-t border-white/10 py-3 px-4 sm:px-6 shrink-0 safe-bottom">
+                <div className="max-w-2xl mx-auto flex justify-between gap-3">
                     {step > 1 ? (
                         <button
                             onClick={prevStep}
@@ -446,7 +458,7 @@ export default function CreateLovePage() {
                     {step < 4 ? (
                         <button
                             onClick={nextStep}
-                            className="px-8 py-2 bg-white text-black rounded-xl hover:bg-gray-200 transition-colors font-bold shadow-lg"
+                            className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20"
                         >
                             Continue
                         </button>

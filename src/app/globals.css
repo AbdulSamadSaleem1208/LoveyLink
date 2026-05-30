@@ -52,3 +52,17 @@ main:not([data-admin]) .lucide-heart,
   fill: #ffffff !important;
   stroke: #ffffff !important;
 }
+
+/* Prevent browser autofill from hiding typed text (light blue + white text) */
+input.visible-input:-webkit-autofill,
+input.visible-input:-webkit-autofill:hover,
+input.visible-input:-webkit-autofill:focus,
+textarea.visible-input:-webkit-autofill,
+textarea.visible-input:-webkit-autofill:hover,
+textarea.visible-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #27272a inset !important;
+  box-shadow: 0 0 0 1000px #27272a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}

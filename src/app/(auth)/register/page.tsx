@@ -109,7 +109,6 @@ export default function RegisterPage() {
                                     autoComplete="name"
                                     required
                                     className={visibleInputClass}
-                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </div>
@@ -126,7 +125,6 @@ export default function RegisterPage() {
                                     autoComplete="email"
                                     required
                                     className={visibleInputClass}
-                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </div>
@@ -143,7 +141,6 @@ export default function RegisterPage() {
                                     autoComplete="new-password"
                                     required
                                     className={visibleInputClass}
-                                    style={{ WebkitTextFillColor: "#ffffff" }}
                                 />
                             </div>
                         </div>
