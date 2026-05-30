@@ -42,7 +42,7 @@ export default function AdminFilterBar({
         statusOptions.find((o) => o.value === status)?.label ?? status;
 
     return (
-        <div className="rounded-2xl border border-white/15 bg-zinc-900/80 backdrop-blur-sm p-4 sm:p-5 space-y-4">
+        <div className="relative z-30 overflow-visible rounded-2xl border border-white/15 bg-zinc-900/80 backdrop-blur-sm p-4 sm:p-5 space-y-4">
             <div className="flex flex-col lg:flex-row gap-4">
                 <div className="flex-1 min-w-0 space-y-2">
                     <label
@@ -89,8 +89,8 @@ export default function AdminFilterBar({
                     )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full lg:w-auto lg:min-w-[280px]">
-                    <div className="flex-1 min-w-[140px]">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full lg:w-auto lg:min-w-[320px]">
+                    <div className="flex-1 min-w-[11.5rem] sm:min-w-[12.5rem]">
                         <DarkSelect
                             id="admin-filter-status"
                             label="Status"
@@ -100,7 +100,7 @@ export default function AdminFilterBar({
                             ariaLabel="Filter by status"
                         />
                     </div>
-                    <div className="flex-1 min-w-[140px]">
+                    <div className="flex-1 min-w-[11.5rem] sm:min-w-[12.5rem]">
                         <DarkSelect
                             id="admin-filter-sort"
                             label="Sort"

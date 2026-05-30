@@ -216,22 +216,24 @@ export default function AdminPaymentsPage() {
                 ))}
             </div>
 
-            <AdminFilterBar
-                search={search}
-                onSearchChange={setSearch}
-                searchPlaceholder="Search TRX ID, email, or name…"
-                status={statusFilter}
-                onStatusChange={setStatusFilter}
-                statusOptions={STATUS_OPTIONS}
-                sort={sort}
-                onSortChange={setSort}
-                sortOptions={SORT_OPTIONS}
-                resultCount={filtered.length}
-                totalCount={payments.length}
-                onClear={clearFilters}
-            />
+            <div className="relative z-30 overflow-visible">
+                <AdminFilterBar
+                    search={search}
+                    onSearchChange={setSearch}
+                    searchPlaceholder="Search TRX ID, email, or name…"
+                    status={statusFilter}
+                    onStatusChange={setStatusFilter}
+                    statusOptions={STATUS_OPTIONS}
+                    sort={sort}
+                    onSortChange={setSort}
+                    sortOptions={SORT_OPTIONS}
+                    resultCount={filtered.length}
+                    totalCount={payments.length}
+                    onClear={clearFilters}
+                />
+            </div>
 
-            <div className="rounded-2xl border border-white/10 overflow-hidden bg-zinc-900/50 backdrop-blur-sm">
+            <div className="relative z-0 rounded-2xl border border-white/10 overflow-hidden bg-zinc-900/50 backdrop-blur-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>

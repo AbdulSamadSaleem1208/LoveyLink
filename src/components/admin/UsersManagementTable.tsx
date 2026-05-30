@@ -46,7 +46,7 @@ export default function UsersManagementTable({ users }: Props) {
         let list = users.filter((user) => {
             const matchesSearch =
                 !q ||
-                user.email.toLowerCase().includes(q) ||
+                (user.email ?? "").toLowerCase().includes(q) ||
                 (user.full_name?.toLowerCase().includes(q) ?? false);
 
             const normalized = normalizeStatus(user.subscription_status);
@@ -61,11 +61,15 @@ export default function UsersManagementTable({ users }: Props) {
                 case "oldest":
                     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
                 case "name_asc":
-                    return (a.full_name || a.email).localeCompare(b.full_name || b.email);
+                    return (a.full_name || a.email || "").localeCompare(
+                        b.full_name || b.email || ""
+                    );
                 case "name_desc":
-                    return (b.full_name || b.email).localeCompare(a.full_name || a.email);
+                    return (b.full_name || b.email || "").localeCompare(
+                        a.full_name || a.email || ""
+                    );
                 case "email_asc":
-                    return a.email.localeCompare(b.email);
+                    return (a.email ?? "").localeCompare(b.email ?? "");
                 case "newest":
                 default:
                     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -83,22 +87,24 @@ export default function UsersManagementTable({ users }: Props) {
 
     return (
         <>
-            <AdminFilterBar
-                search={search}
-                onSearchChange={setSearch}
-                searchPlaceholder="Search by name or email…"
-                status={statusFilter}
-                onStatusChange={setStatusFilter}
-                statusOptions={STATUS_OPTIONS}
-                sort={sort}
-                onSortChange={setSort}
-                sortOptions={SORT_OPTIONS}
-                resultCount={filtered.length}
-                totalCount={users.length}
-                onClear={clearFilters}
-            />
+            <div className="relative z-30 overflow-visible">
+                <AdminFilterBar
+                    search={search}
+                    onSearchChange={setSearch}
+                    searchPlaceholder="Search by name or email…"
+                    status={statusFilter}
+                    onStatusChange={setStatusFilter}
+                    statusOptions={STATUS_OPTIONS}
+                    sort={sort}
+                    onSortChange={setSort}
+                    sortOptions={SORT_OPTIONS}
+                    resultCount={filtered.length}
+                    totalCount={users.length}
+                    onClear={clearFilters}
+                />
+            </div>
 
-            <div className="rounded-2xl border border-white/10 overflow-hidden bg-zinc-900/50 backdrop-blur-sm mt-4">
+            <div className="relative z-0 rounded-2xl border border-white/10 overflow-hidden bg-zinc-900/50 backdrop-blur-sm mt-4">
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
                         <thead>

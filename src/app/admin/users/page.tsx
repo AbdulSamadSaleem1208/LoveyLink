@@ -35,6 +35,11 @@ export default async function AdminUsersPage() {
                 <p className="text-gray-400 mt-2">
                     Manage accounts, premium status, and payments — not for creating love pages
                 </p>
+                {(users?.length ?? 0) >= 500 && (
+                    <p className="text-amber-300/90 text-sm mt-2">
+                        Showing the 500 most recently joined users. Use search to find others.
+                    </p>
+                )}
             </div>
 
             {error && (

@@ -96,7 +96,7 @@ export default function UserEditModal({ user, onClose }: Props) {
                     </button>
                 </div>
 
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-4 overflow-visible">
                     <div>
                         <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
                         <p className="text-sm text-gray-300 bg-black/40 rounded-lg px-3 py-2 border border-white/10">
