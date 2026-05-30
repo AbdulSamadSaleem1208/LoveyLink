@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardShell from "@/components/dashboard/DashboardShell";
-import { isOwnerEmail, isAdminRole } from "@/lib/admin";
+import { userHasAdminAccess } from "@/lib/admin-session";
 import { resolvePremiumAccess } from "@/lib/premium-access";
 import { getUserDisplayInfo } from "@/lib/get-user-display";
 
@@ -23,15 +23,7 @@ export default async function AppShellLayout({
 
     const premiumAccess = await resolvePremiumAccess(user.id);
 
-    let isAdmin = isOwnerEmail(user.email);
-    if (!isAdmin) {
-        const { data: adminRole } = await supabase
-            .from("admin_roles")
-            .select("role")
-            .eq("user_id", user.id)
-            .single();
-        isAdmin = !!adminRole && isAdminRole(adminRole.role);
-    }
+    const isAdmin = await userHasAdminAccess(supabase, user);
 
     const { displayName } = await getUserDisplayInfo(supabase, user);
 

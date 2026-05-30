@@ -2,6 +2,21 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { isOwnerEmail, isAdminRole } from '@/lib/admin'
 
+async function hasAdminAccess(
+    supabase: ReturnType<typeof createServerClient>,
+    user: { id: string; email?: string | null }
+) {
+    if (isOwnerEmail(user.email)) {
+        return true
+    }
+    const { data: adminRole } = await supabase
+        .from('admin_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle()
+    return !!adminRole && isAdminRole(adminRole.role)
+}
+
 export async function middleware(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
         request,
@@ -51,6 +66,16 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
+    // Admin panel: only owner or admin_roles accounts
+    if (user && request.nextUrl.pathname.startsWith('/admin')) {
+        const allowed = await hasAdminAccess(supabase, user)
+        if (!allowed) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
+            return NextResponse.redirect(url)
+        }
+    }
+
     // Logged-in users: pricing/payment flows live on the dashboard
     if (user && request.nextUrl.pathname === '/pricing') {
         const url = request.nextUrl.clone()
@@ -63,17 +88,8 @@ export async function middleware(request: NextRequest) {
     const guestAuthPaths = ['/login', '/register', '/forgot-password']
     if (user && guestAuthPaths.includes(request.nextUrl.pathname)) {
         const url = request.nextUrl.clone()
-        if (isOwnerEmail(user.email)) {
-            url.pathname = '/admin'
-        } else {
-            const { data: adminRole } = await supabase
-                .from('admin_roles')
-                .select('role')
-                .eq('user_id', user.id)
-                .maybeSingle()
-            url.pathname =
-                adminRole && isAdminRole(adminRole.role) ? '/admin' : '/dashboard'
-        }
+        const admin = await hasAdminAccess(supabase, user)
+        url.pathname = admin ? '/admin' : '/dashboard'
         url.search = ''
         return NextResponse.redirect(url)
     }

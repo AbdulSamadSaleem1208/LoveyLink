@@ -12,13 +12,7 @@ export async function getPostLoginPathForUser(
         return "/admin";
     }
 
-    const { data: adminRole } = await supabase
-        .from("admin_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-    if (adminRole && isAdminRole(adminRole.role)) {
+    if (await userHasAdminAccess(supabase, user)) {
         return "/admin";
     }
 
@@ -40,13 +34,14 @@ export async function getPostLoginPath(
     return getPostLoginPathForUser(supabase, user);
 }
 
-export async function isAdminUser(supabase: SupabaseClient): Promise<boolean> {
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) return false;
-    if (isOwnerEmail(user.email)) return true;
+/** True when this account may access /admin (owner email or row in admin_roles). */
+export async function userHasAdminAccess(
+    supabase: SupabaseClient,
+    user: User
+): Promise<boolean> {
+    if (isOwnerEmail(user.email)) {
+        return true;
+    }
 
     const { data: adminRole } = await supabase
         .from("admin_roles")
@@ -55,4 +50,13 @@ export async function isAdminUser(supabase: SupabaseClient): Promise<boolean> {
         .maybeSingle();
 
     return !!adminRole && isAdminRole(adminRole.role);
+}
+
+export async function isAdminUser(supabase: SupabaseClient): Promise<boolean> {
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return false;
+    return userHasAdminAccess(supabase, user);
 }
