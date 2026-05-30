@@ -3,13 +3,17 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import LovePageRenderer from "@/components/love-page/LovePageRenderer";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { headers } from "next/headers";
 import { normalizeSlugParam } from "@/lib/slug";
+import { isQrSourceVisit } from "@/lib/qr-url";
+import { recordQrScan } from "@/lib/qr-scan";
 
 export const dynamic = 'force-dynamic';
 
 type Props = {
-    params: Promise<{ slug: string }>
-}
+    params: Promise<{ slug: string }>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 type LovePageRow = {
     id: string;
@@ -73,9 +77,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-export default async function PublicLovePage({ params }: Props) {
+export default async function PublicLovePage({ params, searchParams }: Props) {
     try {
         const resolvedParams = await params;
+        const resolvedSearch = await searchParams;
         const slug = normalizeSlugParam(resolvedParams.slug);
 
         if (!slug) {
@@ -91,6 +96,28 @@ export default async function PublicLovePage({ params }: Props) {
         const allowed = await canViewPage(page);
         if (!allowed) {
             notFound();
+        }
+
+        if (isQrSourceVisit(resolvedSearch)) {
+            const supabase = await createServerClient();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
+            const isOwnerPreview = !!user && user.id === page.user_id;
+
+            if (!isOwnerPreview) {
+                const headerList = await headers();
+                const forwarded = headerList.get("x-forwarded-for");
+                const ip =
+                    forwarded?.split(",")[0]?.trim() ??
+                    headerList.get("x-real-ip") ??
+                    null;
+
+                await recordQrScan(page.id, {
+                    ip,
+                    userAgent: headerList.get("user-agent"),
+                });
+            }
         }
 
         return <LovePageRenderer data={page} />;

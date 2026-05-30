@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import QRCode from "qrcode";
 import { Loader2, Download, ExternalLink, Share2, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
+import { withQrSourceParam } from "@/lib/qr-url";
 
 export default function QRDisplay({ url, title, message }: { url: string, title: string, message?: string }) {
     const [qrSrc, setQrSrc] = useState<string>("");
@@ -11,8 +12,10 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
     const [showActions, setShowActions] = useState(false);
     const actionsRef = useRef<HTMLDivElement>(null);
 
+    const trackableUrl = withQrSourceParam(url);
+
     useEffect(() => {
-        const data = mode === 'link' ? url : (message || "No message provided");
+        const data = mode === "link" ? trackableUrl : message || "No message provided";
 
         QRCode.toDataURL(data, {
             width: 480,
@@ -23,7 +26,7 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
             },
             errorCorrectionLevel: "H",
         }).then(setQrSrc);
-    }, [url, mode, message]);
+    }, [trackableUrl, mode, message]);
 
     // Close actions panel when clicking outside
     useEffect(() => {
@@ -40,11 +43,11 @@ export default function QRDisplay({ url, title, message }: { url: string, title:
     }, [showActions]);
 
     const handleShare = async () => {
-        const data = mode === 'link' ? url : (message || "No message provided");
+        const data = mode === "link" ? trackableUrl : message || "No message provided";
         const shareData = {
             title: title,
-            text: mode === 'link' ? `Check out this Love Page: ${title}` : message,
-            url: mode === 'link' ? url : undefined
+            text: mode === "link" ? `Check out this Love Page: ${title}` : message,
+            url: mode === "link" ? trackableUrl : undefined,
         };
 
         try {

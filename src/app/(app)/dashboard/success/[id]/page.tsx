@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { resolveSiteUrlFromHost } from "@/lib/site-url";
 import { repairBrokenSlugForPage } from "@/lib/love-page-slug-repair";
 import { isBrokenSlug } from "@/lib/slug";
+import { withQrSourceParam } from "@/lib/qr-url";
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +42,7 @@ export default async function SuccessPage({ params }: Props) {
 
     const { slug: repairedSlug, repaired } = await repairBrokenSlugForPage(page, user.id);
     const publicUrl = `${siteUrl}/lp/${repairedSlug}`;
+    const qrTrackUrl = withQrSourceParam(publicUrl);
     const hadBrokenSlug = repaired || isBrokenSlug(page.slug);
 
     const { data: qr } = await supabase
@@ -50,12 +52,12 @@ export default async function SuccessPage({ params }: Props) {
         .maybeSingle();
 
     if (!qr) {
-        await supabase.from('qr_codes').insert({
+        await supabase.from("qr_codes").insert({
             page_id: page.id,
-            qr_data: publicUrl
+            qr_data: qrTrackUrl,
         });
-    } else if (repaired || qr.qr_data !== publicUrl) {
-        await supabase.from('qr_codes').update({ qr_data: publicUrl }).eq('page_id', page.id);
+    } else if (repaired || qr.qr_data !== qrTrackUrl) {
+        await supabase.from("qr_codes").update({ qr_data: qrTrackUrl }).eq("page_id", page.id);
     }
 
     return (
