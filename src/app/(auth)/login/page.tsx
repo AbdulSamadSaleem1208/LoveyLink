@@ -3,10 +3,9 @@
 import { login } from "@/app/auth/actions";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Heart, Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
+import { Heart, Loader2, Eye, EyeOff, Sparkles, Home, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BackButton } from "@/components/ui/back-button";
 import FloatingHearts from "@/components/ui/FloatingHearts";
 import LoginSparkles from "@/components/auth/LoginSparkles";
 import Image from "next/image";
@@ -58,7 +57,13 @@ export default function LoginPage() {
                 animate={{ opacity: 1, x: 0 }}
                 className="absolute top-4 left-4 z-20"
             >
-                <BackButton />
+                <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 rounded-xl border border-pink-heart/35 bg-pink-heart/10 px-3.5 py-2.5 text-sm font-semibold text-pink-light hover:text-white hover:bg-pink-heart/20 hover:border-pink-heart/55 hover:shadow-lg hover:shadow-pink-heart/20 transition-all cursor-pointer"
+                >
+                    <Home className="h-4 w-4 shrink-0" />
+                    Main website
+                </Link>
             </motion.div>
 
             <motion.div
@@ -236,6 +241,16 @@ export default function LoginPage() {
                             </button>
                         </motion.div>
                     </form>
+
+                    <div className="mt-6 pt-6 border-t border-white/10">
+                        <Link
+                            href="/"
+                            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-medium text-gray-300 border border-white/15 bg-white/5 hover:text-white hover:bg-white/10 hover:border-pink-heart/30 transition-all cursor-pointer"
+                        >
+                            <ArrowLeft className="h-4 w-4 text-pink-heart" />
+                            Back to main website
+                        </Link>
+                    </div>
                 </div>
             </motion.div>
         </div>
