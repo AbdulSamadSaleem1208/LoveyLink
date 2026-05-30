@@ -1,11 +1,33 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { EmailOtpType } from '@supabase/supabase-js'
+import { getPostLoginPathForUser } from '@/lib/admin-session'
 
 function safeRedirectPath(next: string | null): string {
     if (!next || !next.startsWith('/') || next.startsWith('//')) {
         return '/dashboard'
     }
+    return next
+}
+
+async function resolveAuthRedirect(next: string) {
+    if (next.startsWith('/update-password')) {
+        return next
+    }
+
+    const supabase = await createClient()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+        return next
+    }
+
+    if (next === '/dashboard' || next.startsWith('/dashboard?')) {
+        return getPostLoginPathForUser(supabase, user)
+    }
+
     return next
 }
 
@@ -36,15 +58,16 @@ export async function GET(request: Request) {
             if (!error) {
                 const forwardedHost = request.headers.get('x-forwarded-host') 
                 const isLocalEnv = process.env.NODE_ENV === 'development'
+                const destination = await resolveAuthRedirect(next)
 
-                console.log("  OTP Verification Success. Redirecting to:", next);
+                console.log("  OTP Verification Success. Redirecting to:", destination);
 
                 if (isLocalEnv) {
-                    return NextResponse.redirect(`${origin}${next}`)
+                    return NextResponse.redirect(`${origin}${destination}`)
                 } else if (forwardedHost) {
-                    return NextResponse.redirect(`https://${forwardedHost}${next}`)
+                    return NextResponse.redirect(`https://${forwardedHost}${destination}`)
                 } else {
-                    return NextResponse.redirect(`${origin}${next}`)
+                    return NextResponse.redirect(`${origin}${destination}`)
                 }
             } else {
                 console.error("Auth Error verifying OTP:", error)
@@ -59,16 +82,16 @@ export async function GET(request: Request) {
             if (!error) {
                 const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
                 const isLocalEnv = process.env.NODE_ENV === 'development'
+                const destination = await resolveAuthRedirect(next)
 
-                console.log("  Exchange Success. Redirecting to:", next);
+                console.log("  Exchange Success. Redirecting to:", destination);
 
                 if (isLocalEnv) {
-                    // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                    return NextResponse.redirect(`${origin}${next}`)
+                    return NextResponse.redirect(`${origin}${destination}`)
                 } else if (forwardedHost) {
-                    return NextResponse.redirect(`https://${forwardedHost}${next}`)
+                    return NextResponse.redirect(`https://${forwardedHost}${destination}`)
                 } else {
-                    return NextResponse.redirect(`${origin}${next}`)
+                    return NextResponse.redirect(`${origin}${destination}`)
                 }
             } else {
                 console.error("Auth Error exchanging code:", error)

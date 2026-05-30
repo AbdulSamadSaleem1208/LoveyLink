@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isOwnerEmail, isAdminRole } from '@/lib/admin'
 
 export async function middleware(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -58,11 +59,21 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
-    // Logged-in users: go to app dashboard (not marketing login/register)
+    // Logged-in users: admins → admin panel, others → dashboard
     const guestAuthPaths = ['/login', '/register', '/forgot-password']
     if (user && guestAuthPaths.includes(request.nextUrl.pathname)) {
         const url = request.nextUrl.clone()
-        url.pathname = '/dashboard'
+        if (isOwnerEmail(user.email)) {
+            url.pathname = '/admin'
+        } else {
+            const { data: adminRole } = await supabase
+                .from('admin_roles')
+                .select('role')
+                .eq('user_id', user.id)
+                .maybeSingle()
+            url.pathname =
+                adminRole && isAdminRole(adminRole.role) ? '/admin' : '/dashboard'
+        }
         url.search = ''
         return NextResponse.redirect(url)
     }

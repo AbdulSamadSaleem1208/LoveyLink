@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { getCanonicalSiteUrl, resolveSiteUrlFromHost } from "@/lib/site-url";
+import { getPostLoginPath } from "@/lib/admin-session";
 
 const getSiteUrl = async () => {
     if (process.env.NEXT_PUBLIC_SITE_URL) {
@@ -44,7 +45,7 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath("/", "layout");
-    redirect("/dashboard?welcome=1");
+    redirect(await getPostLoginPath(supabase));
 }
 
 export async function signup(formData: FormData) {
@@ -77,7 +78,7 @@ export async function signup(formData: FormData) {
 
     const { data: sessionData } = await supabase.auth.getSession();
     if (sessionData.session) {
-        redirect("/dashboard?welcome=1");
+        redirect(await getPostLoginPath(supabase));
     }
 
     return { success: "Check your email to confirm your account." };

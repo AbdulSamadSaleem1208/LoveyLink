@@ -48,7 +48,7 @@ export default function DashboardSidebarNav({
             ? [
                   {
                       href: "/admin",
-                      label: "Admin Panel",
+                      label: "Administration",
                       icon: Shield,
                       active: pathname.startsWith("/admin"),
                   },

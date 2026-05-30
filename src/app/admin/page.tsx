@@ -102,7 +102,7 @@ export default async function AdminDashboard() {
                         System Overview
                     </h1>
                     <p className="text-gray-400 mt-2">
-                        Live stats from your LoveyLink platform
+                        Users, payments, and platform stats — management only
                     </p>
                 </div>
                 {pendingPayments ? (

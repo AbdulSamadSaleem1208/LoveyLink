@@ -173,8 +173,7 @@ export default function AdminPaymentsPage() {
                 </div>
                 <h1 className="text-3xl font-bold text-white">Payment Approvals</h1>
                 <p className="text-gray-400 mt-2">
-                    Easypaisa manual verification — approve grants 30 days premium; reject
-                    declines the request
+                    Review Easypaisa payments — approve to grant premium, reject to decline
                 </p>
             </div>
 
