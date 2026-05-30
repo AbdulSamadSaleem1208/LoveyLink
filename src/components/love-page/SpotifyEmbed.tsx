@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toSpotifyEmbedUrl } from "@/lib/spotify-url";
 
 interface Props {
     url: string;
@@ -8,18 +9,18 @@ interface Props {
 
 export default function SpotifyEmbed({ url }: Props) {
     const [hasMounted, setHasMounted] = useState(false);
+    const embedUrl = toSpotifyEmbedUrl(url);
 
     useEffect(() => {
         setHasMounted(true);
     }, []);
 
-    // Don't render on server or if no URL
-    if (!hasMounted || !url) return null;
+    if (!hasMounted || !embedUrl) return null;
 
     return (
         <div className="w-full max-w-md mx-auto">
             <iframe
-                src={url}
+                src={embedUrl}
                 width="100%"
                 height="152"
                 frameBorder="0"

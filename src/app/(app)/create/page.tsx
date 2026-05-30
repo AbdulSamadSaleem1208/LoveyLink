@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, Upload, Music, ArrowRight, ArrowLeft, Loader2, Play, Pause } from "lucide-react";
 import LovePageRenderer from "@/components/love-page/LovePageRenderer";
+import { toSpotifyEmbedUrl } from "@/lib/spotify-url";
 import { toast } from "sonner";
 import Link from "next/link";
 import { buildLovePageSlug } from "@/lib/slug";
@@ -218,14 +219,9 @@ export default function CreateLovePage() {
 
             const slug = buildLovePageSlug(formData.recipient_name);
 
-            // Convert Spotify URL to embed format if needed
-            let musicUrl = formData.music_url;
-            if (musicUrl) {
-                const trackMatch = musicUrl.match(/track\/([a-zA-Z0-9]+)/);
-                if (trackMatch && !musicUrl.includes('/embed/')) {
-                    musicUrl = `https://open.spotify.com/embed/track/${trackMatch[1]}`;
-                }
-            }
+            const musicUrl = formData.music_url
+                ? toSpotifyEmbedUrl(formData.music_url) ?? formData.music_url
+                : null;
 
             const payload = {
                 user_id: user.id,
@@ -513,7 +509,7 @@ export default function CreateLovePage() {
                                         Ready to publish — all required fields are filled.
                                     </div>
                                 )}
-                            <div className="h-[min(520px,55vh)] border border-white/10 rounded-2xl overflow-hidden bg-black relative"
+                            <div className="h-[min(680px,72vh)] border border-white/10 rounded-2xl overflow-y-auto overflow-x-hidden bg-black relative scroll-smooth"
                             >
                                 <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-black/60 backdrop-blur px-4 py-1 rounded-full text-xs text-white border border-white/10">
                                     Preview Mode

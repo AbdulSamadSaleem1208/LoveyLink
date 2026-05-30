@@ -58,9 +58,15 @@ export default function LovePageRenderer({
         );
     }
 
+    const isPreview = preview;
+
     return (
         <div
-            className="min-h-screen w-full overflow-x-hidden flex flex-col items-center py-12 px-4 relative"
+            className={
+                isPreview
+                    ? "min-h-0 w-full overflow-x-hidden flex flex-col items-center py-6 px-3 relative"
+                    : "min-h-screen w-full overflow-x-hidden flex flex-col items-center py-12 px-4 relative"
+            }
             style={{
                 backgroundColor: bgColor,
                 fontFamily: data.theme_config?.fontFamily || "var(--font-outfit)",
@@ -92,7 +98,11 @@ export default function LovePageRenderer({
                             className="absolute inset-0 blur-2xl rounded-full opacity-50"
                             style={{ backgroundColor: primaryColor }}
                         />
-                        <Heart className="relative h-20 w-20 mx-auto text-pink-heart fill-pink-heart drop-shadow-[0_0_20px_rgba(255,107,157,0.6)] animate-pulse" />
+                        <Heart
+                            className={`relative mx-auto text-pink-heart fill-pink-heart drop-shadow-[0_0_20px_rgba(255,107,157,0.6)] animate-pulse ${
+                                isPreview ? "h-14 w-14" : "h-20 w-20"
+                            }`}
+                        />
                     </div>
                 </motion.div>
 
@@ -100,7 +110,9 @@ export default function LovePageRenderer({
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.45 }}
-                    className="text-4xl md:text-7xl font-bold mb-6 drop-shadow-sm"
+                    className={`font-bold drop-shadow-sm ${
+                        isPreview ? "text-2xl md:text-3xl mb-4" : "text-4xl md:text-7xl mb-6"
+                    }`}
                     style={{ color: primaryColor }}
                 >
                     {data.title || "My Love Page"}
@@ -124,14 +136,21 @@ export default function LovePageRenderer({
                 </motion.div>
             </motion.div>
 
-            <LovePagePhotoGallery images={data.images} primaryColor={primaryColor} />
+            <LovePagePhotoGallery
+                images={data.images}
+                primaryColor={primaryColor}
+                compact={isPreview}
+            />
 
             <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={isPreview ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileInView={isPreview ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.7 }}
-                className={`backdrop-blur-md p-8 md:p-12 rounded-3xl shadow-xl max-w-2xl w-full text-center z-10 mx-auto border ${
+                transition={{ duration: isPreview ? 0.3 : 0.7 }}
+                className={`backdrop-blur-md rounded-3xl shadow-xl max-w-2xl w-full text-center z-10 mx-auto border ${
+                    isPreview ? "p-5 md:p-6" : "p-8 md:p-12"
+                } ${
                     isDarkBg
                         ? "bg-white/5 border-pink-heart/20"
                         : "bg-white/70 border-pink-heart/30"
@@ -155,18 +174,23 @@ export default function LovePageRenderer({
                 </div>
             </motion.div>
 
-            {data.music_url && !preview && (
+            {data.music_url && (
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={isPreview ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileInView={isPreview ? undefined : { opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="mt-12 w-full max-w-md mx-auto z-10"
+                    className={`w-full max-w-md mx-auto z-10 ${isPreview ? "mt-6" : "mt-12"}`}
                 >
                     <SpotifyEmbed url={data.music_url} />
                 </motion.div>
             )}
 
-            <div className={`mt-20 text-center text-sm z-10 pb-10 ${textMuted}`}>
+            <div
+                className={`text-center text-sm z-10 ${textMuted} ${
+                    isPreview ? "mt-8 pb-4" : "mt-20 pb-10"
+                }`}
+            >
                 <p>
                     Created with{" "}
                     <Heart className="inline h-3.5 w-3.5 text-pink-heart fill-pink-heart" /> using

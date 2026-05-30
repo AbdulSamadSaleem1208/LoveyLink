@@ -10,6 +10,7 @@ const PINK_LIGHT = "#FFB3C6";
 type Props = {
     images: string[];
     primaryColor?: string;
+    compact?: boolean;
 };
 
 function PhotoCaptionBar({
@@ -57,17 +58,25 @@ function ImageScrim() {
     );
 }
 
-export default function LovePagePhotoGallery({ images, primaryColor = PINK }: Props) {
+export default function LovePagePhotoGallery({
+    images,
+    primaryColor = PINK,
+    compact = false,
+}: Props) {
     if (!images.length) return null;
+
+    const sectionMb = compact ? "mb-8" : "mb-16";
+    const singleMaxW = compact ? "max-w-xs" : "max-w-lg";
 
     if (images.length === 1) {
         return (
             <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={compact ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileInView={compact ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.9, ease: "easeOut" }}
-                className="relative z-10 w-full max-w-lg mx-auto mb-16 px-4"
+                transition={{ duration: compact ? 0.3 : 0.9, ease: "easeOut" }}
+                className={`relative z-10 w-full ${singleMaxW} mx-auto ${sectionMb} px-4`}
             >
                 <div
                     className="absolute -inset-3 rounded-[3rem] opacity-60 blur-2xl"
@@ -83,7 +92,9 @@ export default function LovePagePhotoGallery({ images, primaryColor = PINK }: Pr
                         boxShadow: `0 25px 60px -15px ${primaryColor}66, 0 0 0 1px rgba(255,255,255,0.1) inset`,
                     }}
                 >
-                    <div className="relative aspect-[3/4] w-full">
+                    <div
+                        className={`relative w-full ${compact ? "aspect-[4/5] max-h-[220px]" : "aspect-[3/4]"}`}
+                    >
                         <Image
                             src={images[0]}
                             alt="Love memory"
@@ -106,7 +117,7 @@ export default function LovePagePhotoGallery({ images, primaryColor = PINK }: Pr
     }
 
     return (
-        <div className="relative z-10 w-full max-w-6xl mx-auto mb-16 px-4">
+        <div className={`relative z-10 w-full max-w-6xl mx-auto ${sectionMb} px-4`}>
             <div
                 className={
                     images.length === 2
@@ -117,11 +128,20 @@ export default function LovePagePhotoGallery({ images, primaryColor = PINK }: Pr
                 {images.map((img, idx) => (
                     <motion.div
                         key={img}
-                        initial={{ opacity: 0, y: 30, rotate: idx % 2 === 0 ? -3 : 3 }}
-                        whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+                        initial={
+                            compact
+                                ? { opacity: 1, y: 0, rotate: 0 }
+                                : { opacity: 0, y: 30, rotate: idx % 2 === 0 ? -3 : 3 }
+                        }
+                        animate={{ opacity: 1, y: 0, rotate: 0 }}
+                        whileInView={compact ? undefined : { opacity: 1, y: 0, rotate: 0 }}
                         whileHover={{ scale: 1.03, rotate: 0, zIndex: 10 }}
                         viewport={{ once: true }}
-                        transition={{ delay: idx * 0.12, type: "spring", stiffness: 120 }}
+                        transition={{
+                            delay: compact ? 0 : idx * 0.12,
+                            type: "spring",
+                            stiffness: 120,
+                        }}
                         className="group relative"
                     >
                         <div
