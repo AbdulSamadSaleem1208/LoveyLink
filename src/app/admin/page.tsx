@@ -5,7 +5,7 @@ import { formatDistanceToNow, subDays } from "date-fns";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBarChart from "@/components/admin/AdminBarChart";
 import AdminDonutChart from "@/components/admin/AdminDonutChart";
-import { buildDailySeries, countByField } from "@/lib/admin-analytics";
+import { buildDailySeries } from "@/lib/admin-analytics";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +34,9 @@ export default async function AdminDashboard() {
         { data: recentUsers },
         { data: userRows },
         { data: pageRows },
-        { data: paymentRows },
+        { count: approvedPayCount },
+        { count: rejectedPayCount },
+        { count: revokedPayCount },
     ] = await Promise.all([
         supabaseAdmin.from("users").select("*", { count: "exact", head: true }),
         supabaseAdmin.from("love_pages").select("*", { count: "exact", head: true }),
@@ -63,17 +65,28 @@ export default async function AdminDashboard() {
             .limit(6),
         supabaseAdmin.from("users").select("created_at").gte("created_at", since),
         supabaseAdmin.from("love_pages").select("created_at").gte("created_at", since),
-        supabaseAdmin.from("payment_requests").select("status"),
+        supabaseAdmin
+            .from("payment_requests")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "approved"),
+        supabaseAdmin
+            .from("payment_requests")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "rejected"),
+        supabaseAdmin
+            .from("payment_requests")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "revoked"),
     ]);
 
     const signupSeries = buildDailySeries(userRows ?? [], 14);
     const pagesSeries = buildDailySeries(pageRows ?? [], 14);
-    const paymentBreakdown = countByField(paymentRows ?? [], [
-        "pending",
-        "approved",
-        "rejected",
-        "revoked",
-    ]).filter((d) => d.value > 0);
+    const paymentBreakdown = [
+        { name: "pending", value: pendingPayments ?? 0 },
+        { name: "approved", value: approvedPayCount ?? 0 },
+        { name: "rejected", value: rejectedPayCount ?? 0 },
+        { name: "revoked", value: revokedPayCount ?? 0 },
+    ].filter((d) => d.value > 0);
 
     return (
         <div className="space-y-6 sm:space-y-8 max-w-7xl w-full min-w-0">

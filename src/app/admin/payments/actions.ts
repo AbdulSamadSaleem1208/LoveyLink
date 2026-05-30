@@ -110,13 +110,28 @@ export async function rejectPayment(paymentId: string) {
     try {
         await verifyAdmin();
 
+        const { data: payment, error: fetchError } = await supabaseAdmin
+            .from("payment_requests")
+            .select("status")
+            .eq("id", paymentId)
+            .single();
+
+        if (fetchError || !payment) {
+            throw new Error("Payment request not found");
+        }
+
+        if (payment.status !== "pending") {
+            throw new Error("Only pending payments can be rejected");
+        }
+
         const { error } = await supabaseAdmin
             .from("payment_requests")
             .update({
                 status: "rejected",
                 updated_at: new Date().toISOString(),
             })
-            .eq("id", paymentId);
+            .eq("id", paymentId)
+            .eq("status", "pending");
 
         if (error) throw error;
 
@@ -148,21 +163,36 @@ export async function getPaymentRequests() {
         const userIds = Array.from(new Set(payments.map((p) => p.user_id)));
         const userMap = new Map<string, { email: string; full_name: string }>();
 
-        await Promise.all(
-            userIds.map(async (uid) => {
-                const {
-                    data: { user },
-                    error,
-                } = await supabaseAdmin.auth.admin.getUserById(uid);
-                if (!error && user) {
-                    userMap.set(uid, {
-                        email: user.email ?? "Unknown",
-                        full_name:
-                            (user.user_metadata?.full_name as string) || "Unknown",
-                    });
-                }
-            })
-        );
+        const { data: profiles } = await supabaseAdmin
+            .from("users")
+            .select("id, email, full_name")
+            .in("id", userIds);
+
+        for (const profile of profiles ?? []) {
+            userMap.set(profile.id, {
+                email: profile.email ?? "Unknown",
+                full_name: profile.full_name || "Unknown",
+            });
+        }
+
+        const missingIds = userIds.filter((id) => !userMap.has(id));
+        if (missingIds.length > 0) {
+            await Promise.all(
+                missingIds.map(async (uid) => {
+                    const {
+                        data: { user },
+                        error,
+                    } = await supabaseAdmin.auth.admin.getUserById(uid);
+                    if (!error && user) {
+                        userMap.set(uid, {
+                            email: user.email ?? "Unknown",
+                            full_name:
+                                (user.user_metadata?.full_name as string) || "Unknown",
+                        });
+                    }
+                })
+            );
+        }
 
         const joinedData = payments.map((p) => ({
             ...p,

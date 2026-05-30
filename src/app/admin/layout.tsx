@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { isOwnerEmail, isAdminRole } from "@/lib/admin";
-import { expireDueSubscriptions } from "@/lib/subscription-expiration";
 import AdminMobileShell from "@/components/admin/AdminMobileShell";
 import { type AdminNotification } from "@/components/admin/AdminNotificationsBanner";
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
@@ -30,32 +29,52 @@ export default async function AdminLayout({
         redirect("/login");
     }
 
-    const { data: adminRole } = await supabase
-        .from("admin_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .single();
-
     const isOwner = isOwnerEmail(user.email);
 
-    if (!isOwner && !isAdminRole(adminRole?.role)) {
-        redirect("/dashboard");
-    }
-
-    await expireDueSubscriptions();
-
+    let adminRole: { role: string } | null = null;
     let adminNotifications: AdminNotification[] = [];
-    try {
-        const supabaseAdmin = getAdminServiceClient();
-        const { data } = await supabaseAdmin
-            .from("admin_notifications")
-            .select("id, type, user_email, message, created_at")
-            .is("read_at", null)
-            .order("created_at", { ascending: false })
-            .limit(15);
-        adminNotifications = (data ?? []) as AdminNotification[];
-    } catch {
-        adminNotifications = [];
+
+    if (isOwner) {
+        try {
+            const supabaseAdmin = getAdminServiceClient();
+            const { data } = await supabaseAdmin
+                .from("admin_notifications")
+                .select("id, type, user_email, message, created_at")
+                .is("read_at", null)
+                .order("created_at", { ascending: false })
+                .limit(15);
+            adminNotifications = (data ?? []) as AdminNotification[];
+        } catch {
+            adminNotifications = [];
+        }
+    } else {
+        const [roleResult, notifResult] = await Promise.all([
+            supabase
+                .from("admin_roles")
+                .select("role")
+                .eq("user_id", user.id)
+                .single(),
+            (async () => {
+                try {
+                    const supabaseAdmin = getAdminServiceClient();
+                    return supabaseAdmin
+                        .from("admin_notifications")
+                        .select("id, type, user_email, message, created_at")
+                        .is("read_at", null)
+                        .order("created_at", { ascending: false })
+                        .limit(15);
+                } catch {
+                    return { data: [] as AdminNotification[] };
+                }
+            })(),
+        ]);
+
+        adminRole = roleResult.data;
+        adminNotifications = (notifResult.data ?? []) as AdminNotification[];
+
+        if (!isAdminRole(adminRole?.role)) {
+            redirect("/dashboard");
+        }
     }
 
     return (

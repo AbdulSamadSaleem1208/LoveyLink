@@ -130,11 +130,15 @@ export default function AdminPaymentsPage() {
                 throw new Error(result.error);
             }
 
-            const msg =
-                "message" in result && typeof result.message === "string"
-                    ? result.message
-                    : `Payment ${action}d successfully`;
-            toast.success(msg);
+            if (action === "approve") {
+                const msg =
+                    "message" in result && typeof result.message === "string"
+                        ? result.message
+                        : "Payment approved — user upgraded to premium for 30 days";
+                toast.success(msg);
+            } else {
+                toast.success("Payment rejected — no premium granted");
+            }
             await fetchPayments();
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : "Action failed";
@@ -169,7 +173,8 @@ export default function AdminPaymentsPage() {
                 </div>
                 <h1 className="text-3xl font-bold text-white">Payment Approvals</h1>
                 <p className="text-gray-400 mt-2">
-                    Easypaisa manual verification — PKR 500 / 30 days premium
+                    Easypaisa manual verification — approve grants 30 days premium; reject
+                    declines the request
                 </p>
             </div>
 
@@ -295,25 +300,6 @@ export default function AdminPaymentsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right space-x-2">
-                                            {payment.status === "approved" && (
-                                                <button
-                                                    onClick={() =>
-                                                        handleAction(payment.id, "approve")
-                                                    }
-                                                    disabled={
-                                                        !!processingId &&
-                                                        processingId !== payment.id
-                                                    }
-                                                    title="Re-apply premium if upgrade failed"
-                                                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 disabled:opacity-40"
-                                                >
-                                                    {processingId === payment.id ? (
-                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                    ) : (
-                                                        "Sync premium"
-                                                    )}
-                                                </button>
-                                            )}
                                             {payment.status === "pending" && (
                                                 <>
                                                     <button
