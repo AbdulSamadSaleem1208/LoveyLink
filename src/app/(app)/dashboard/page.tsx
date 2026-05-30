@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Plus, Heart } from "lucide-react";
+import { Plus, Heart, Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
 import WelcomeConfetti from "@/components/dashboard/WelcomeConfetti";
 import LovePagesManager from "@/components/dashboard/LovePagesManager";
@@ -68,6 +68,8 @@ export default async function Dashboard({
     const showUpgradeBanner =
         params.upgrade === "1" && !premiumAccess.isPremium;
 
+    const pageCount = lovePages?.length ?? 0;
+
     return (
         <>
             <SubscriptionStatusPoller
@@ -77,63 +79,69 @@ export default async function Dashboard({
             {params.welcome === "1" && <LoginWelcomeBurst />}
             {showWelcome && <WelcomeConfetti />}
 
+            <div className="rounded-3xl border border-pink-heart/20 bg-gradient-to-br from-zinc-900/80 via-zinc-950/90 to-black p-6 sm:p-8 mb-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-pink-heart/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                    <div>
+                        <p className="text-pink-heart text-sm font-semibold mb-2 flex items-center gap-1.5">
+                            <Heart className="w-4 h-4 fill-pink-heart shrink-0" />
+                            Welcome back, {firstName}
+                        </p>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                            Your love pages
+                        </h1>
+                        <p className="text-gray-400 text-sm max-w-md">
+                            {pageCount === 0
+                                ? "Create a romantic page, share the link, and track who views it."
+                                : `You have ${pageCount} page${pageCount === 1 ? "" : "s"}. Filter, search, or create another.`}
+                        </p>
+                    </div>
+                    <Link
+                        href="/create"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-button-gradient text-white font-bold shadow-lg shadow-pink-heart/25 hover:opacity-90 transition-all shrink-0"
+                    >
+                        <Plus className="w-5 h-5" />
+                        New page
+                    </Link>
+                </div>
+            </div>
+
             <DashboardAccountActions
                 isPremium={premiumAccess.isPremium}
                 status={premiumAccess.status}
                 label={premiumAccess.label}
             />
 
-            <div className="mb-8 md:mb-10">
-                <p className="text-pink-heart text-sm font-semibold mb-1 flex items-center gap-1.5">
-                    <Heart className="w-4 h-4 fill-pink-heart shrink-0" />
-                    Welcome back, {firstName}
-                </p>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white via-pink-100 to-pink-heart/80 bg-clip-text text-transparent">
-                    My Love Pages
-                </h1>
-                <p className="text-gray-400 text-sm sm:text-base">
-                    Manage and create your special declarations.
-                </p>
-            </div>
-
             {showUpgradeBanner && (
-                <div className="mb-6 rounded-2xl border border-pink-heart/30 bg-gradient-to-r from-pink-heart/10 to-red-primary/10 p-4 sm:p-5">
-                    <p className="text-white font-semibold mb-1">Upgrade to Premium</p>
-                    <p className="text-sm text-gray-400 mb-3">
-                        PKR 500 for 30 days — unlimited pages, QR codes, and analytics.
-                        Complete Easypaisa payment in the popup.
-                    </p>
+                <div className="mb-8 rounded-2xl border border-pink-heart/25 bg-pink-heart/5 p-5 flex gap-3">
+                    <Sparkles className="w-5 h-5 text-pink-heart shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-white font-semibold text-sm">Upgrade to Premium</p>
+                        <p className="text-sm text-gray-400 mt-1">
+                            PKR 500 for 30 days — publish pages, QR codes, and analytics.
+                        </p>
+                    </div>
                 </div>
             )}
-
-            <div className="flex justify-end mb-6">
-                <Link
-                    href="/create"
-                    className="inline-flex items-center justify-center px-5 py-3 bg-button-gradient text-white rounded-xl shadow-lg shadow-pink-heart/30 hover:opacity-90 transition-all font-bold w-full sm:w-auto"
-                >
-                    <Plus className="w-5 h-5 mr-2 shrink-0" />
-                    Create New Page
-                </Link>
-            </div>
 
             {lovePages && lovePages.length > 0 ? (
                 <LovePagesManager initialPages={lovePages} />
             ) : (
-                <div className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-pink-heart/20 rounded-3xl p-8 sm:p-16 text-center backdrop-blur-sm shadow-[0_0_60px_rgba(255,107,157,0.08)]">
-                    <div className="mx-auto h-24 w-24 bg-pink-heart/10 rounded-full flex items-center justify-center mb-6 border-2 border-dashed border-pink-heart/40 ring-4 ring-pink-heart/10">
-                        <Heart className="h-10 w-10 text-pink-heart fill-pink-heart animate-pulse" />
+                <div className="rounded-3xl border border-dashed border-pink-heart/25 bg-zinc-900/30 p-10 sm:p-16 text-center">
+                    <div className="mx-auto h-20 w-20 rounded-2xl bg-pink-heart/10 flex items-center justify-center mb-6 border border-pink-heart/20">
+                        <Heart className="h-9 w-9 text-pink-heart fill-pink-heart" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">No love pages yet</h3>
-                    <p className="text-gray-400 mb-8 max-w-md mx-auto">
-                        Start creating your first romantic page to share with your loved one! It
-                        only takes a minute.
+                    <h3 className="text-xl font-bold text-white mb-2">No pages yet</h3>
+                    <p className="text-gray-500 text-sm mb-8 max-w-sm mx-auto">
+                        Fill in the required details — title, names, and message — then publish
+                        when you are ready.
                     </p>
                     <Link
                         href="/create"
-                        className="inline-flex items-center px-8 py-3 bg-button-gradient text-white rounded-2xl shadow-lg shadow-pink-heart/25 hover:opacity-90 transition-all font-bold text-lg"
+                        className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-button-gradient text-white font-bold hover:opacity-90"
                     >
-                        <Plus className="w-5 h-5 mr-2" />
-                        Create My First Page
+                        <Plus className="w-5 h-5" />
+                        Create your first page
                     </Link>
                 </div>
             )}

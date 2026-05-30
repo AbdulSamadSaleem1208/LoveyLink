@@ -11,7 +11,14 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { buildLovePageSlug } from "@/lib/slug";
 import ThemePresetPicker from "@/components/create/ThemePresetPicker";
-import { visibleInputClass, visibleTextareaClass } from "@/lib/form-input-styles";
+import { visibleInputClass } from "@/lib/form-input-styles";
+import CreateFormField from "@/components/create/CreateFormField";
+import {
+    validateLovePageBasics,
+    isLovePageBasicsValid,
+    basicsCompletionCount,
+    type LovePageFieldErrors,
+} from "@/lib/love-page-form-validation";
 
 interface LovePageData {
     title: string;
@@ -29,6 +36,7 @@ export default function CreateLovePage() {
     const [loading, setLoading] = useState(false);
     const [publishing, setPublishing] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<LovePageFieldErrors>({});
 
     const [formData, setFormData] = useState<LovePageData>({
         title: "",
@@ -79,8 +87,44 @@ export default function CreateLovePage() {
         };
     }, [router]);
 
-    const nextStep = () => setStep(s => Math.min(s + 1, 4));
-    const prevStep = () => setStep(s => Math.max(s - 1, 1));
+    const clearFieldError = (key: keyof LovePageFieldErrors) => {
+        setFieldErrors((prev) => {
+            if (!prev[key]) return prev;
+            const next = { ...prev };
+            delete next[key];
+            return next;
+        });
+    };
+
+    const tryNextStep = () => {
+        if (step === 1) {
+            const errors = validateLovePageBasics(formData);
+            if (Object.keys(errors).length > 0) {
+                setFieldErrors(errors);
+                toast.error("Please complete all required fields");
+                return;
+            }
+            setFieldErrors({});
+        }
+        setStep((s) => Math.min(s + 1, 4));
+    };
+
+    const tryGoToPreview = () => {
+        const errors = validateLovePageBasics(formData);
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            toast.error("Complete required fields before preview");
+            setStep(1);
+            return;
+        }
+        setFieldErrors({});
+        setStep(4);
+    };
+
+    const prevStep = () => setStep((s) => Math.max(s - 1, 1));
+
+    const basicsComplete = isLovePageBasicsValid(formData);
+    const basicsProgress = basicsCompletionCount(formData);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
@@ -155,19 +199,15 @@ export default function CreateLovePage() {
                 return;
             }
 
-            if (!formData.title.trim()) {
-                toast.error("Please add a page title before publishing");
+            const errors = validateLovePageBasics(formData);
+            if (Object.keys(errors).length > 0) {
+                setFieldErrors(errors);
+                toast.error("Cannot publish — fill in all required fields");
                 setPublishing(false);
                 setStep(1);
                 return;
             }
-
-            if (!formData.recipient_name.trim()) {
-                toast.error("Please add their name before publishing — it is used for your share link");
-                setPublishing(false);
-                setStep(1);
-                return;
-            }
+            setFieldErrors({});
 
             const slug = buildLovePageSlug(formData.recipient_name);
 
@@ -264,54 +304,77 @@ export default function CreateLovePage() {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
-                                <div className="text-center mb-8">
-                                    <h2 className="text-2xl font-bold text-white mb-2">The Basics</h2>
-                                    <p className="text-gray-400">Ideally, who is this page for?</p>
+                                <div className="mb-6">
+                                    <h2 className="text-2xl font-bold text-white mb-1">The basics</h2>
+                                    <p className="text-gray-400 text-sm">
+                                        Required fields must be filled before you can publish.
+                                    </p>
+                                    <div className="mt-3 flex items-center gap-2">
+                                        <div className="flex-1 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                                            <div
+                                                className="h-full bg-pink-heart transition-all duration-300"
+                                                style={{ width: `${(basicsProgress / 4) * 100}%` }}
+                                            />
+                                        </div>
+                                        <span className="text-xs text-gray-500 shrink-0">
+                                            {basicsProgress}/4
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-1">Page Title</label>
-                                        <input
-                                            type="text"
-                                            value={formData.title}
-                                            onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                            className={visibleInputClass}
-                                            placeholder="e.g. For My Love"
+                                <div className="space-y-5">
+                                    <CreateFormField
+                                        id="page-title"
+                                        label="Page title"
+                                        required
+                                        value={formData.title}
+                                        onChange={(v) => {
+                                            setFormData({ ...formData, title: v });
+                                            clearFieldError("title");
+                                        }}
+                                        placeholder="e.g. For My Love"
+                                        error={fieldErrors.title}
+                                    />
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <CreateFormField
+                                            id="sender-name"
+                                            label="Your name"
+                                            required
+                                            value={formData.sender_name}
+                                            onChange={(v) => {
+                                                setFormData({ ...formData, sender_name: v });
+                                                clearFieldError("sender_name");
+                                            }}
+                                            placeholder="Your name"
+                                            error={fieldErrors.sender_name}
+                                        />
+                                        <CreateFormField
+                                            id="recipient-name"
+                                            label="Their name"
+                                            required
+                                            value={formData.recipient_name}
+                                            onChange={(v) => {
+                                                setFormData({ ...formData, recipient_name: v });
+                                                clearFieldError("recipient_name");
+                                            }}
+                                            placeholder="Their name"
+                                            error={fieldErrors.recipient_name}
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-1">Your Name</label>
-                                            <input
-                                                type="text"
-                                                value={formData.sender_name}
-                                                onChange={e => setFormData({ ...formData, sender_name: e.target.value })}
-                                                className={visibleInputClass}
-                                                placeholder="Note"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-1">Their Name</label>
-                                            <input
-                                                type="text"
-                                                value={formData.recipient_name}
-                                                onChange={e => setFormData({ ...formData, recipient_name: e.target.value })}
-                                                className={visibleInputClass}
-                                                placeholder="Juliet"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-1">Your Message</label>
-                                        <textarea
-                                            value={formData.message}
-                                            onChange={e => setFormData({ ...formData, message: e.target.value })}
-                                            rows={4}
-                                            className={visibleTextareaClass}
-                                            placeholder="Write something from your heart..."
-                                        />
-                                    </div>
+                                    <CreateFormField
+                                        id="message"
+                                        label="Your message"
+                                        required
+                                        as="textarea"
+                                        rows={5}
+                                        value={formData.message}
+                                        onChange={(v) => {
+                                            setFormData({ ...formData, message: v });
+                                            clearFieldError("message");
+                                        }}
+                                        placeholder="Write something from your heart…"
+                                        error={fieldErrors.message}
+                                    />
                                 </div>
                             </motion.div>
                         )}
@@ -324,9 +387,12 @@ export default function CreateLovePage() {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
-                                <div className="text-center mb-8">
-                                    <h2 className="text-2xl font-bold text-white mb-2">Memories</h2>
-                                    <p className="text-gray-400">Upload a special photo for the cover.</p>
+                                <div className="mb-6">
+                                    <h2 className="text-2xl font-bold text-white mb-1">Memories</h2>
+                                    <p className="text-gray-400 text-sm">
+                                        <span className="text-gray-500">Optional</span> — add up to 5
+                                        photos, or skip and continue.
+                                    </p>
                                 </div>
 
                                 <div className="flex flex-col items-center space-y-4">
@@ -375,14 +441,19 @@ export default function CreateLovePage() {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
-                                <div className="text-center mb-8">
-                                    <h2 className="text-2xl font-bold text-white mb-2">Set the Mood</h2>
-                                    <p className="text-gray-400">Choose a theme color and background music.</p>
+                                <div className="mb-6">
+                                    <h2 className="text-2xl font-bold text-white mb-1">Set the mood</h2>
+                                    <p className="text-gray-400 text-sm">
+                                        Pick a color theme. Music is optional.
+                                    </p>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                                        Pick a romantic color scheme
+                                    <label className="block text-sm font-medium text-gray-200 mb-1">
+                                        Color theme
+                                        <span className="ml-2 text-[10px] font-semibold uppercase text-pink-heart">
+                                            Required
+                                        </span>
                                     </label>
                                     <ThemePresetPicker
                                         selected={formData.theme}
@@ -415,7 +486,19 @@ export default function CreateLovePage() {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
-                                className="h-[600px] border border-white/10 rounded-2xl overflow-hidden bg-black relative"
+                                className="space-y-4"
+                            >
+                                {!basicsComplete && (
+                                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+                                        Complete required fields on step 1 before publishing.
+                                    </div>
+                                )}
+                                {basicsComplete && (
+                                    <div className="rounded-xl border border-green-500/25 bg-green-500/10 px-4 py-3 text-sm text-green-300">
+                                        Ready to publish — all required fields are filled.
+                                    </div>
+                                )}
+                            <div className="h-[min(520px,55vh)] border border-white/10 rounded-2xl overflow-hidden bg-black relative"
                             >
                                 <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-black/60 backdrop-blur px-4 py-1 rounded-full text-xs text-white border border-white/10">
                                     Preview Mode
@@ -436,6 +519,7 @@ export default function CreateLovePage() {
                                     }}
                                     preview={true}
                                 />
+                            </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -455,20 +539,36 @@ export default function CreateLovePage() {
                         <div></div>
                     )}
 
-                    {step < 4 ? (
+                    {step < 3 ? (
                         <button
-                            onClick={nextStep}
-                            className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20"
+                            type="button"
+                            onClick={tryNextStep}
+                            disabled={step === 1 && !basicsComplete}
+                            className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Continue
                         </button>
+                    ) : step === 3 ? (
+                        <button
+                            type="button"
+                            onClick={tryGoToPreview}
+                            disabled={!basicsComplete}
+                            className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            Preview & publish
+                        </button>
                     ) : (
                         <button
+                            type="button"
                             onClick={handlePublish}
-                            disabled={publishing}
-                            className="px-8 py-2 bg-gradient-to-r from-red-primary to-pink-hot text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-red-900/50 flex items-center"
+                            disabled={publishing || !basicsComplete}
+                            className="px-8 py-2.5 bg-button-gradient text-white rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-pink-heart/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                         >
-                            {publishing ? <Loader2 className="w-5 h-5 animate-spin" /> : "Publish Page"}
+                            {publishing ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                "Publish page"
+                            )}
                         </button>
                     )}
                 </div>
